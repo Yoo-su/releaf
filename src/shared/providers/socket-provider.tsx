@@ -19,14 +19,20 @@ export const useSocketContext = () => {
   return useContext(SocketContext);
 };
 
-export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+export const SocketProvider = ({
+  children,
+  namespace,
+}: {
+  children: React.ReactNode;
+  namespace: string;
+}) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const accessToken = useAuthStore((state) => state.accessToken);
 
   useEffect(() => {
     if (accessToken) {
-      const newSocket = io(`${process.env.NEXT_PUBLIC_API_URL!}/chat`, {
+      const newSocket = io(`${process.env.NEXT_PUBLIC_API_URL!}${namespace}`, {
         transports: ["websocket"],
         auth: {
           token: accessToken,
@@ -34,12 +40,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       newSocket.on("connect", () => {
-        console.log("Socket connected:", newSocket.id);
+        console.log(`Socket connected to ${namespace}:`, newSocket.id);
         setIsConnected(true);
       });
 
       newSocket.on("disconnect", () => {
-        console.log("Socket disconnected");
+        console.log(`Socket disconnected from ${namespace}`);
         setIsConnected(false);
       });
 
@@ -48,19 +54,19 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       newSocket.on("error", (error) => {
-        console.error("Socket error:", error.message);
+        console.error(`Socket error on ${namespace}:`, error.message);
       });
 
       setSocket(newSocket);
 
       return () => {
-        console.log("Disconnecting socket...");
+        console.log(`Disconnecting socket from ${namespace}...`);
         newSocket.disconnect();
         setSocket(null);
         setIsConnected(false);
       };
     }
-  }, [accessToken]);
+  }, [accessToken, namespace]);
 
   const value = useMemo(() => ({ socket, isConnected }), [socket, isConnected]);
 
