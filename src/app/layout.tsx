@@ -77,7 +77,7 @@ export default async function Layout({
       <body style={{ fontFamily: "var(--font-pretendard)" }}>
         <QueryProvider>
           <UserProvider>
-            <SocketProvider>
+            <SocketProvider namespace="/chat">
               <ChatProvider>{children}</ChatProvider>
             </SocketProvider>
           </UserProvider>
