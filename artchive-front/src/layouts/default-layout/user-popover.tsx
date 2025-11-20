@@ -73,6 +73,13 @@ export default function UserPopover() {
             className="justify-start w-full h-auto px-3 py-2"
             asChild
           >
+            <Link href="/my-page">마이페이지</Link>
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start w-full h-auto px-3 py-2"
+            asChild
+          >
             <Link href="/my-page/sales">판매글목록</Link>
           </Button>
           <Button

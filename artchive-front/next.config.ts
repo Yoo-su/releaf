@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
         hostname: "img1.kakaocdn.net",
       },
       {
+        protocol: "http",
+        hostname: "k.kakaocdn.net",
+      },
+      {
         protocol: "https",
         hostname: "phinf.pstatic.net",
       },
