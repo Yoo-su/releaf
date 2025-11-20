@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     title: "ArtChive - 문화와 지식을 잇는 아카이브",
     description:
       "다양한 문화 예술 정보를 탐색하고, 중고 서적을 거래하며 지식의 가치를 발견하는 공간입니다.",
-    url: "http://artchive-front-dun.vercel.app", // 실제 서비스 URL
+    url: "http://artchive-hub.vercel.app", // 실제 서비스 URL
     siteName: "ArtChive",
     images: [
       {
