@@ -4,9 +4,10 @@ import { UserService } from './services/user.service';
 import { User } from './entities/user.entity';
 import { UserController } from './controllers/user.controller';
 import { UsedBookSale } from '../book/entities/used-book-sale.entity';
+import { ChatParticipant } from '../chat/entities/chat-participant.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, UsedBookSale])],
+  imports: [TypeOrmModule.forFeature([User, UsedBookSale, ChatParticipant])],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

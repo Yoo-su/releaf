@@ -22,6 +22,16 @@ export class UserController {
     };
   }
 
+  @Get('stats')
+  @UseGuards(AuthGuard('jwt'))
+  async getStats(@CurrentUser() user: User) {
+    const stats = await this.userService.getUserStats(user.id);
+    return {
+      success: true,
+      stats,
+    };
+  }
+
   @Get('profile')
   @UseGuards(AuthGuard('jwt'))
   getUser(@CurrentUser() user: User) {

@@ -18,6 +18,8 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(UsedBookSale)
     private readonly usedBookSaleRepository: Repository<UsedBookSale>,
+    @InjectRepository(ChatParticipant)
+    private readonly chatParticipantRepository: Repository<ChatParticipant>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -52,6 +54,34 @@ export class UserService {
       relations: ['book', 'user'],
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async getUserStats(userId: number) {
+    // 1. 판매글 통계
+    const sales = await this.usedBookSaleRepository.find({
+      where: { user: { id: userId } },
+      select: ['status'],
+    });
+
+    const salesCount = sales.length;
+    const salesStatusCounts = sales.reduce(
+      (acc, sale) => {
+        acc[sale.status] = (acc[sale.status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<SaleStatus, number>,
+    );
+
+    // 2. 채팅방 통계 (활성화된 채팅방 수)
+    const chatRoomCount = await this.chatParticipantRepository.count({
+      where: { user: { id: userId }, isActive: true },
+    });
+
+    return {
+      salesCount,
+      salesStatusCounts,
+      chatRoomCount,
+    };
   }
 
   async withdraw(userId: number): Promise<void> {
