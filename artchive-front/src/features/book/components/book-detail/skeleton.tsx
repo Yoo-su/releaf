@@ -6,7 +6,7 @@ export const BookDetailSkeleton = () => (
   <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
     {/* 이미지 스켈레톤 */}
     <div className="md:col-span-1">
-      <Skeleton className="w-full rounded-lg aspect-[3/4]" />
+      <Skeleton className="w-full rounded-lg aspect-3/4" />
     </div>
     {/* 정보 스켈레톤 */}
     <div className="flex flex-col gap-4 md:col-span-2">

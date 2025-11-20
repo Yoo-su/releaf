@@ -5,6 +5,14 @@ import typescriptEslint from "typescript-eslint";
 const eslintConfig = [
   // 1. 기본적으로 모든 파일에 적용될 TypeScript 규칙
   ...typescriptEslint.configs.recommended,
+  {
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
 
   // 2. Next.js 관련 규칙
   {

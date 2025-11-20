@@ -1,0 +1,15 @@
+{
+  "name": "artchive-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "turbo": "latest"
+  },
+  "packageManager": "pnpm@9.4.0"
+}

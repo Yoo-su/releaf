@@ -8,7 +8,6 @@ import { Autoplay, EffectCoverflow, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import { TextAnimate } from "@/shared/components/magicui/text-animate";
-// Shadcn/ui 컴포넌트
 import { Button } from "@/shared/components/shadcn/button";
 
 import { MAIN_PUBLISHERS } from "../../constants";
