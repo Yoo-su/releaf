@@ -38,7 +38,7 @@ interface BookSaleHistoryItemProps {
 }
 export const BookSaleHistoryItem = ({ sale }: BookSaleHistoryItemProps) => {
   const { mutate: updateSaleStatus } = useUpdateBookSaleStatusMutation();
-  const { mutate: deleteSale, isPending: isDeleting } = 
+  const { mutate: deleteSale, isPending: isDeleting } =
     useDeleteBookSaleMutation();
 
   const handleStatusChange = (newStatus: SaleStatus) => {
@@ -66,7 +66,7 @@ export const BookSaleHistoryItem = ({ sale }: BookSaleHistoryItemProps) => {
     <Link href={`/book/sale/${sale.id}`} passHref>
       <Card className="transition-shadow duration-300 hover:shadow-md cursor-pointer">
         <CardContent className="flex items-center p-4 gap-4">
-          <div className="relative w-20 h-28 flex-shrink-0">
+          <div className="relative w-20 h-28 shrink-0">
             <Image
               src={sale.book.image ?? "/placeholder.jpg"}
               alt={sale.book.title}
@@ -75,9 +75,9 @@ export const BookSaleHistoryItem = ({ sale }: BookSaleHistoryItemProps) => {
               className="rounded-md object-cover"
             />
           </div>
-          <div className="flex-grow min-w-0">
+          <div className="grow min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex-grow w-0">
+              <div className="grow w-0">
                 <SaleStatusBadge status={sale.status} />
                 <h3 className="font-semibold text-lg mt-1 truncate">
                   {sale.title}

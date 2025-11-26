@@ -322,7 +322,7 @@ export const BookSaleForm = ({ bookInfo }: BookSaleFormProps) => {
 
             <Button
               type="submit"
-              className="w-full !mt-10"
+              className="w-full mt-10!"
               disabled={isPending}
             >
               {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

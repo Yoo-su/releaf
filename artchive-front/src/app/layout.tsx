@@ -48,6 +48,9 @@ export const metadata: Metadata = {
       "공연, 전시, 중고 서적 거래를 한 곳에서. 당신의 문화 생활을 업그레이드하세요.",
     images: ["/imgs/artchive.png"], // 트위터 카드 이미지 경로
   },
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 const nanum_gothic = Nanum_Gothic({

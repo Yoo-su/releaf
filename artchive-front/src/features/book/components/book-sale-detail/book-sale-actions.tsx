@@ -1,4 +1,3 @@
-// src/features/book/components/book-sale-detail/book-sale-actions.tsx
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
@@ -9,6 +8,7 @@ import { useState } from "react";
 
 import { findOrCreateRoom } from "@/features/chat/apis";
 import { useChatStore } from "@/features/chat/stores/use-chat-store";
+import { WishlistButton } from "@/features/user/components/wishlist-button";
 import {
   Avatar,
   AvatarFallback,
@@ -155,19 +155,28 @@ export const BookSaleActions = ({ sale, isOwner }: BookSaleActionsProps) => {
             </Button>
           </div>
         ) : (
-          <Button
-            size="lg"
-            className="w-full sm:w-auto"
-            onClick={handleStartChat}
-            disabled={isCreatingChat}
-          >
-            {isCreatingChat ? (
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            ) : (
-              <MessageCircle className="w-5 h-5 mr-2" />
+          <div className="flex gap-2 w-full sm:w-auto">
+            {sale.status === "FOR_SALE" && (
+              <WishlistButton
+                type="SALE"
+                id={sale.id}
+                className="border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 w-11 rounded-md"
+              />
             )}
-            {isCreatingChat ? "채팅방 여는 중..." : "판매자와 채팅하기"}
-          </Button>
+            <Button
+              size="lg"
+              className="flex-1 sm:flex-none"
+              onClick={handleStartChat}
+              disabled={isCreatingChat}
+            >
+              {isCreatingChat ? (
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              ) : (
+                <MessageCircle className="w-5 h-5 mr-2" />
+              )}
+              {isCreatingChat ? "채팅방 여는 중..." : "판매자와 채팅하기"}
+            </Button>
+          </div>
         )}
       </div>
 
@@ -184,7 +193,7 @@ export const BookSaleActions = ({ sale, isOwner }: BookSaleActionsProps) => {
           </CardHeader>
           <CardContent>
             <div className="flex gap-4">
-              <div className="relative w-20 h-[120px] flex-shrink-0">
+              <div className="relative w-20 h-[120px] shrink-0">
                 <Image
                   src={sale.book.image}
                   alt={sale.book.title}

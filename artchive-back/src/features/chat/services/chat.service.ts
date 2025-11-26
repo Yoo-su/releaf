@@ -282,7 +282,7 @@ export class ChatService {
       chatRoom,
       sender,
     });
-    return this.chatMessageRepository.save(message);
+    return await this.chatMessageRepository.save(message);
   }
 
   /**

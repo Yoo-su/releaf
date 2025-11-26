@@ -45,8 +45,8 @@ export class BookController {
    * @param query - 검색, 필터링, 정렬, 페이지네이션 DTO
    */
   @Get('sales')
-  searchSales(@Query() query: QueryBookSaleDto) {
-    return this.bookService.searchSales(query);
+  async searchSales(@Query() query: QueryBookSaleDto) {
+    return await this.bookService.searchSales(query);
   }
 
   /**
@@ -74,13 +74,13 @@ export class BookController {
    * 최근 판매글 목록을 조회하는 엔드포인트
    */
   @Get('sales/recent')
-  getRecentSales() {
-    return this.bookService.findRecentSales();
+  async getRecentSales() {
+    return await this.bookService.findRecentSales();
   }
 
   @Get('sales/:id')
-  getSaleById(@Param('id', ParseIntPipe) id: number) {
-    return this.bookService.findSaleById(id);
+  async getSaleById(@Param('id', ParseIntPipe) id: number) {
+    return await this.bookService.findSaleById(id);
   }
 
   /**
@@ -89,11 +89,11 @@ export class BookController {
    * @param query - 페이지네이션 및 필터링 옵션 (page, limit, city, district)
    */
   @Get(':isbn/sales')
-  getBookSales(
+  async getBookSales(
     @Param('isbn') isbn: string,
     @Query() query: GetBookSalesQueryDto,
   ) {
-    return this.bookService.findSalesByIsbn(isbn, query);
+    return await this.bookService.findSalesByIsbn(isbn, query);
   }
 
   /**
