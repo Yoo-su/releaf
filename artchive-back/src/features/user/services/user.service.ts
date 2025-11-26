@@ -9,7 +9,10 @@ import {
 } from '@/features/book/entities/used-book-sale.entity';
 import { ChatParticipant } from '@/features/chat/entities/chat-participant.entity';
 import { DataSource } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { Wishlist } from '../entities/wishlist.entity';
+import { Book } from '@/features/book/entities/book.entity';
+import { BookInfoDto } from '@/features/book/dtos/book-info.dto';
 
 @Injectable()
 export class UserService {
@@ -20,6 +23,10 @@ export class UserService {
     private readonly usedBookSaleRepository: Repository<UsedBookSale>,
     @InjectRepository(ChatParticipant)
     private readonly chatParticipantRepository: Repository<ChatParticipant>,
+    @InjectRepository(Wishlist)
+    private readonly wishlistRepository: Repository<Wishlist>,
+    @InjectRepository(Book)
+    private readonly bookRepository: Repository<Book>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -27,7 +34,9 @@ export class UserService {
     provider: string,
     providerId: string,
   ): Promise<User | null> {
-    return this.userRepository.findOne({ where: { provider, providerId } });
+    return await this.userRepository.findOne({
+      where: { provider, providerId },
+    });
   }
 
   async createUser(socialLoginDto: SocialLoginDto): Promise<User> {
@@ -40,7 +49,7 @@ export class UserService {
   }
 
   async findById(id: number): Promise<User | null> {
-    return this.userRepository.findOne({ where: { id } });
+    return await this.userRepository.findOne({ where: { id } });
   }
 
   /**
@@ -49,7 +58,7 @@ export class UserService {
    * @returns 사용자의 판매글 목록
    */
   async findMySales(userId: number): Promise<UsedBookSale[]> {
-    return this.usedBookSaleRepository.find({
+    return await this.usedBookSaleRepository.find({
       where: { user: { id: userId } },
       relations: ['book', 'user'],
       order: { createdAt: 'DESC' },
@@ -129,5 +138,111 @@ export class UserService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async addToWishlist(
+    userId: number,
+    type: 'BOOK' | 'SALE',
+    id: string | number,
+    bookData?: BookInfoDto,
+  ) {
+    // 이미 찜했는지 확인
+    const existing = await this.wishlistRepository.findOne({
+      where: {
+        user: { id: userId },
+        ...(type === 'BOOK'
+          ? { book: { isbn: id as string } }
+          : { usedBookSale: { id: id as number } }),
+      },
+    });
+
+    if (existing) {
+      return existing; // 이미 찜한 경우 그대로 반환 (또는 에러 처리)
+    }
+
+    const wishlist = new Wishlist();
+    wishlist.user = { id: userId } as User;
+
+    if (type === 'BOOK') {
+      let book = await this.bookRepository.findOne({
+        where: { isbn: id as string },
+      });
+
+      if (!book) {
+        if (bookData) {
+          // DB에 책이 없고, 책 정보가 제공된 경우 새로 생성
+          book = this.bookRepository.create({
+            isbn: bookData.isbn,
+            title: bookData.title,
+            author: bookData.author,
+            publisher: bookData.publisher,
+            description: bookData.description,
+            image: bookData.image,
+          });
+          await this.bookRepository.save(book);
+        } else {
+          throw new NotFoundException(
+            'Book not found and no data provided to create it',
+          );
+        }
+      }
+      wishlist.book = book;
+    } else {
+      const sale = await this.usedBookSaleRepository.findOne({
+        where: { id: id as number },
+      });
+      if (!sale) throw new NotFoundException('Sale not found');
+      if (sale.status !== SaleStatus.FOR_SALE) {
+        throw new BadRequestException('Only items for sale can be wishlisted');
+      }
+      wishlist.usedBookSale = sale;
+    }
+
+    return await this.wishlistRepository.save(wishlist);
+  }
+
+  async removeFromWishlist(
+    userId: number,
+    type: 'BOOK' | 'SALE',
+    id: string | number,
+  ) {
+    const wishlist = await this.wishlistRepository.findOne({
+      where: {
+        user: { id: userId },
+        ...(type === 'BOOK'
+          ? { book: { isbn: id as string } }
+          : { usedBookSale: { id: id as number } }),
+      },
+    });
+
+    if (!wishlist) {
+      throw new NotFoundException('Wishlist item not found');
+    }
+
+    return await this.wishlistRepository.remove(wishlist);
+  }
+
+  async getWishlist(userId: number) {
+    return await this.wishlistRepository.find({
+      where: { user: { id: userId } },
+      relations: ['book', 'usedBookSale', 'usedBookSale.book'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async checkWishlistStatus(
+    userId: number,
+    type: 'BOOK' | 'SALE',
+    id: string | number,
+  ) {
+    const exists = await this.wishlistRepository.exists({
+      where: {
+        user: { id: userId },
+        ...(type === 'BOOK'
+          ? { book: { isbn: id as string } }
+          : { usedBookSale: { id: id as number } }),
+      },
+    });
+    return { isWishlisted: exists };
   }
 }

@@ -105,7 +105,7 @@ export class BookService {
     }
 
     sale.status = status;
-    return this.usedBookSaleRepository.save(sale);
+    return await this.usedBookSaleRepository.save(sale);
   }
 
   async findSaleById(id: number) {
@@ -288,7 +288,7 @@ export class BookService {
       updateBookSaleDto,
     );
 
-    return this.usedBookSaleRepository.save(updatedSale);
+    return await this.usedBookSaleRepository.save(updatedSale);
   }
 
   /**
@@ -317,7 +317,7 @@ export class BookService {
    * 가장 최근에 등록된 중고책 판매글을 조회합니다. (최대 10개)
    */
   async findRecentSales(): Promise<UsedBookSale[]> {
-    return this.usedBookSaleRepository.find({
+    return await this.usedBookSaleRepository.find({
       where: { status: SaleStatus.FOR_SALE }, // 판매중인 판매글만 조회
       order: { createdAt: 'DESC' },
       take: 10,

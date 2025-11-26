@@ -85,6 +85,13 @@ export default function UserPopover() {
           <Button
             variant="ghost"
             className="justify-start w-full h-auto px-3 py-2"
+            asChild
+          >
+            <Link href="/my-page/wishlist">위시리스트</Link>
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start w-full h-auto px-3 py-2"
             onClick={handleLogout}
           >
             로그아웃

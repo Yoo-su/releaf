@@ -1,10 +1,11 @@
 "use client";
 
-import { Heart, PenSquare } from "lucide-react";
+import { PenSquare } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import { WishlistButton } from "@/features/user/components/wishlist-button";
 // Shadcn/ui 컴포넌트
 import { Badge } from "@/shared/components/shadcn/badge";
 import { Button } from "@/shared/components/shadcn/button";
@@ -56,7 +57,7 @@ export const BookDetail = () => {
               alt={book.title}
               width={600}
               height={800}
-              className="object-cover w-full h-auto aspect-[3/4] transition-transform duration-300 group-hover:scale-105"
+              className="object-cover w-full h-auto aspect-3/4 transition-transform duration-300 group-hover:scale-105"
               priority // LCP(Largest Contentful Paint) 최적화를 위해 priority 추가
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20" />
@@ -94,15 +95,12 @@ export const BookDetail = () => {
               <PenSquare className="w-4 h-4 mr-2" />
               중고책 판매글 작성
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full sm:w-auto"
-              onClick={() => {}}
-            >
-              <Heart className="w-4 h-4 mr-2" />
-              위시리스트
-            </Button>
+            <WishlistButton
+              type="BOOK"
+              id={isbn}
+              bookData={book}
+              className="w-full sm:w-auto border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 px-8 rounded-md"
+            />
           </div>
 
           <Separator className="my-6" />

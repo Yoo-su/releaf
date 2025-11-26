@@ -77,6 +77,6 @@ export class AuthService {
   }
 
   async refresh(userId: number, nickname: string) {
-    return this.getTokens(userId, nickname);
+    return await this.getTokens(userId, nickname);
   }
 }

@@ -101,7 +101,7 @@ export const BookSaleFilter = ({
     >
       {/* Row 1: Search & Location */}
       <div className="flex flex-wrap items-center gap-4">
-        <div className="relative flex-grow min-w-[200px]">
+        <div className="relative grow min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="text"
@@ -169,26 +169,26 @@ export const BookSaleFilter = ({
             control={control}
             render={({ field }) => (
               <>
-                {(Object.keys(SaleStatus) as Array<keyof typeof SaleStatus>).map(
-                  (key) => (
-                    <div key={key} className="flex items-center gap-1.5">
-                      <Checkbox
-                        id={SaleStatus[key]}
-                        checked={field.value.includes(SaleStatus[key])}
-                        onCheckedChange={(checked) => {
-                          const currentStatus = SaleStatus[key];
-                          const newValue = checked
-                            ? [...field.value, currentStatus]
-                            : field.value.filter((s) => s !== currentStatus);
-                          field.onChange(newValue);
-                        }}
-                      />
-                      <Label htmlFor={SaleStatus[key]} className="font-normal">
-                        {statusToKorean[SaleStatus[key]]}
-                      </Label>
-                    </div>
-                  )
-                )}
+                {(
+                  Object.keys(SaleStatus) as Array<keyof typeof SaleStatus>
+                ).map((key) => (
+                  <div key={key} className="flex items-center gap-1.5">
+                    <Checkbox
+                      id={SaleStatus[key]}
+                      checked={field.value.includes(SaleStatus[key])}
+                      onCheckedChange={(checked) => {
+                        const currentStatus = SaleStatus[key];
+                        const newValue = checked
+                          ? [...field.value, currentStatus]
+                          : field.value.filter((s) => s !== currentStatus);
+                        field.onChange(newValue);
+                      }}
+                    />
+                    <Label htmlFor={SaleStatus[key]} className="font-normal">
+                      {statusToKorean[SaleStatus[key]]}
+                    </Label>
+                  </div>
+                ))}
               </>
             )}
           />
@@ -215,9 +215,9 @@ export const BookSaleFilter = ({
 
       {/* Row 3: Price Slider & Buttons */}
       <div className="flex flex-wrap items-center gap-4">
-        <div className="flex flex-grow items-center gap-4">
+        <div className="flex grow items-center gap-4">
           <Label className="shrink-0 font-semibold">가격대:</Label>
-          <div className="flex-grow flex items-center gap-2">
+          <div className="grow flex items-center gap-2">
             <Controller
               name="priceRange"
               control={control}
