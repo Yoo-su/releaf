@@ -2,9 +2,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { useCreateBookSaleMutation } from "../../mutations";
-import { BookInfo, CreateBookSaleParams } from "../../types";
-import { sellFormSchema, SellFormValues } from "./schema";
+import {
+  sellFormSchema,
+  SellFormValues,
+} from "../components/book-sale-form/schema";
+import { useCreateBookSaleMutation } from "../mutations";
+import { BookInfo, CreateBookSaleParams } from "../types";
 
 interface UseBookSaleFormProps {
   bookInfo: BookInfo;
