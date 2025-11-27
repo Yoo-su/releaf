@@ -24,8 +24,8 @@ import { Textarea } from "@/shared/components/shadcn/textarea";
 import { ImageUploader } from "@/shared/components/ui/image-uploader";
 import { LocationSelector } from "@/shared/components/ui/location-selector";
 
+import { useBookSaleEditForm } from "../../hooks/use-book-sale-edit-form";
 import { UsedBookSale } from "../../types";
-import { useBookSaleEditForm } from "./use-book-sale-edit-form";
 
 interface BookSaleEditFormProps {
   sale: UsedBookSale;
