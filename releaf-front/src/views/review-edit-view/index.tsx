@@ -3,11 +3,11 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { getBookDetail } from "@/features/book/apis";
 import { Book } from "@/features/book/types";
 import { getReview, updateReview } from "@/features/review/apis";
 import { ReviewForm } from "@/features/review/components/review-form";
 import { ReviewFormValues } from "@/features/review/types";
+import { Spinner } from "@/shared/components/shadcn/spinner";
 
 export const ReviewEditView = () => {
   const params = useParams();
@@ -32,22 +32,7 @@ export const ReviewEditView = () => {
 
       try {
         const review = await getReview(id);
-
-        let bookData: Book | undefined;
-
-        if (review.bookIsbn) {
-          const bookResult = await getBookDetail(review.bookIsbn);
-          // 네이버 API 응답 구조 또는 직접적인 Book 객체 처리
-          if (
-            "items" in bookResult &&
-            Array.isArray(bookResult.items) &&
-            bookResult.items.length > 0
-          ) {
-            bookData = bookResult.items[0] as any;
-          } else {
-            bookData = bookResult as any;
-          }
-        }
+        const bookData = review.book;
 
         setInitialData({
           title: review.title,
@@ -87,7 +72,7 @@ export const ReviewEditView = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto py-8 flex justify-center">
-        <p>로딩 중...</p>
+        <Spinner />
       </div>
     );
   }

@@ -1,14 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
 import { useAuthStore } from "@/features/auth/store";
-import { getBookDetail } from "@/features/book/apis";
 import { ReviewDetailActions } from "@/features/review/components/review-detail-actions";
 import { ReviewDetailContent } from "@/features/review/components/review-detail-content";
 import { ReviewDetailHeader } from "@/features/review/components/review-detail-header";
 import { useReviewDetailQuery } from "@/features/review/queries";
+import { Spinner } from "@/shared/components/shadcn/spinner";
 
 export const ReviewDetailView = () => {
   const params = useParams();
@@ -21,17 +20,10 @@ export const ReviewDetailView = () => {
     error,
   } = useReviewDetailQuery(Number(id), !!id);
 
-  const { data: bookData } = useQuery({
-    queryKey: ["book", review?.bookIsbn],
-    queryFn: () => getBookDetail(String(review?.bookIsbn)),
-    enabled: !!review?.bookIsbn,
-    staleTime: 1000 * 60 * 60,
-  });
-
   if (isLoading) {
     return (
       <div className="container mx-auto py-20 flex justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        <Spinner className="size-8 text-primary" />
       </div>
     );
   }
@@ -44,10 +36,7 @@ export const ReviewDetailView = () => {
     );
   }
 
-  const book =
-    bookData && "items" in bookData
-      ? (bookData.items[0] as any)
-      : (bookData as any);
+  const book = review.book;
 
   const isAuthor = user?.id === review.userId;
 

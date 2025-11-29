@@ -106,7 +106,7 @@ export const MainBookSlider = () => {
   }, [books]);
 
   return (
-    <div className="w-full bg-gradient-to-b from-white via-gray-50 to-white py-10">
+    <div className="w-full bg-linear-to-b from-white via-gray-50 to-white py-8">
       <SwiperStyles />
       <div className="mx-auto max-w-5xl px-4 text-center">
         <TextAnimate
@@ -187,7 +187,7 @@ export const MainBookSlider = () => {
             {books.map((book, index) => (
               <SwiperSlide
                 key={`${book.isbn}-${index}`} // 고유한 키 보장
-                className="!w-[240px] md:!w-[300px]"
+                className="w-[240px]! md:w-[300px]!"
               >
                 <Link href={`/book/${book.isbn}/detail`} passHref>
                   <div className="group relative w-full h-[360px] md:h-[450px] rounded-lg overflow-hidden shadow-2xl transform transition-transform duration-500">

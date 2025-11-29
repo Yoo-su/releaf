@@ -1,8 +1,9 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+
+import { Spinner } from "@/shared/components/shadcn/spinner";
 
 import { useInfiniteBookSalesQuery } from "../../queries";
 import { SearchBookSalesParams } from "../../types";
@@ -79,7 +80,7 @@ export const BookSaleGrid = ({ filterParams }: BookSaleGridProps) => {
       {/* 다음 페이지 로딩 중일 때 스피너 표시 */}
       {isFetchingNextPage && (
         <div className="flex items-center justify-center py-6">
-          <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
+          <Spinner />
         </div>
       )}
     </div>
