@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Review } from "@/features/review/types";
 import { Button } from "@/shared/components/shadcn/button";
+import { Spinner } from "@/shared/components/shadcn/spinner";
 
 import { ReviewCard } from "./review-card";
 
@@ -80,9 +81,7 @@ export function ReviewGridList({
 
       {/* Infinite Scroll Trigger & Loading State */}
       <div ref={loadMoreRef} className="h-10 flex justify-center items-center">
-        {isFetchingNextPage && (
-          <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-        )}
+        {isFetchingNextPage && <Spinner />}
       </div>
     </div>
   );

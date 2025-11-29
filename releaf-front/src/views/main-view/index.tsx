@@ -4,6 +4,7 @@ import { MainArtSlider } from "@/features/art/components/art-slider/main-art-sli
 import { MAIN_ARTS } from "@/features/art/constants";
 import { MainBookSlider } from "@/features/book/components/book-slider/main-book-slider";
 import { RecentSalesSlider } from "@/features/book/components/book-slider/recent-sale-slider";
+import { RecentReviewSlider } from "@/features/review/components/recent-review-slider";
 
 export const MainView = () => {
   return (
@@ -11,6 +12,8 @@ export const MainView = () => {
       <MainBookSlider />
 
       <RecentSalesSlider />
+
+      <RecentReviewSlider />
 
       <div>
         <MainArtSlider
