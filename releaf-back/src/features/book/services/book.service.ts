@@ -25,7 +25,11 @@ export class BookService {
     private readonly dataSource: DataSource,
   ) {}
 
-  // 책 정보가 DB에 있으면 찾고, 없으면 새로 생성하는 메서드
+  /**
+   * 책 정보가 DB에 있으면 찾고, 없으면 새로 생성합니다.
+   * @param bookInfoDto 책 정보 DTO
+   * @returns 책 엔티티
+   */
   private async findOrCreateBook(bookInfoDto: BookInfoDto): Promise<Book> {
     let book = await this.bookRepository.findOneBy({ isbn: bookInfoDto.isbn });
     if (!book) {
@@ -35,6 +39,12 @@ export class BookService {
     return book;
   }
 
+  /**
+   * 중고책 판매글을 생성합니다.
+   * @param createBookSaleDto 판매글 생성 DTO
+   * @param userId 작성자 ID
+   * @returns 생성된 판매글
+   */
   async createUsedBookSale(
     createBookSaleDto: CreateBookSaleDto,
     userId: number,
@@ -108,6 +118,11 @@ export class BookService {
     return await this.usedBookSaleRepository.save(sale);
   }
 
+  /**
+   * ID로 판매글을 조회합니다.
+   * @param id 판매글 ID
+   * @returns 판매글 정보
+   */
   async findSaleById(id: number) {
     const sale = await this.usedBookSaleRepository.findOne({
       where: { id },
@@ -120,6 +135,11 @@ export class BookService {
     return sale;
   }
 
+  /**
+   * 조건에 따라 판매글 목록을 검색합니다.
+   * @param queryDto 검색 조건 DTO
+   * @returns 판매글 목록 및 메타데이터
+   */
   async searchSales(queryDto: QueryBookSaleDto) {
     const {
       page = 1,

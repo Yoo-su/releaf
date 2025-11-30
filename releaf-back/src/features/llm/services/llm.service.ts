@@ -10,7 +10,9 @@ export class LlmService {
   private genAI: GoogleGenerativeAI;
   private model: GenerativeModel;
 
-  // ConfigService를 주입받아 API 키를 안전하게 사용합니다.
+  /**
+   * ConfigService를 주입받아 API 키를 안전하게 사용합니다.
+   */
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY') ?? '';
     this.genAI = new GoogleGenerativeAI(apiKey);

@@ -26,9 +26,6 @@ import {
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  /**
-   * 내가 등록한 모든 판매글을 조회하는 엔드포인트
-   */
   @Get('my-sales')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
@@ -63,12 +60,6 @@ export class UserController {
     return user;
   }
 
-  /**
-   * 회원 탈퇴
-   */
-  /**
-   * 회원 탈퇴
-   */
   @Delete('me')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
@@ -83,9 +74,6 @@ export class UserController {
     };
   }
 
-  /**
-   * 위시리스트에 추가하는 엔드포인트
-   */
   @Post('wishlist')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({

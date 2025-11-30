@@ -12,7 +12,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiResponse, ApiParam } from '@nestjs/swagger';
 
 import { CurrentUser } from '@/features/user/decorators/current-user.decorator';
 import { User } from '@/features/user/entities/user.entity';
@@ -99,6 +99,7 @@ export class ReviewController {
     status: HttpStatus.NOT_FOUND,
     description: '리뷰를 찾을 수 없습니다.',
   })
+  @ApiParam({ name: 'id', description: '리뷰 ID' })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Review> {
     return await this.reviewsService.findOne(id);
   }
@@ -122,6 +123,7 @@ export class ReviewController {
     status: HttpStatus.NOT_FOUND,
     description: '리뷰를 찾을 수 없습니다.',
   })
+  @ApiParam({ name: 'id', description: '리뷰 ID' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateReviewDto: UpdateReviewDto,
@@ -149,6 +151,7 @@ export class ReviewController {
     status: HttpStatus.NOT_FOUND,
     description: '리뷰를 찾을 수 없습니다.',
   })
+  @ApiParam({ name: 'id', description: '리뷰 ID' })
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: User,
