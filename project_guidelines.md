@@ -33,7 +33,10 @@ The project follows a **Feature-based Architecture**. Code is organized by busin
   - `features/[feature-name]/components`: Components specific to this feature.
   - `features/[feature-name]/hooks`: Custom hooks for this feature.
   - `features/[feature-name]/types.ts`: Type definitions.
+  - `features/[feature-name]/constants.ts`: Constants.
   - `features/[feature-name]/api.ts`: API calls.
+  - `features/[feature-name]/queries.ts`: API queries.
+  - `features/[feature-name]/mutations.ts`: API mutations.
 - **`views/`**: Page-level components. Assembles features and shared components to form a complete page.
 - **`shared/`**: Reusable code used across multiple features.
   - `shared/components/ui`: Generic UI components (buttons, inputs, etc.).
@@ -61,13 +64,21 @@ The project follows a **Feature-based Architecture**. Code is organized by busin
 ### Separation of Concerns (SoC)
 
 - **Logic Extraction**: Extract reusable logic into custom hooks (`use...`) or utility functions. Do not keep complex logic inside UI components.
+- **Data Fetching Separation**:
+  - API calls should be in `api.ts`.
+  - React Query hooks (`useQuery`, `useMutation`) should be in `queries.ts` and `mutations.ts`.
+  - **UI Components should NOT call APIs directly.** They should use the custom hooks.
 - **Single Responsibility**: Each component, function, or module should have one clear purpose.
 - **DRY (Don't Repeat Yourself)**: If you find yourself copying code, refactor it into a shared component or utility.
 - **Feature Isolation**: Keep feature-specific logic within its feature directory. Only move code to `shared/` if it is truly generic and used by multiple distinct features.
 
 ### Component Design
 
-- **Presentational vs. Container**: Keep UI components (Presentational) separate from logic (Container/Hooks).
+- **Container/Presentational Pattern**:
+  - **Container Components**: Responsible for logic, state management, and data fetching. They pass data and callbacks to Presentational components. usually located in `features/[feature]/components` or `views/`.
+    - _Naming_: `[Name]Container.tsx` or simply `[Name].tsx` if it wraps a specific UI.
+  - **Presentational Components**: Responsible _only_ for rendering UI. They receive data via props and have no dependency on stores or API calls.
+    - _Naming_: `[Name]UI.tsx`, `[Name]Content.tsx`, etc. (Avoid `View` suffix as it is reserved for page-level components).
 - **Composition**: Use composition over inheritance. Build complex UIs from small, single-purpose components.
 - **Shadcn UI**: Use `src/shared/components/shadcn` for base UI elements. Do not modify them directly unless necessary for global styling.
 
