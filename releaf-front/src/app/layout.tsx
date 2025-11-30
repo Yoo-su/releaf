@@ -14,34 +14,44 @@ import UserProvider from "@/shared/providers/user-provider";
 
 // SEO를 위한 기본 메타데이터 객체
 export const metadata: Metadata = {
+  metadataBase: new URL("https://releaf-hub.vercel.app"),
   title: {
     template: "%s | ReLeaf", // 페이지별 제목이 %s 위치에 들어갑니다.
-    default: "ReLeaf - 책과 지식의 선순환", // 기본 제목
+    default: "ReLeaf - 책과 지식의 선순환, 중고책 거래 및 독서 커뮤니티", // 기본 제목
   },
   description:
-    "공연, 전시 정보부터 중고 서적 거래까지. ReLeaf에서 당신의 문화적 경험과 지식의 선순환을 만들어보세요.",
+    "ReLeaf(릴리프)에서 중고 서적을 거래하고 공연, 전시 정보를 확인하세요. 독서 모임과 리뷰를 통해 지식의 선순환을 만드는 문화 커뮤니티입니다.",
   keywords: [
+    "ReLeaf",
+    "릴리프",
+    "중고책",
     "중고서적",
+    "책거래",
+    "독서",
+    "서평",
+    "북리뷰",
+    "독서모임",
     "공연",
     "전시",
     "문화예술",
-    "책거래",
-    "채팅",
-    "ReLeaf",
+    "지식공유",
+    "커뮤니티",
   ],
   openGraph: {
     title: "ReLeaf - 책과 지식의 선순환",
     description:
       "다양한 문화 예술 정보를 탐색하고, 중고 서적을 거래하며 지식의 가치를 발견하는 공간입니다.",
-    url: "http://releaf-hub.vercel.app",
+    url: "https://releaf-hub.vercel.app",
     siteName: "ReLeaf",
     images: [
       {
         url: "/imgs/releaf.png",
         width: 1200,
         height: 630,
+        alt: "ReLeaf - 책과 지식의 선순환",
       },
     ],
+    locale: "ko_KR",
     type: "website",
   },
   twitter: {
@@ -53,6 +63,30 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/logo.svg",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "ReLeaf",
+  url: "https://releaf-hub.vercel.app",
+  potentialAction: {
+    "@type": "SearchAction",
+    target:
+      "https://releaf-hub.vercel.app/book/search?keyword={search_term_string}",
+    "query-input": "required name=search_term_string",
   },
 };
 
@@ -91,6 +125,10 @@ export default async function Layout({
           <Analytics />
           <SpeedInsights />
         </QueryProvider>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </body>
     </html>
   );
