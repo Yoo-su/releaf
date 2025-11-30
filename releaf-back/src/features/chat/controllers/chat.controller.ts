@@ -21,6 +21,7 @@ import {
   ApiResponse,
   ApiQuery,
   ApiBody,
+  ApiParam,
 } from '@nestjs/swagger';
 
 @ApiTags('채팅 (Chat)')
@@ -29,7 +30,6 @@ import {
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  // 내 채팅방 목록 조회
   @Get('rooms')
   @ApiOperation({
     summary: '내 채팅방 목록 조회',
@@ -41,7 +41,6 @@ export class ChatController {
     return await this.chatService.getChatRooms(userId);
   }
 
-  // 특정 채팅방 메시지 조회 (페이지네이션)
   @Get('rooms/:roomId/messages')
   @ApiOperation({
     summary: '채팅 메시지 조회',
@@ -58,6 +57,7 @@ export class ChatController {
     description: '페이지 당 메시지 수 (기본값: 20)',
   })
   @ApiResponse({ status: 200, description: '메시지 목록을 반환합니다.' })
+  @ApiParam({ name: 'roomId', description: '채팅방 ID' })
   async getMessages(
     @Param('roomId', ParseIntPipe) roomId: number,
     @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
@@ -66,12 +66,6 @@ export class ChatController {
     return await this.chatService.getChatMessages(roomId, page, limit);
   }
 
-  /**
-   * 특정 판매글에 대한 채팅방을 찾거나 생성하는 API
-   */
-  /**
-   * 특정 판매글에 대한 채팅방을 찾거나 생성하는 API
-   */
   @Post('rooms')
   @ApiOperation({
     summary: '채팅방 생성 또는 조회',
@@ -94,18 +88,13 @@ export class ChatController {
     return await this.chatService.getChatRoom(saleId, buyerId);
   }
 
-  /**
-   * 특정 채팅방의 메시지를 모두 읽음으로 처리하는 API
-   */
-  /**
-   * 특정 채팅방의 메시지를 모두 읽음으로 처리하는 API
-   */
   @Patch('rooms/:roomId/read')
   @ApiOperation({
     summary: '메시지 읽음 처리',
     description: '특정 채팅방의 모든 메시지를 읽음 상태로 변경합니다.',
   })
   @ApiResponse({ status: 200, description: '성공적으로 처리되었습니다.' })
+  @ApiParam({ name: 'roomId', description: '채팅방 ID' })
   async markAsRead(
     @Param('roomId', ParseIntPipe) roomId: number,
     @CurrentUser() user: User,
@@ -114,18 +103,13 @@ export class ChatController {
     return await this.chatService.markMessagesAsRead(roomId, userId);
   }
 
-  /**
-   * 특정 채팅방을 나가는 API
-   */
-  /**
-   * 특정 채팅방을 나가는 API
-   */
   @Delete('rooms/:roomId')
   @ApiOperation({
     summary: '채팅방 나가기',
     description: '채팅방에서 나갑니다.',
   })
   @ApiResponse({ status: 200, description: '성공적으로 나갔습니다.' })
+  @ApiParam({ name: 'roomId', description: '채팅방 ID' })
   async leaveRoom(
     @Param('roomId', ParseIntPipe) roomId: number,
     @CurrentUser() user: User,

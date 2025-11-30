@@ -15,6 +15,11 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  /**
+   * 소셜 로그인 정보를 검증하고 유저를 생성하거나 반환합니다.
+   * @param socialLoginDto 소셜 로그인 정보
+   * @returns 유저 정보
+   */
   async validateUser(socialLoginDto: {
     provider: string;
     providerId: string;
@@ -52,6 +57,12 @@ export class AuthService {
     return newUser;
   }
 
+  /**
+   * 유저 ID와 닉네임을 기반으로 Access Token과 Refresh Token을 생성합니다.
+   * @param userId 유저 ID
+   * @param userNickname 유저 닉네임
+   * @returns Access Token과 Refresh Token
+   */
   async getTokens(userId: number, userNickname: string) {
     const payload: JwtPayload = { sub: userId, nickname: userNickname };
     const [accessToken, refreshToken] = await Promise.all([
@@ -67,6 +78,11 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  /**
+   * 소셜 로그인 성공 후 토큰과 유저 정보를 반환합니다.
+   * @param user 유저 엔티티
+   * @returns 토큰과 유저 정보
+   */
   async socialLogin(user: User) {
     const { accessToken, refreshToken } = await this.getTokens(
       user.id,
@@ -76,6 +92,12 @@ export class AuthService {
     return { accessToken, refreshToken, user };
   }
 
+  /**
+   * Refresh Token을 사용하여 새로운 토큰을 발급합니다.
+   * @param userId 유저 ID
+   * @param nickname 유저 닉네임
+   * @returns 새로운 Access Token과 Refresh Token
+   */
   async refresh(userId: number, nickname: string) {
     return await this.getTokens(userId, nickname);
   }

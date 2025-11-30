@@ -34,7 +34,10 @@ export class ChatService {
   ) {}
 
   /**
-   * 판매글 id와 구매자 id로 채팅방을 찾아(생성해) 반환합니다.
+   * 판매글 ID와 구매자 ID로 채팅방을 찾거나 생성하여 반환합니다.
+   * @param saleId 판매글 ID
+   * @param buyerId 구매자 ID
+   * @returns 채팅방 엔티티
    */
   async getChatRoom(saleId: number, buyerId: number): Promise<ChatRoom> {
     const sale = await this.usedBookSaleRepository.findOne({
@@ -183,6 +186,8 @@ export class ChatService {
   /**
    * 현재 로그인한 유저의 모든 채팅방 목록을 조회합니다.
    * 각 채팅방의 마지막 메시지, 안 읽은 메시지 개수, 상대방 정보를 포함합니다.
+   * @param userId 유저 ID
+   * @returns 채팅방 목록 및 상세 정보
    */
   async getChatRooms(userId: number) {
     // 1. 현재 유저가 참여하고 있는 모든 채팅방을 찾습니다.
@@ -247,6 +252,10 @@ export class ChatService {
 
   /**
    * 특정 채팅방의 메시지 목록을 페이지네이션으로 조회합니다.
+   * @param roomId 채팅방 ID
+   * @param page 페이지 번호
+   * @param limit 페이지 당 메시지 수
+   * @returns 메시지 목록 및 메타데이터
    */
   async getChatMessages(roomId: number, page: number, limit: number) {
     const [messages, total] = await this.chatMessageRepository.findAndCount({
@@ -265,6 +274,13 @@ export class ChatService {
     };
   }
 
+  /**
+   * 메시지를 저장하고 채팅방의 업데이트 시간을 갱신합니다.
+   * @param content 메시지 내용
+   * @param roomId 채팅방 ID
+   * @param sender 보낸 사람
+   * @returns 저장된 메시지
+   */
   async saveMessage(
     content: string,
     roomId: number,
@@ -286,7 +302,10 @@ export class ChatService {
   }
 
   /**
-   * 특정 채팅방의 안 읽은 메시지를 모두 읽음으로 처리하는 로직
+   * 특정 채팅방의 안 읽은 메시지를 모두 읽음으로 처리합니다.
+   * @param roomId 채팅방 ID
+   * @param userId 유저 ID
+   * @returns 처리 결과
    */
   async markMessagesAsRead(roomId: number, userId: number) {
     // 1. 이 방에서, 상대방이 보냈고, 내가 아직 읽지 않은 모든 메시지를 찾습니다.

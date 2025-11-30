@@ -9,14 +9,6 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 export class LlmController {
   constructor(private readonly llmService: LlmService) {}
 
-  /**
-   * 책 요약 및 후기 생성 요청을 처리하는 엔드포인트
-   * @param bookSummaryDto - 책 제목과 저자 정보
-   */
-  /**
-   * 책 요약 및 후기 생성 요청을 처리하는 엔드포인트
-   * @param bookSummaryDto - 책 제목과 저자 정보
-   */
   @Post('book-summary')
   @ApiOperation({
     summary: '책 요약 생성',

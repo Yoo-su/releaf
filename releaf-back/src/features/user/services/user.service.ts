@@ -33,6 +33,12 @@ export class UserService {
     private readonly dataSource: DataSource,
   ) {}
 
+  /**
+   * 소셜 제공자 ID로 유저를 조회합니다.
+   * @param provider 제공자 (naver, kakao 등)
+   * @param providerId 제공자 측 유저 ID
+   * @returns 유저 엔티티 또는 null
+   */
   async findByProviderId(
     provider: string,
     providerId: string,
@@ -42,15 +48,30 @@ export class UserService {
     });
   }
 
+  /**
+   * 새로운 유저를 생성합니다.
+   * @param socialLoginDto 소셜 로그인 정보
+   * @returns 생성된 유저
+   */
   async createUser(socialLoginDto: SocialLoginDto): Promise<User> {
     const newUser = this.userRepository.create(socialLoginDto);
     return await this.userRepository.save(newUser);
   }
 
+  /**
+   * 유저 정보를 업데이트합니다.
+   * @param user 업데이트할 유저 엔티티
+   * @returns 업데이트된 유저
+   */
   async updateUser(user: User): Promise<User> {
     return await this.userRepository.save(user);
   }
 
+  /**
+   * ID로 유저를 조회합니다.
+   * @param id 유저 ID
+   * @returns 유저 엔티티 또는 null
+   */
   async findById(id: number): Promise<User | null> {
     return await this.userRepository.findOne({ where: { id } });
   }
@@ -68,6 +89,11 @@ export class UserService {
     });
   }
 
+  /**
+   * 유저의 활동 통계(판매글 수, 채팅방 수, 리뷰 수 등)를 조회합니다.
+   * @param userId 유저 ID
+   * @returns 통계 정보
+   */
   async getUserStats(userId: number) {
     // 1. 판매글 통계
     const sales = await this.usedBookSaleRepository.find({
@@ -102,6 +128,10 @@ export class UserService {
     };
   }
 
+  /**
+   * 회원 탈퇴를 처리합니다. 유저 정보를 익명화하고 관련 데이터를 정리합니다.
+   * @param userId 유저 ID
+   */
   async withdraw(userId: number): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -149,6 +179,14 @@ export class UserService {
     }
   }
 
+  /**
+   * 위시리스트에 항목을 추가합니다.
+   * @param userId 유저 ID
+   * @param type 타입 (BOOK, SALE)
+   * @param id 대상 ID (ISBN 또는 Sale ID)
+   * @param bookData 책 정보 (책이 DB에 없을 경우 생성용)
+   * @returns 위시리스트 항목
+   */
   async addToWishlist(
     userId: number,
     type: 'BOOK' | 'SALE',
@@ -210,6 +248,13 @@ export class UserService {
     return await this.wishlistRepository.save(wishlist);
   }
 
+  /**
+   * 위시리스트에서 항목을 제거합니다.
+   * @param userId 유저 ID
+   * @param type 타입 (BOOK, SALE)
+   * @param id 대상 ID
+   * @returns 제거된 항목
+   */
   async removeFromWishlist(
     userId: number,
     type: 'BOOK' | 'SALE',
@@ -231,6 +276,11 @@ export class UserService {
     return await this.wishlistRepository.remove(wishlist);
   }
 
+  /**
+   * 유저의 위시리스트 목록을 조회합니다.
+   * @param userId 유저 ID
+   * @returns 위시리스트 목록
+   */
   async getWishlist(userId: number) {
     return await this.wishlistRepository.find({
       where: { user: { id: userId } },
@@ -239,6 +289,13 @@ export class UserService {
     });
   }
 
+  /**
+   * 특정 항목이 위시리스트에 있는지 확인합니다.
+   * @param userId 유저 ID
+   * @param type 타입 (BOOK, SALE)
+   * @param id 대상 ID
+   * @returns 포함 여부
+   */
   async checkWishlistStatus(
     userId: number,
     type: 'BOOK' | 'SALE',

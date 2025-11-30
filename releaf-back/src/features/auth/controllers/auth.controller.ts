@@ -28,9 +28,7 @@ export class AuthController {
     status: 302,
     description: '네이버 로그인 페이지로 리다이렉트됩니다.',
   })
-  async naverLogin() {
-    // initiates the Naver OAuth2 login flow
-  }
+  async naverLogin() {}
 
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
@@ -66,9 +64,7 @@ export class AuthController {
     status: 302,
     description: '카카오 로그인 페이지로 리다이렉트됩니다.',
   })
-  async kakaoLogin() {
-    // initiates the Kakao OAuth2 login flow
-  }
+  async kakaoLogin() {}
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))

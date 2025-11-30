@@ -30,13 +30,18 @@ export class ReviewService {
     private reviewImageHelper: ReviewImageHelper,
   ) {}
 
+  /**
+   * 리뷰를 생성합니다. 책 정보가 없으면 새로 생성합니다.
+   * @param createReviewDto 리뷰 생성 DTO
+   * @param userId 작성자 ID
+   * @returns 생성된 리뷰
+   */
   async create(
     createReviewDto: CreateReviewDto,
     userId: number,
   ): Promise<Review> {
     const { book, ...reviewData } = createReviewDto;
 
-    // 책 정보가 있으면 먼저 저장 또는 조회
     if (book) {
       const existingBook = await this.booksRepository.findOne({
         where: { isbn: book.isbn },
@@ -54,6 +59,11 @@ export class ReviewService {
     return this.reviewsRepository.save(review);
   }
 
+  /**
+   * 조건에 따라 리뷰 목록을 조회합니다.
+   * @param query 검색 조건 DTO
+   * @returns 리뷰 목록 및 메타데이터
+   */
   async findAll(query: GetReviewsQueryDto): Promise<GetReviewsResponseDto> {
     const { page = 1, limit = 10, bookIsbn, tag, search, category } = query;
     const skip = (page - 1) * limit;
@@ -116,6 +126,10 @@ export class ReviewService {
     };
   }
 
+  /**
+   * 카테고리별 최신 리뷰 피드를 조회합니다.
+   * @returns 카테고리별 리뷰 피드 목록
+   */
   async findFeeds(): Promise<ReviewFeedDto[]> {
     const categories = BOOK_DOMAINS;
     const feeds: ReviewFeedDto[] = [];
@@ -139,6 +153,11 @@ export class ReviewService {
     return feeds;
   }
 
+  /**
+   * ID로 리뷰를 조회합니다.
+   * @param id 리뷰 ID
+   * @returns 리뷰 엔티티
+   */
   async findOne(id: number) {
     const review = await this.reviewsRepository.findOne({
       where: { id },
@@ -152,6 +171,13 @@ export class ReviewService {
     return review;
   }
 
+  /**
+   * 리뷰를 수정합니다. 내용이 변경되면 사용되지 않는 이미지를 삭제합니다.
+   * @param id 리뷰 ID
+   * @param updateReviewDto 수정할 리뷰 정보
+   * @param userId 요청한 유저 ID
+   * @returns 수정된 리뷰
+   */
   async update(id: number, updateReviewDto: UpdateReviewDto, userId: number) {
     const review = await this.findOne(id);
 
@@ -161,7 +187,6 @@ export class ReviewService {
       );
     }
 
-    // 내용이 수정된 경우 이미지 삭제 처리
     if (updateReviewDto.content && updateReviewDto.content !== review.content) {
       const removedImages = this.reviewImageHelper.getRemovedImages(
         review.content,
@@ -176,6 +201,12 @@ export class ReviewService {
     return this.reviewsRepository.save(review);
   }
 
+  /**
+   * 리뷰를 삭제합니다. 연관된 이미지도 함께 삭제합니다.
+   * @param id 리뷰 ID
+   * @param userId 요청한 유저 ID
+   * @returns 삭제된 리뷰
+   */
   async remove(id: number, userId: number) {
     const review = await this.findOne(id);
 
@@ -185,7 +216,6 @@ export class ReviewService {
       );
     }
 
-    // 리뷰와 연관된 모든 이미지 삭제
     const images = this.reviewImageHelper.extractImageUrls(review.content);
     if (images.length > 0) {
       await this.reviewImageHelper.deleteImages(images);
