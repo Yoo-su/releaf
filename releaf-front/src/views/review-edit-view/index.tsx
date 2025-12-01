@@ -62,8 +62,11 @@ export const ReviewEditView = () => {
     fetchData();
   }, [id, router]);
 
-  const handleSubmit = async (data: ReviewFormValues) => {
-    await updateReview({ id, data });
+  const handleSubmit = async (
+    data: ReviewFormValues,
+    deletedImageUrls?: string[]
+  ) => {
+    await updateReview({ id, data, deletedImageUrls });
     router.push(PATHS.REVIEW_DETAIL(id));
   };
 

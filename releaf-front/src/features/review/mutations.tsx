@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import { deleteImages } from "@/features/book/actions/delete-action";
 import {
   createReview,
   deleteReview,
@@ -147,8 +148,20 @@ export const useUpdateReviewMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: ReviewFormValues }) =>
-      updateReview(id, data),
+    mutationFn: async ({
+      id,
+      data,
+      deletedImageUrls,
+    }: {
+      id: number;
+      data: ReviewFormValues;
+      deletedImageUrls?: string[];
+    }) => {
+      if (deletedImageUrls && deletedImageUrls.length > 0) {
+        await deleteImages(deletedImageUrls);
+      }
+      return updateReview(id, data);
+    },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewKeys.detail(data.id).queryKey,

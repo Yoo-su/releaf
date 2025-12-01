@@ -3,10 +3,12 @@ import { useRef, useState } from "react";
 
 interface UseEditorImageHandlerOptions {
   uploadPath: (file: File) => string;
+  initialContent?: string;
 }
 
 export const useEditorImageHandler = ({
   uploadPath,
+  initialContent = "",
 }: UseEditorImageHandlerOptions) => {
   const [isUploading, setIsUploading] = useState(false);
   const imageMapRef = useRef<Map<string, File>>(new Map());
@@ -53,7 +55,24 @@ export const useEditorImageHandler = ({
       imageMapRef.current.forEach((_, url) => URL.revokeObjectURL(url));
       imageMapRef.current.clear();
 
-      return newContent;
+      // 초기 콘텐츠에 있었지만 최종 콘텐츠에는 없는 이미지 URL 찾기 (삭제된 이미지)
+      const extractImageUrls = (html: string) => {
+        const regex = /<img[^>]+src="([^">]+)"/g;
+        const urls: string[] = [];
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+          urls.push(match[1]);
+        }
+        return urls;
+      };
+
+      const initialUrls = extractImageUrls(initialContent);
+      const finalUrls = extractImageUrls(newContent);
+      const deletedImageUrls = initialUrls.filter(
+        (url) => !finalUrls.includes(url)
+      );
+
+      return { content: newContent, deletedImageUrls };
     } catch (error) {
       console.error("Image upload error:", error);
       throw error;

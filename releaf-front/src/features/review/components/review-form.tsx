@@ -46,7 +46,10 @@ interface ReviewFormProps {
     rating: number;
     book?: Book;
   };
-  onSubmit: (data: ReviewFormValues) => Promise<void>;
+  onSubmit: (
+    data: ReviewFormValues,
+    deletedImageUrls?: string[]
+  ) => Promise<void>;
   submitLabel?: string;
   isSubmitting?: boolean;
 }
@@ -71,6 +74,7 @@ export const ReviewForm = ({
   const { handleImageAdd, uploadImages, isUploading } = useEditorImageHandler({
     uploadPath: (file) =>
       `${user?.provider}-${user?.id}/review-images/${file.name}`,
+    initialContent: initialData?.content,
   });
 
   const form = useForm<ReviewSchemaValues>({
@@ -131,22 +135,25 @@ export const ReviewForm = ({
   };
 
   const handleSubmit = async (data: ReviewFormValues) => {
-    const content = await uploadImages(data.content);
+    const { content, deletedImageUrls } = await uploadImages(data.content);
 
-    await onSubmit({
-      ...data,
-      content,
-      book: selectedBook
-        ? {
-            isbn: selectedBook.isbn,
-            title: selectedBook.title,
-            author: selectedBook.author,
-            publisher: selectedBook.publisher,
-            image: selectedBook.image,
-            description: selectedBook.description,
-          }
-        : undefined,
-    });
+    await onSubmit(
+      {
+        ...data,
+        content,
+        book: selectedBook
+          ? {
+              isbn: selectedBook.isbn,
+              title: selectedBook.title,
+              author: selectedBook.author,
+              publisher: selectedBook.publisher,
+              image: selectedBook.image,
+              description: selectedBook.description,
+            }
+          : undefined,
+      },
+      deletedImageUrls
+    );
   };
 
   const isProcessing = isSubmitting || isUploading;
