@@ -1,12 +1,6 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import {
-  deleteReview,
   getMyReviewReaction,
   getReview,
   getReviewFeeds,
@@ -84,21 +78,5 @@ export const useMyReviewReactionQuery = (
     queryKey: [...QUERY_KEYS.reviewKeys.detail(id).queryKey, "reaction"],
     queryFn: () => getMyReviewReaction(id),
     enabled,
-  });
-};
-
-/**
- * 리뷰를 삭제하는 뮤테이션 훅입니다.
- */
-export const useDeleteReviewMutation = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: deleteReview,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.reviewKeys.all.queryKey,
-      });
-    },
   });
 };

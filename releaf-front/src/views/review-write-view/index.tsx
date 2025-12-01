@@ -1,29 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
-import { createReview } from "@/features/review/apis";
 import { ReviewForm } from "@/features/review/components/review-form";
+import { useCreateReviewMutation } from "@/features/review/mutations";
 import { ReviewFormValues } from "@/features/review/types";
 import { PATHS } from "@/shared/constants/paths";
 
 export const ReviewWriteView = () => {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    mutateAsync: createReview,
+    isPending: isSubmitting,
+    isSuccess,
+  } = useCreateReviewMutation();
 
   const handleSubmit = async (data: ReviewFormValues) => {
-    setIsSubmitting(true);
-    try {
-      await createReview(data);
-      alert("리뷰가 작성되었습니다!");
-      router.push(PATHS.REVIEWS); // 리뷰 목록으로 리다이렉트
-    } catch (error: any) {
-      console.error("Review creation error:", error);
-      alert(error.message || "리뷰 작성 중 오류가 발생했습니다.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    await createReview(data);
+    router.push(PATHS.REVIEWS);
   };
 
   return (
@@ -32,7 +26,7 @@ export const ReviewWriteView = () => {
       <ReviewForm
         onSubmit={handleSubmit}
         submitLabel="작성 완료"
-        isSubmitting={isSubmitting}
+        isSubmitting={isSubmitting || isSuccess}
       />
     </div>
   );

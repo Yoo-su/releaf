@@ -7,10 +7,8 @@ import { useInView } from "react-intersection-observer";
 
 import { useAuthStore } from "@/features/auth/store";
 import { ReviewGridList } from "@/features/review/components/review-grid-list";
-import {
-  useDeleteReviewMutation,
-  useReviewsInfiniteQuery,
-} from "@/features/review/queries";
+import { useDeleteReviewMutation } from "@/features/review/mutations";
+import { useReviewsInfiniteQuery } from "@/features/review/queries";
 import { PATHS } from "@/shared/constants/paths";
 
 export default function MyReviewsPage() {
@@ -29,7 +27,7 @@ export default function MyReviewsPage() {
     enabled: !!user,
   });
 
-  const deleteReviewMutation = useDeleteReviewMutation();
+  const { mutateAsync: deleteReviewMutation } = useDeleteReviewMutation();
 
   useEffect(() => {
     if (!user) {
@@ -45,17 +43,14 @@ export default function MyReviewsPage() {
 
   const handleDeleteReview = async (id: number) => {
     if (window.confirm("정말로 이 리뷰를 삭제하시겠습니까?")) {
-      try {
-        await deleteReviewMutation.mutateAsync(id);
-      } catch (error) {
-        console.error("Failed to delete review:", error);
-        alert("리뷰 삭제에 실패했습니다.");
-      }
+      await deleteReviewMutation(id);
     }
   };
 
   const handleEditReview = (id: number) => {
-    router.push(PATHS.REVIEW_EDIT(id));
+    if (window.confirm("리뷰를 수정하시겠습니까?")) {
+      router.push(PATHS.REVIEW_EDIT(id));
+    }
   };
 
   if (isReviewsLoading) {
