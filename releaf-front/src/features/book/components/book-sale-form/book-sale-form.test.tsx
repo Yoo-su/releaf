@@ -1,5 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { toast } from "sonner";
 
 import { BookInfo } from "../../types";
 import { BookSaleForm } from ".";
@@ -11,6 +12,14 @@ jest.mock("../../mutations", () => ({
     mutate: mockMutate,
     isPending: false,
   }),
+}));
+
+// Sonner Toast Mock
+jest.mock("sonner", () => ({
+  toast: {
+    error: jest.fn(),
+    success: jest.fn(),
+  },
 }));
 
 // Next.js Image 컴포넌트 Mock
@@ -484,7 +493,6 @@ describe("BookSaleForm", () => {
 
     it("이미지를 5개 초과로 첨부하려 하면 경고창이 표시되어야 한다", async () => {
       const user = userEvent.setup();
-      const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
 
       render(<BookSaleForm bookInfo={mockBookInfo} />);
 
@@ -497,11 +505,9 @@ describe("BookSaleForm", () => {
 
       await user.upload(fileInput, files);
 
-      expect(alertSpy).toHaveBeenCalledWith(
+      expect(toast.error).toHaveBeenCalledWith(
         "이미지는 최대 5개까지 첨부할 수 있습니다."
       );
-
-      alertSpy.mockRestore();
     });
 
     it("이미지를 5개 첨부하면 추가 버튼이 사라져야 한다", async () => {

@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import {
   editFormSchema,
@@ -48,7 +49,7 @@ export const useBookSaleEditForm = ({ sale }: UseBookSaleEditFormProps) => {
       existingImages.length + newImageFiles.length + files.length;
 
     if (totalImages > 5) {
-      alert("이미지는 최대 5개까지 첨부할 수 있습니다.");
+      toast.error("이미지는 최대 5개까지 첨부할 수 있습니다.");
       return;
     }
 

@@ -6,6 +6,7 @@ import debounce from "lodash/debounce";
 import { ArrowLeft, Loader2, LogOut, SendHorizontal } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { useAuthStore } from "@/features/auth/store";
 import {
@@ -188,7 +189,7 @@ export const ChatRoom = () => {
       (response: { status: string; error?: string }) => {
         if (response.status !== "ok") {
           console.error("Message failed to send:", response.error);
-          alert(`메시지 전송에 실패했습니다: ${response.error}`);
+          toast.error(`메시지 전송에 실패했습니다: ${response.error}`);
         }
       }
     );
@@ -216,7 +217,7 @@ export const ChatRoom = () => {
           });
           closeChatRoom();
         } else {
-          alert(`채팅방을 나가는 데 실패했습니다: ${response.error}`);
+          toast.error(`채팅방을 나가는 데 실패했습니다: ${response.error}`);
         }
       }
     );

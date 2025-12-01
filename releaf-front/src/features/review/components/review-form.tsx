@@ -5,6 +5,7 @@ import { BookOpen, Loader2, Search, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { useAuthStore } from "@/features/auth/store";
 import { BookSearchModal } from "@/features/book/components/book-search-modal";
@@ -45,7 +46,10 @@ interface ReviewFormProps {
     rating: number;
     book?: Book;
   };
-  onSubmit: (data: ReviewFormValues) => Promise<void>;
+  onSubmit: (
+    data: ReviewFormValues,
+    deletedImageUrls?: string[]
+  ) => Promise<void>;
   submitLabel?: string;
   isSubmitting?: boolean;
 }
@@ -65,12 +69,12 @@ export const ReviewForm = ({
     initialData?.book || null
   );
   const [tagInput, setTagInput] = useState("");
-  const [isLocalSubmitting, setIsLocalSubmitting] = useState(false);
   const { user } = useAuthStore();
 
   const { handleImageAdd, uploadImages, isUploading } = useEditorImageHandler({
     uploadPath: (file) =>
       `${user?.provider}-${user?.id}/review-images/${file.name}`,
+    initialContent: initialData?.content,
   });
 
   const form = useForm<ReviewSchemaValues>({
@@ -101,7 +105,7 @@ export const ReviewForm = ({
     if (!tagInput.trim()) return;
     const currentTags = form.getValues("tags");
     if (currentTags.length >= 5) {
-      alert("태그는 최대 5개까지 입력 가능합니다.");
+      toast.error("태그는 최대 5개까지 입력 가능합니다.");
       return;
     }
     if (!currentTags.includes(tagInput.trim())) {
@@ -131,16 +135,10 @@ export const ReviewForm = ({
   };
 
   const handleSubmit = async (data: ReviewFormValues) => {
-    if (!user) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
+    const { content, deletedImageUrls } = await uploadImages(data.content);
 
-    setIsLocalSubmitting(true);
-    try {
-      const content = await uploadImages(data.content);
-
-      await onSubmit({
+    await onSubmit(
+      {
         ...data,
         content,
         book: selectedBook
@@ -153,15 +151,12 @@ export const ReviewForm = ({
               description: selectedBook.description,
             }
           : undefined,
-      });
-    } catch (error: any) {
-      console.error("Review submission error:", error);
-      alert(error.message || "리뷰 작성 중 오류가 발생했습니다.");
-      setIsLocalSubmitting(false);
-    }
+      },
+      deletedImageUrls
+    );
   };
 
-  const isProcessing = isSubmitting || isLocalSubmitting || isUploading;
+  const isProcessing = isSubmitting || isUploading;
 
   return (
     <Form {...form}>

@@ -5,6 +5,7 @@ import { Clock, Edit, Loader2, MessageCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { findOrCreateRoom } from "@/features/chat/apis";
 import { useChatStore } from "@/features/chat/stores/use-chat-store";
@@ -86,7 +87,7 @@ export const BookSaleActions = ({ sale, isOwner }: BookSaleActionsProps) => {
       openChatRoom(newRoom.id, queryClient);
     } catch (error) {
       console.error("Failed to start chat:", error);
-      alert("채팅방을 여는 데 실패했습니다. 다시 시도해주세요.");
+      toast.error("채팅방을 여는 데 실패했습니다. 다시 시도해주세요.");
     } finally {
       setIsCreatingChat(false);
     }

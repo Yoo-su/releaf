@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { PATHS } from "@/shared/constants/paths";
 import { QUERY_KEYS } from "@/shared/constants/query-keys";
@@ -58,12 +59,12 @@ export const useCreateBookSaleMutation = () => {
       return saleResult;
     },
     onSuccess: () => {
-      alert("판매글이 성공적으로 등록되었습니다.");
+      toast.success("판매글이 성공적으로 등록되었습니다.");
       router.push(PATHS.MY_PAGE_SALES);
     },
     onError: (error) => {
       console.error("Submission failed:", error);
-      alert(error.message || "오류가 발생했습니다. 다시 시도해주세요.");
+      toast.error(error.message || "오류가 발생했습니다. 다시 시도해주세요.");
     },
   });
 };
@@ -153,7 +154,7 @@ export const useUpdateBookSaleMutation = () => {
       return result;
     },
     onSuccess: (data) => {
-      alert("판매글이 성공적으로 수정되었습니다.");
+      toast.success("판매글이 성공적으로 수정되었습니다.");
       // 관련 쿼리들을 무효화하여 최신 데이터로 갱신
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.bookKeys.mySales.queryKey,
@@ -164,7 +165,7 @@ export const useUpdateBookSaleMutation = () => {
       router.push(PATHS.MY_PAGE_SALES);
     },
     onError: (error) => {
-      alert(`수정 중 오류가 발생했습니다: ${error.message}`);
+      toast.error(`수정 중 오류가 발생했습니다: ${error.message}`);
     },
   });
 };
@@ -187,7 +188,7 @@ export const useDeleteBookSaleMutation = () => {
       await deleteBookSale(saleId);
     },
     onSuccess: (_, { saleId }) => {
-      alert("판매글이 삭제되었습니다.");
+      toast.success("판매글이 삭제되었습니다.");
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.bookKeys._def });
       // 현재 페이지가 삭제된 게시글 상세 페이지일 경우 홈으로 이동
       if (window.location.pathname.includes(`/book/sale/${saleId}`)) {
@@ -195,7 +196,7 @@ export const useDeleteBookSaleMutation = () => {
       }
     },
     onError: (error) => {
-      alert(`삭제 중 오류가 발생했습니다: ${error.message}`);
+      toast.error(`삭제 중 오류가 발생했습니다: ${error.message}`);
     },
   });
 };

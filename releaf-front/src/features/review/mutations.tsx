@@ -1,7 +1,20 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+"use client";
 
-import { toggleReviewReaction } from "@/features/review/apis";
-import { Review, ReviewReactionType } from "@/features/review/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { deleteImages } from "@/features/book/actions/delete-action";
+import {
+  createReview,
+  deleteReview,
+  toggleReviewReaction,
+  updateReview,
+} from "@/features/review/apis";
+import {
+  Review,
+  ReviewFormValues,
+  ReviewReactionType,
+} from "@/features/review/types";
 import { QUERY_KEYS } from "@/shared/constants/query-keys";
 
 /**
@@ -102,6 +115,90 @@ export const useToggleReviewReactionMutation = (reviewId: number) => {
           "reaction",
         ],
       });
+    },
+  });
+};
+
+/**
+ * 리뷰를 생성하는 뮤테이션 훅입니다.
+ */
+export const useCreateReviewMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: ReviewFormValues) => createReview(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewKeys.feeds.queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewKeys.list._def,
+      });
+      toast.success("리뷰가 작성되었습니다.");
+    },
+    onError: () => {
+      toast.error("리뷰 작성 중 오류가 발생했습니다.");
+    },
+  });
+};
+
+/**
+ * 리뷰를 수정하는 뮤테이션 훅입니다.
+ */
+export const useUpdateReviewMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      data,
+      deletedImageUrls,
+    }: {
+      id: number;
+      data: ReviewFormValues;
+      deletedImageUrls?: string[];
+    }) => {
+      if (deletedImageUrls && deletedImageUrls.length > 0) {
+        await deleteImages(deletedImageUrls);
+      }
+      return updateReview(id, data);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewKeys.detail(data.id).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewKeys.feeds.queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewKeys.list._def,
+      });
+      toast.success("리뷰가 수정되었습니다!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "리뷰 수정 중 오류가 발생했습니다.");
+    },
+  });
+};
+
+/**
+ * 리뷰를 삭제하는 뮤테이션 훅입니다.
+ */
+export const useDeleteReviewMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteReview,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewKeys.feeds.queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewKeys.list._def,
+      });
+      toast.success("리뷰가 삭제되었습니다.");
+    },
+    onError: () => {
+      toast.error("리뷰 삭제 중 오류가 발생했습니다.");
     },
   });
 };

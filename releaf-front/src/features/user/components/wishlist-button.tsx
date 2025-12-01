@@ -2,6 +2,7 @@
 
 import { Heart } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { useAuthStore } from "@/features/auth/store";
 import { BookInfo } from "@/features/book/types";
@@ -44,7 +45,7 @@ export const WishlistButton = ({
     e.stopPropagation();
 
     if (!user) {
-      alert("로그인이 필요한 기능입니다.");
+      toast.error("로그인이 필요한 기능입니다.");
       return;
     }
 
