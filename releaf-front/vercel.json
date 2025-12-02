@@ -1,0 +1,5 @@
+{
+  "buildCommand": "echo 'Skip build on Vercel'",
+  "outputDirectory": ".next",
+  "framework": "nextjs"
+}
