@@ -22,6 +22,7 @@ import { BOOK_DOMAINS } from '../constants';
 import {
   GetReviewsResponseDto,
   ReviewFeedDto,
+  ReviewResponseDto,
 } from '../dto/review-response.dto';
 
 @Injectable()
@@ -175,28 +176,9 @@ export class ReviewService {
       throw new NotFoundException(`Review with ID ${id} not found`);
     }
 
-    const reactions = await this.reviewReactionsRepository
-      .createQueryBuilder('reaction')
-      .select('reaction.type')
-      .addSelect('COUNT(reaction.id)', 'count')
-      .where('reaction.reviewId = :reviewId', { reviewId: id })
-      .groupBy('reaction.type')
-      .getRawMany();
+    const [reviewWithCounts] = await this.attachReactionCounts([review]);
 
-    const reactionCounts = {
-      [ReviewReactionType.LIKE]: 0,
-      [ReviewReactionType.INSIGHTFUL]: 0,
-      [ReviewReactionType.SUPPORT]: 0,
-    };
-
-    reactions.forEach((r) => {
-      reactionCounts[r.reaction_type] = parseInt(r.count, 10);
-    });
-
-    return {
-      ...review,
-      reactionCounts,
-    };
+    return reviewWithCounts;
   }
 
   /**
@@ -208,11 +190,10 @@ export class ReviewService {
   }
 
   /**
-   * 인기 리뷰를 조회합니다.
    * 인기 점수 = (조회수 * 1) + (리액션 수 * 3)
    */
-  async findPopular(): Promise<Review[]> {
-    return this.reviewsRepository
+  async findPopular(): Promise<ReviewResponseDto[]> {
+    const reviews = await this.reviewsRepository
       .createQueryBuilder('review')
       .leftJoinAndSelect('review.user', 'user')
       .leftJoinAndSelect('review.book', 'book')
@@ -226,7 +207,66 @@ export class ReviewService {
       .addGroupBy('book.isbn')
       .orderBy('score', 'DESC')
       .take(5)
+      .take(5)
       .getMany();
+
+    return this.attachReactionCounts(reviews);
+  }
+
+  /**
+   * 리뷰 목록에 리액션 카운트 정보를 첨부합니다.
+   * @param reviews 리뷰 목록
+   * @returns 리액션 카운트가 포함된 리뷰 목록
+   */
+  private async attachReactionCounts(
+    reviews: Review[],
+  ): Promise<ReviewResponseDto[]> {
+    if (reviews.length === 0) return [];
+
+    const reviewIds = reviews.map((review) => review.id);
+
+    const reactions = await this.reviewReactionsRepository
+      .createQueryBuilder('reaction')
+      .select('reaction.reviewId', 'reviewId')
+      .addSelect('reaction.type', 'type')
+      .addSelect('COUNT(reaction.id)', 'count')
+      .where('reaction.reviewId IN (:...ids)', { ids: reviewIds })
+      .groupBy('reaction.reviewId')
+      .addGroupBy('reaction.type')
+      .getRawMany();
+
+    const reactionCountsMap = new Map<
+      number,
+      { [key in ReviewReactionType]: number }
+    >();
+
+    reactions.forEach((r) => {
+      const reviewId = r.reviewId;
+      const type = r.type;
+      const count = parseInt(r.count, 10);
+
+      if (!reactionCountsMap.has(reviewId)) {
+        reactionCountsMap.set(reviewId, {
+          [ReviewReactionType.LIKE]: 0,
+          [ReviewReactionType.INSIGHTFUL]: 0,
+          [ReviewReactionType.SUPPORT]: 0,
+        });
+      }
+
+      const counts = reactionCountsMap.get(reviewId);
+      if (counts) {
+        counts[type] = count;
+      }
+    });
+
+    return reviews.map((review) => ({
+      ...review,
+      reactionCounts: reactionCountsMap.get(review.id) || {
+        [ReviewReactionType.LIKE]: 0,
+        [ReviewReactionType.INSIGHTFUL]: 0,
+        [ReviewReactionType.SUPPORT]: 0,
+      },
+    }));
   }
 
   /**
@@ -307,7 +347,8 @@ export class ReviewService {
     }
 
     Object.assign(review, updateReviewDto);
-    return this.reviewsRepository.save(review);
+    await this.reviewsRepository.save(review);
+    return this.findOne(id);
   }
 
   /**

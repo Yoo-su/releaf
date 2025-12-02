@@ -1,14 +1,39 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Review } from '../entities/review.entity';
+import { ReviewReactionType } from '../entities/review-reaction.entity';
+
+export class ReviewResponseDto extends Review {
+  @ApiProperty({
+    description: '리액션별 카운트',
+    example: { LIKE: 10, INSIGHTFUL: 5, SUPPORT: 2 },
+    required: false,
+  })
+  reactionCounts?: {
+    [key in ReviewReactionType]: number;
+  };
+}
 
 export class GetReviewsResponseDto {
-  reviews: Review[];
+  @ApiProperty({ type: [ReviewResponseDto] })
+  reviews: ReviewResponseDto[];
+
+  @ApiProperty()
   total: number;
+
+  @ApiProperty()
   page: number;
+
+  @ApiProperty()
   limit: number;
+
+  @ApiProperty()
   totalPages: number;
 }
 
 export class ReviewFeedDto {
+  @ApiProperty()
   category: string;
-  reviews: Review[];
+
+  @ApiProperty({ type: [ReviewResponseDto] })
+  reviews: ReviewResponseDto[];
 }
