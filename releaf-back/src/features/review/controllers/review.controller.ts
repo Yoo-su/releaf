@@ -29,6 +29,7 @@ import { ReviewReactionType } from '@/features/review/entities/review-reaction.e
 import {
   GetReviewsResponseDto,
   ReviewFeedDto,
+  ReviewResponseDto,
 } from '../dto/review-response.dto';
 
 @ApiTags('리뷰 (Review)')
@@ -96,9 +97,9 @@ export class ReviewController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '인기 리뷰 목록을 반환합니다.',
-    type: [Review],
+    type: [ReviewResponseDto],
   })
-  async findPopular(): Promise<Review[]> {
+  async findPopular(): Promise<ReviewResponseDto[]> {
     return await this.reviewsService.findPopular();
   }
 
@@ -111,14 +112,16 @@ export class ReviewController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '리뷰 상세 정보를 반환합니다.',
-    type: Review,
+    type: ReviewResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: '리뷰를 찾을 수 없습니다.',
   })
   @ApiParam({ name: 'id', description: '리뷰 ID' })
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ReviewResponseDto> {
     return await this.reviewsService.findOne(id);
   }
 
@@ -131,13 +134,14 @@ export class ReviewController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '리액션이 성공적으로 반영되었습니다.',
+    type: ReviewResponseDto,
   })
   @ApiParam({ name: 'id', description: '리뷰 ID' })
   async toggleReaction(
     @Param('id', ParseIntPipe) id: number,
     @Body('type') type: ReviewReactionType,
     @CurrentUser() user: User,
-  ) {
+  ): Promise<ReviewResponseDto> {
     return await this.reviewsService.toggleReaction(id, user.id, type);
   }
 
@@ -150,7 +154,7 @@ export class ReviewController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '리뷰가 성공적으로 수정되었습니다.',
-    type: Review,
+    type: ReviewResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -165,7 +169,7 @@ export class ReviewController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateReviewDto: UpdateReviewDto,
     @CurrentUser() user: User,
-  ): Promise<Review> {
+  ): Promise<ReviewResponseDto> {
     return await this.reviewsService.update(id, updateReviewDto, user.id);
   }
 

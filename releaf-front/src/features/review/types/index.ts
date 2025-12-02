@@ -12,6 +12,10 @@ export enum ReviewReactionType {
   SUPPORT = "SUPPORT",
 }
 
+export type ReviewReactionCounts = {
+  [key in ReviewReactionType]: number;
+};
+
 export interface Review {
   id: number;
   title: string;
@@ -22,10 +26,8 @@ export interface Review {
   category: string;
   viewCount: number;
   userId: number;
-  reactionCounts?: {
-    [key in ReviewReactionType]: number;
-  };
-  myReaction?: ReviewReactionType | null;
+  reactionCounts?: ReviewReactionCounts;
+
   user: ReviewUser;
   book: BookInfo;
   createdAt: string;
