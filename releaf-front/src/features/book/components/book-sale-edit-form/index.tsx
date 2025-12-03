@@ -36,7 +36,7 @@ export const BookSaleEditForm = ({ sale }: BookSaleEditFormProps) => {
     form,
     existingImages,
     newImagePreviews,
-    isPending,
+    isSubmitDisabled,
     handleImagesAdd,
     handleExistingImageRemove,
     handleNewImageRemove,
@@ -52,17 +52,26 @@ export const BookSaleEditForm = ({ sale }: BookSaleEditFormProps) => {
         <CardDescription>게시글 정보를 수정해주세요.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center p-4 mb-6 border rounded-lg bg-gray-50">
-          <Image
-            src={sale.book.image}
-            alt={sale.book.title}
-            width={60}
-            height={80}
-            className="object-cover rounded-md shadow-md"
-          />
-          <div className="ml-4">
-            <p className="font-semibold text-gray-800">{sale.book.title}</p>
-            <p className="text-sm text-gray-500">{sale.book.author} 저</p>
+        <div className="relative flex flex-col sm:flex-row items-start sm:items-center p-6 mb-8 border rounded-xl bg-card shadow-sm gap-6 group overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+          <div className="relative w-24 h-36 shrink-0 rounded-lg overflow-hidden shadow-md">
+            <Image
+              src={sale.book.image}
+              alt={sale.book.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="space-y-1">
+              <h3 className="font-bold text-xl leading-tight text-foreground">
+                {sale.book.title}
+              </h3>
+              <p className="text-muted-foreground">
+                {sale.book.author} <span className="mx-1">·</span>{" "}
+                {sale.book.publisher}
+              </p>
+            </div>
           </div>
         </div>
         <Form {...form}>
@@ -180,9 +189,11 @@ export const BookSaleEditForm = ({ sale }: BookSaleEditFormProps) => {
             <Button
               type="submit"
               className="w-full mt-10!"
-              disabled={isPending}
+              disabled={isSubmitDisabled}
             >
-              {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {isSubmitDisabled && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
               수정 완료
             </Button>
           </form>

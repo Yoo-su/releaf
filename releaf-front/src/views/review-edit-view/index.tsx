@@ -90,6 +90,7 @@ export const ReviewEditView = () => {
         onSubmit={handleSubmit}
         submitLabel="수정 완료"
         isSubmitting={isSubmitting || isSuccess}
+        isEditMode={true}
       />
     </div>
   );

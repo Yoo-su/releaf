@@ -15,7 +15,9 @@ interface UseBookSaleEditFormProps {
 }
 
 export const useBookSaleEditForm = ({ sale }: UseBookSaleEditFormProps) => {
-  const { mutate, isPending } = useUpdateBookSaleMutation();
+  const { mutate, isPending, isSuccess } = useUpdateBookSaleMutation();
+
+  const isSubmitDisabled = isPending || isSuccess;
 
   const [existingImages, setExistingImages] = useState<string[]>(
     sale.imageUrls
@@ -96,7 +98,7 @@ export const useBookSaleEditForm = ({ sale }: UseBookSaleEditFormProps) => {
     form,
     existingImages,
     newImagePreviews,
-    isPending,
+    isSubmitDisabled,
     handleImagesAdd,
     handleExistingImageRemove,
     handleNewImageRemove,

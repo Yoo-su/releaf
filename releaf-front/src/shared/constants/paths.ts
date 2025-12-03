@@ -3,7 +3,7 @@ export const PATHS = {
   LOGIN: "/login",
   BOOK_SEARCH: "/book/search",
   BOOK_DETAIL: (isbn: string) => `/book/${isbn}/detail`,
-  BOOK_SELL: (isbn: string) => `/book/${isbn}/sell`,
+  BOOK_SELL: "/book/sell",
   BOOK_SALE_DETAIL: (id: string) => `/book/sale/${id}`,
   ART_DETAIL: (id: string) => `/art/${id}`,
   MY_PAGE_SALES: "/my-page/sales",
