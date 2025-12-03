@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BookOpen, Loader2, Search, X } from "lucide-react";
+import { BookOpen, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -52,6 +52,7 @@ interface ReviewFormProps {
   ) => Promise<void>;
   submitLabel?: string;
   isSubmitting?: boolean;
+  isEditMode?: boolean;
 }
 
 /**
@@ -63,6 +64,7 @@ export const ReviewForm = ({
   onSubmit,
   submitLabel = "작성 완료",
   isSubmitting = false,
+  isEditMode = false,
 }: ReviewFormProps) => {
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(
@@ -169,63 +171,83 @@ export const ReviewForm = ({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <FormLabel>리뷰할 책</FormLabel>
-              <BookSearchModal
-                onSelect={handleBookSelect}
-                open={isBookModalOpen}
-                onOpenChange={setIsBookModalOpen}
-                trigger={
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={isProcessing}
-                  >
-                    <Search className="w-4 h-4 mr-2" />책 검색
-                  </Button>
-                }
-              />
             </div>
 
-            {selectedBook ? (
-              <div className="flex items-center gap-4 p-4 border rounded-lg bg-muted/30 relative group">
-                <div className="relative w-16 h-24 rounded overflow-hidden shadow-sm">
+            {!selectedBook ? (
+              <div className="flex flex-col items-center justify-center py-12 px-4 mb-6 border-2 border-dashed rounded-xl bg-muted/30 gap-6 hover:bg-muted/50 transition-colors group">
+                <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                  <BookOpen className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="font-semibold text-lg">
+                    리뷰할 책을 선택해주세요
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                    ISBN, 제목, 저자명으로 검색하여 리뷰할 책을 선택할 수
+                    있습니다.
+                  </p>
+                </div>
+                {!isEditMode && (
+                  <BookSearchModal
+                    onSelect={handleBookSelect}
+                    open={isBookModalOpen}
+                    onOpenChange={setIsBookModalOpen}
+                    trigger={
+                      <Button
+                        type="button"
+                        size="lg"
+                        className="px-8 font-semibold"
+                        disabled={isProcessing}
+                      >
+                        책 검색하기
+                      </Button>
+                    }
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="relative flex flex-col sm:flex-row items-start sm:items-center p-6 mb-8 border rounded-xl bg-card shadow-sm gap-6 group overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+                <div className="relative w-24 h-36 shrink-0 rounded-lg overflow-hidden shadow-md">
                   <Image
                     src={selectedBook.image}
                     alt={selectedBook.title}
                     fill
                     className="object-cover"
-                    sizes="64px"
                   />
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg">{selectedBook.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedBook.author} | {selectedBook.publisher}
-                  </p>
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-xl leading-tight text-foreground">
+                      {selectedBook.title}
+                    </h3>
+                    <p className="text-muted-foreground">
+                      {selectedBook.author} <span className="mx-1">·</span>{" "}
+                      {selectedBook.publisher}
+                    </p>
+                  </div>
+                  {!isEditMode && (
+                    <div className="flex items-center gap-2 pt-2">
+                      <BookSearchModal
+                        onSelect={handleBookSelect}
+                        open={isBookModalOpen}
+                        onOpenChange={setIsBookModalOpen}
+                        trigger={
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-8"
+                            disabled={isProcessing}
+                          >
+                            다른 책 선택
+                          </Button>
+                        }
+                      />
+                    </div>
+                  )}
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={handleRemoveBook}
-                  disabled={isProcessing}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
               </div>
-            ) : (
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-24 border-dashed flex flex-col gap-2 hover:bg-muted/50"
-                onClick={() => setIsBookModalOpen(true)}
-                disabled={isProcessing}
-              >
-                <BookOpen className="w-6 h-6 text-muted-foreground" />
-                <span className="text-muted-foreground">
-                  리뷰할 책을 검색하여 선택해주세요
-                </span>
-              </Button>
             )}
             <input type="hidden" {...form.register("bookIsbn")} />
             {form.formState.errors.bookIsbn && (

@@ -10,13 +10,11 @@ import {
 import { useCreateBookSaleMutation } from "../mutations";
 import { BookInfo, CreateBookSaleParams } from "../types";
 
-interface UseBookSaleFormProps {
-  bookInfo: BookInfo;
-}
-
-export const useBookSaleForm = ({ bookInfo }: UseBookSaleFormProps) => {
+export const useBookSaleForm = () => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const { mutate, isPending } = useCreateBookSaleMutation();
+  const { mutate, isPending, isSuccess } = useCreateBookSaleMutation();
+
+  const isSubmitDisabled = isPending || isSuccess;
 
   const form = useForm<SellFormValues>({
     resolver: zodResolver(sellFormSchema),
@@ -26,9 +24,16 @@ export const useBookSaleForm = ({ bookInfo }: UseBookSaleFormProps) => {
       content: "",
       city: "",
       district: "",
+      book: null,
     },
     mode: "onBlur",
   });
+
+  const selectedBook = form.watch("book");
+
+  const handleBookSelect = (book: BookInfo | null) => {
+    form.setValue("book", book, { shouldValidate: true });
+  };
 
   const handleImagesAdd = (newFiles: FileList) => {
     const currentFiles = Array.from(form.getValues("images") || []);
@@ -64,22 +69,23 @@ export const useBookSaleForm = ({ bookInfo }: UseBookSaleFormProps) => {
   };
 
   const onSubmit = (data: SellFormValues) => {
+    if (!data.book) return;
     const imageFiles = Array.from(data.images);
 
     const payload: Omit<CreateBookSaleParams, "imageUrls"> = {
       title: data.title,
-      price: data.price,
+      price: Number(data.price),
       city: data.city,
       district: data.district,
       content: data.content,
       book: {
-        isbn: bookInfo.isbn,
-        title: bookInfo.title,
-        description: bookInfo.description,
-        author: bookInfo.author,
-        publisher: bookInfo.publisher,
-        image: bookInfo.image,
-        pubdate: bookInfo.pubdate,
+        isbn: data.book.isbn,
+        title: data.book.title,
+        description: data.book.description,
+        author: data.book.author,
+        publisher: data.book.publisher,
+        image: data.book.image,
+        pubdate: data.book.pubdate,
       },
     };
 
@@ -89,7 +95,9 @@ export const useBookSaleForm = ({ bookInfo }: UseBookSaleFormProps) => {
   return {
     form,
     imagePreviews,
-    isPending,
+    isSubmitDisabled,
+    selectedBook,
+    setSelectedBook: handleBookSelect,
     handleImagesAdd,
     handleImageRemove,
     onSubmit: form.handleSubmit(onSubmit),

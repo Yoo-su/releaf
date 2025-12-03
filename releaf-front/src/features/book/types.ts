@@ -61,7 +61,7 @@ export interface GetBookDetailErrorResponse {
 
 export interface CreateBookSaleParams {
   title: string;
-  price: string;
+  price: number;
   city: string;
   district: string;
   content: string;

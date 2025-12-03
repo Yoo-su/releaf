@@ -29,6 +29,18 @@ export const sellFormSchema = z
         (files) => files && files.length <= 5,
         "이미지는 최대 5개까지 등록할 수 있습니다."
       ),
+    book: z
+      .object({
+        isbn: z.string(),
+        title: z.string(),
+        author: z.string(),
+        publisher: z.string(),
+        image: z.string(),
+        description: z.string(),
+        pubdate: z.string(),
+      })
+      .nullable()
+      .refine((val) => val !== null, "판매할 책을 선택해주세요."),
   })
   // .refine()을 사용하여 객체 전체에 대한 유효성 검사를 추가합니다.
   .refine(

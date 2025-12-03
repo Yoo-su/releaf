@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { BookOpen, Loader2 } from "lucide-react";
 import Image from "next/image";
 
 import { Button } from "@/shared/components/shadcn/button";
@@ -25,46 +25,104 @@ import { ImageUploader } from "@/shared/components/ui/image-uploader";
 import { LocationSelector } from "@/shared/components/ui/location-selector";
 
 import { useBookSaleForm } from "../../hooks/use-book-sale-form";
-import { BookInfo } from "../../types";
+import { BookSearchModal } from "../book-search-modal";
 
-interface BookSaleFormProps {
-  bookInfo: BookInfo;
-}
-
-export const BookSaleForm = ({ bookInfo }: BookSaleFormProps) => {
+export const BookSaleForm = () => {
   const {
     form,
     imagePreviews,
-    isPending,
+    isSubmitDisabled,
+    selectedBook,
+    setSelectedBook,
     handleImagesAdd,
     handleImageRemove,
     onSubmit,
-  } = useBookSaleForm({ bookInfo });
+  } = useBookSaleForm();
 
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <Card className="w-full border-none shadow-none sm:border sm:shadow-sm">
+      <CardHeader className="px-0 sm:px-6">
         <CardTitle className="text-2xl">중고책 판매글 작성</CardTitle>
         <CardDescription>
           판매할 책의 정보를 정확하게 입력해주세요.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center p-4 mb-6 border rounded-lg bg-gray-50">
-          <Image
-            src={bookInfo.image}
-            alt={bookInfo.title}
-            width={60}
-            height={80}
-            className="object-cover rounded-md shadow-md"
-          />
-          <div className="ml-4">
-            <p className="font-semibold text-gray-800">{bookInfo.title}</p>
-            <p className="text-sm text-gray-500">{bookInfo.author} 저</p>
-          </div>
-        </div>
+      <CardContent className="px-0 sm:px-6">
         <Form {...form}>
           <form onSubmit={onSubmit} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="book"
+              render={() => (
+                <FormItem>
+                  {!selectedBook ? (
+                    <div className="flex flex-col items-center justify-center py-12 px-4 mb-2 border-2 border-dashed rounded-xl bg-muted/30 gap-6 hover:bg-muted/50 transition-colors group">
+                      <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                        <BookOpen className="w-8 h-8 text-muted-foreground" />
+                      </div>
+                      <div className="text-center space-y-2">
+                        <h3 className="font-semibold text-lg">
+                          판매할 책을 선택해주세요
+                        </h3>
+                        <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                          ISBN, 제목, 저자명으로 검색하여 판매할 책을 등록할 수
+                          있습니다.
+                        </p>
+                      </div>
+                      <BookSearchModal
+                        onSelect={setSelectedBook}
+                        trigger={
+                          <Button size="lg" className="px-8 font-semibold">
+                            책 검색하기
+                          </Button>
+                        }
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative flex flex-col sm:flex-row items-start sm:items-center p-6 mb-2 border rounded-xl bg-card shadow-sm gap-6 group overflow-hidden">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+                      <div className="relative w-24 h-36 shrink-0 rounded-lg overflow-hidden shadow-md">
+                        <Image
+                          src={selectedBook.image}
+                          alt={selectedBook.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="space-y-1">
+                          <h3 className="font-bold text-xl leading-tight text-foreground">
+                            {selectedBook.title}
+                          </h3>
+                          <p className="text-muted-foreground">
+                            {selectedBook.author}{" "}
+                            <span className="mx-1">·</span>{" "}
+                            {selectedBook.publisher}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 pt-2">
+                          <BookSearchModal
+                            onSelect={setSelectedBook}
+                            trigger={
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8"
+                              >
+                                다른 책 선택
+                              </Button>
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="h-5">
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="title"
@@ -180,9 +238,11 @@ export const BookSaleForm = ({ bookInfo }: BookSaleFormProps) => {
             <Button
               type="submit"
               className="w-full mt-10!"
-              disabled={isPending}
+              disabled={isSubmitDisabled}
             >
-              {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {isSubmitDisabled && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
               판매글 등록하기
             </Button>
           </form>
