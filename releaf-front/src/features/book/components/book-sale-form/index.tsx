@@ -49,80 +49,84 @@ export const BookSaleForm = () => {
       </CardHeader>
       <CardContent className="px-0 sm:px-6">
         <Form {...form}>
-          <form onSubmit={onSubmit} className="space-y-6">
+          <form onSubmit={onSubmit} className="space-y-4">
             <FormField
               control={form.control}
               name="book"
               render={() => (
-                <FormItem>
-                  {!selectedBook ? (
-                    <div className="flex flex-col items-center justify-center py-12 px-4 mb-2 border-2 border-dashed rounded-xl bg-muted/30 gap-6 hover:bg-muted/50 transition-colors group">
-                      <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                        <BookOpen className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                      <div className="text-center space-y-2">
-                        <h3 className="font-semibold text-lg">
-                          판매할 책을 선택해주세요
-                        </h3>
-                        <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                          ISBN, 제목, 저자명으로 검색하여 판매할 책을 등록할 수
-                          있습니다.
-                        </p>
-                      </div>
-                      <BookSearchModal
-                        onSelect={setSelectedBook}
-                        trigger={
-                          <Button size="lg" className="px-8 font-semibold">
-                            책 검색하기
-                          </Button>
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <div className="relative flex flex-col sm:flex-row items-start sm:items-center p-6 mb-2 border rounded-xl bg-card shadow-sm gap-6 group overflow-hidden">
-                      <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
-                      <div className="relative w-24 h-36 shrink-0 rounded-lg overflow-hidden shadow-md">
-                        <Image
-                          src={selectedBook.image}
-                          alt={selectedBook.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0 space-y-2">
-                        <div className="space-y-1">
-                          <h3 className="font-bold text-xl leading-tight text-foreground">
-                            {selectedBook.title}
+                <>
+                  <FormLabel>판매할 책</FormLabel>
+                  <FormItem>
+                    {!selectedBook ? (
+                      <div className="flex flex-col items-center justify-center py-12 px-4 mb-2 border-2 border-dashed rounded-xl bg-muted/30 gap-6 hover:bg-muted/50 transition-colors group">
+                        <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                          <BookOpen className="w-8 h-8 text-muted-foreground" />
+                        </div>
+                        <div className="text-center space-y-2">
+                          <h3 className="font-semibold text-lg">
+                            판매할 책을 선택해주세요
                           </h3>
-                          <p className="text-muted-foreground">
-                            {selectedBook.author}{" "}
-                            <span className="mx-1">·</span>{" "}
-                            {selectedBook.publisher}
+                          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                            ISBN, 제목, 저자명으로 검색하여 판매할 책을 등록할
+                            수 있습니다.
                           </p>
                         </div>
-                        <div className="flex items-center gap-2 pt-2">
-                          <BookSearchModal
-                            onSelect={setSelectedBook}
-                            trigger={
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8"
-                              >
-                                다른 책 선택
-                              </Button>
-                            }
+                        <BookSearchModal
+                          onSelect={setSelectedBook}
+                          trigger={
+                            <Button size="lg" className="px-8 font-semibold">
+                              책 검색하기
+                            </Button>
+                          }
+                        />
+                      </div>
+                    ) : (
+                      <div className="relative flex flex-col sm:flex-row items-start sm:items-center p-6 mb-2 border rounded-xl bg-card shadow-sm gap-6 group overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+                        <div className="relative w-24 h-36 shrink-0 rounded-lg overflow-hidden shadow-md">
+                          <Image
+                            src={selectedBook.image}
+                            alt={selectedBook.title}
+                            fill
+                            className="object-cover"
                           />
                         </div>
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="space-y-1">
+                            <h3 className="font-bold text-xl leading-tight text-foreground">
+                              {selectedBook.title}
+                            </h3>
+                            <p className="text-muted-foreground">
+                              {selectedBook.author}{" "}
+                              <span className="mx-1">·</span>{" "}
+                              {selectedBook.publisher}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 pt-2">
+                            <BookSearchModal
+                              onSelect={setSelectedBook}
+                              trigger={
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8"
+                                >
+                                  다른 책 선택
+                                </Button>
+                              }
+                            />
+                          </div>
+                        </div>
                       </div>
+                    )}
+                    <div className="mt-1 min-h-5">
+                      <FormMessage />
                     </div>
-                  )}
-                  <div className="h-5">
-                    <FormMessage />
-                  </div>
-                </FormItem>
+                  </FormItem>
+                </>
               )}
             />
+
             <FormField
               control={form.control}
               name="title"
@@ -132,7 +136,7 @@ export const BookSaleForm = () => {
                   <FormControl>
                     <Input placeholder="판매글 제목을 입력하세요" {...field} />
                   </FormControl>
-                  <div className="h-5">
+                  <div className="mt-1 min-h-5">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -153,7 +157,7 @@ export const BookSaleForm = () => {
                         {...field}
                       />
                     </FormControl>
-                    <div className="h-5">
+                    <div className="mt-1 min-h-5">
                       <FormMessage />
                     </div>
                   </FormItem>
@@ -172,15 +176,15 @@ export const BookSaleForm = () => {
                     form.setValue("district", value, { shouldValidate: true });
                   }}
                 />
-                <div className="flex gap-4 mt-2">
-                  <div className="flex-1 h-5">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-2">
+                  <div className="flex-1 min-h-5">
                     {form.formState.errors.city && (
                       <p className="text-sm font-medium text-destructive">
                         {form.formState.errors.city.message}
                       </p>
                     )}
                   </div>
-                  <div className="flex-1 h-5">
+                  <div className="flex-1 min-h-5">
                     {form.formState.errors.district && (
                       <p className="text-sm font-medium text-destructive">
                         {form.formState.errors.district.message}
@@ -207,7 +211,7 @@ export const BookSaleForm = () => {
                       maxFiles={5}
                     />
                   </FormControl>
-                  <div className="h-5">
+                  <div className="mt-1 min-h-5">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -228,7 +232,7 @@ export const BookSaleForm = () => {
                       {...field}
                     />
                   </FormControl>
-                  <div className="h-5">
+                  <div className="mt-1 min-h-5">
                     <FormMessage />
                   </div>
                 </FormItem>

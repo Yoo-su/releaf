@@ -15,6 +15,7 @@ import {
   CardHeader,
 } from "@/shared/components/shadcn/card";
 import { Skeleton } from "@/shared/components/shadcn/skeleton";
+import { PATHS } from "@/shared/constants/paths";
 import { cn } from "@/shared/utils/cn";
 import { formatPostDate } from "@/shared/utils/date";
 
@@ -42,7 +43,7 @@ export const BookSaleCard = ({
   const displayDate =
     sale.updatedAt > sale.createdAt ? sale.updatedAt : sale.createdAt;
 
-  const linkHref = href || `/book/sale/${sale.id}`;
+  const linkHref = href || PATHS.BOOK_SALES_DETAIL(String(sale.id));
 
   return (
     <Link

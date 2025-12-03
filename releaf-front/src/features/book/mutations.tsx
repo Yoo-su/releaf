@@ -191,7 +191,7 @@ export const useDeleteBookSaleMutation = () => {
       toast.success("판매글이 삭제되었습니다.");
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.bookKeys._def });
       // 현재 페이지가 삭제된 게시글 상세 페이지일 경우 홈으로 이동
-      if (window.location.pathname.includes(`/book/sale/${saleId}`)) {
+      if (window.location.pathname.includes(`/book/sales/${saleId}`)) {
         router.push(PATHS.MY_PAGE_SALES);
       }
     },

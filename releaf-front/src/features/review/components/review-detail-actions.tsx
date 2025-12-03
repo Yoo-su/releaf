@@ -123,7 +123,7 @@ export function ReviewDetailActions({
           className="text-stone-500 hover:text-stone-900"
           asChild
         >
-          <Link href="/review">← Back to Reviews</Link>
+          <Link href={PATHS.REVIEWS}>← Back to Reviews</Link>
         </Button>
 
         {isAuthor && (

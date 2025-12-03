@@ -94,7 +94,7 @@ export const DefaultHeader = () => {
                     <>
                       <DropdownMenuItem asChild>
                         <Link
-                          href={PATHS.BOOK_SELL}
+                          href={PATHS.BOOK_SALES_REGISTER}
                           className="flex items-center gap-2 cursor-pointer"
                         >
                           <PenSquare className="w-4 h-4 mr-2" />

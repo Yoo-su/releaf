@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/shadcn/select";
+import { PATHS } from "@/shared/constants/paths";
 
 import {
   useDeleteBookSaleMutation,
@@ -63,7 +64,7 @@ export const BookSaleHistoryItem = ({ sale }: BookSaleHistoryItemProps) => {
   };
 
   return (
-    <Link href={`/book/sale/${sale.id}`} passHref>
+    <Link href={PATHS.BOOK_SALES_DETAIL(String(sale.id))} passHref>
       <Card className="transition-shadow duration-300 hover:shadow-md cursor-pointer">
         <CardContent className="flex items-center p-4 gap-4">
           <div className="relative w-20 h-28 shrink-0">

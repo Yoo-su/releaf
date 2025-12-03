@@ -189,9 +189,6 @@ export const BookSearchModal = ({
                 {bookList.map((book, index) => (
                   <motion.div
                     key={`${book.isbn}-${index}`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
                     whileHover={{
                       backgroundColor: "rgba(0,0,0,0.02)",
                     }}
