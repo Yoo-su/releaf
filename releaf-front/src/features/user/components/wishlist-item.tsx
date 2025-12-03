@@ -7,6 +7,7 @@ import { WishlistButton } from "@/features/user/components/wishlist-button";
 import { Badge } from "@/shared/components/shadcn/badge";
 import { Button } from "@/shared/components/shadcn/button";
 import { Card } from "@/shared/components/shadcn/card";
+import { PATHS } from "@/shared/constants/paths";
 
 import { WishlistItem as WishlistItemType } from "../types";
 
@@ -114,7 +115,7 @@ export const WishlistItem = ({ item }: WishlistItemProps) => {
                 variant="secondary"
                 disabled={isSoldOut}
               >
-                <Link href={`/book/sale/${sale.id}`}>
+                <Link href={PATHS.BOOK_SALES_DETAIL(String(sale.id))}>
                   {isSoldOut ? "판매 종료" : "상세보기"}
                 </Link>
               </Button>

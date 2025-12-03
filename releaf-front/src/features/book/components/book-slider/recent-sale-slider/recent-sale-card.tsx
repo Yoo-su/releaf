@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { UsedBookSale } from "@/features/book/types";
+import { PATHS } from "@/shared/constants/paths";
 
 interface RecentSaleCardProps {
   sale: UsedBookSale;
@@ -11,7 +12,7 @@ interface RecentSaleCardProps {
 export const RecentSaleCard = ({ sale }: RecentSaleCardProps) => {
   return (
     <Link
-      href={`/book/sale/${sale.id}`}
+      href={PATHS.BOOK_SALES_DETAIL(String(sale.id))}
       className="group block w-full"
       passHref
     >

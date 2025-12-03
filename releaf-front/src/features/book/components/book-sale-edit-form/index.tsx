@@ -52,6 +52,7 @@ export const BookSaleEditForm = ({ sale }: BookSaleEditFormProps) => {
         <CardDescription>게시글 정보를 수정해주세요.</CardDescription>
       </CardHeader>
       <CardContent>
+        <label className="font-medium text-gray-900 text-sm">판매할 책</label>
         <div className="relative flex flex-col sm:flex-row items-start sm:items-center p-6 mb-8 border rounded-xl bg-card shadow-sm gap-6 group overflow-hidden">
           <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
           <div className="relative w-24 h-36 shrink-0 rounded-lg overflow-hidden shadow-md">
@@ -85,7 +86,7 @@ export const BookSaleEditForm = ({ sale }: BookSaleEditFormProps) => {
                   <FormControl>
                     <Input placeholder="판매글 제목을 입력하세요" {...field} />
                   </FormControl>
-                  <div className="h-5">
+                  <div className="mt-1 min-h-5">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -105,7 +106,7 @@ export const BookSaleEditForm = ({ sale }: BookSaleEditFormProps) => {
                         {...field}
                       />
                     </FormControl>
-                    <div className="h-5">
+                    <div className="mt-1 min-h-5">
                       <FormMessage />
                     </div>
                   </FormItem>
@@ -124,15 +125,15 @@ export const BookSaleEditForm = ({ sale }: BookSaleEditFormProps) => {
                     form.setValue("district", value, { shouldValidate: true });
                   }}
                 />
-                <div className="flex gap-4 mt-2">
-                  <div className="flex-1 h-5">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-2">
+                  <div className="flex-1 min-h-5">
                     {form.formState.errors.city && (
                       <p className="text-sm font-medium text-destructive">
                         {form.formState.errors.city.message}
                       </p>
                     )}
                   </div>
-                  <div className="flex-1 h-5">
+                  <div className="flex-1 min-h-5">
                     {form.formState.errors.district && (
                       <p className="text-sm font-medium text-destructive">
                         {form.formState.errors.district.message}
@@ -159,7 +160,7 @@ export const BookSaleEditForm = ({ sale }: BookSaleEditFormProps) => {
                       maxFiles={5}
                     />
                   </FormControl>
-                  <div className="h-5">
+                  <div className="mt-1 min-h-5">
                     <FormMessage />
                   </div>
                 </FormItem>
@@ -180,7 +181,7 @@ export const BookSaleEditForm = ({ sale }: BookSaleEditFormProps) => {
                       {...field}
                     />
                   </FormControl>
-                  <div className="h-5">
+                  <div className="mt-1 min-h-5">
                     <FormMessage />
                   </div>
                 </FormItem>
