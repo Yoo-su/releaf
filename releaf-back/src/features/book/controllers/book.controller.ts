@@ -104,6 +104,16 @@ export class BookController {
     return await this.bookService.findRecentSales();
   }
 
+  @Get('sales/popular')
+  @ApiOperation({
+    summary: '인기 판매글 조회',
+    description: '조회수가 높은 상위 판매글 목록을 조회합니다.',
+  })
+  @ApiResponse({ status: 200, description: '인기 판매글 목록을 반환합니다.' })
+  async getPopularSales() {
+    return await this.bookService.findPopularSales();
+  }
+
   @Get('sales/:id')
   @UseInterceptors(UsedBookViewCountInterceptor)
   @ApiOperation({

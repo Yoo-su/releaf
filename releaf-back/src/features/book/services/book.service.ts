@@ -115,6 +115,22 @@ export class BookService {
   }
 
   /**
+   * 인기 판매글을 조회합니다.
+   * 조회수 내림차순, 최신순으로 정렬하여 상위 6개를 반환합니다.
+   */
+  async findPopularSales(): Promise<UsedBookSale[]> {
+    return await this.usedBookSaleRepository.find({
+      where: { status: SaleStatus.FOR_SALE },
+      relations: ['user', 'book'],
+      order: {
+        viewCount: 'DESC',
+        createdAt: 'DESC',
+      },
+      take: 6,
+    });
+  }
+
+  /**
    * ID로 판매글을 조회합니다.
    * @param id 판매글 ID
    * @returns 판매글 정보
