@@ -1,6 +1,7 @@
 "use client";
 
 import { BookMarket } from "@/features/book/components/book-market";
+import { PopularBookSaleList } from "@/features/book/components/book-market/popular-book-sale-list";
 
 export const BookMarketView = () => {
   return (
@@ -13,6 +14,11 @@ export const BookMarketView = () => {
           원하는 책을 찾아보세요! 다양한 중고 서적들이 있습니다.
         </p>
       </section>
+
+      <div className="mb-8">
+        <PopularBookSaleList />
+      </div>
+
       <BookMarket />
     </div>
   );

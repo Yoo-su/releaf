@@ -8,6 +8,7 @@ import {
   getBookSaleDetail,
   getBookSummary,
   getMyBookSales,
+  getPopularBookSales,
   getRecentBookSales,
   getRelatedSales,
   searchBookSales,
@@ -162,6 +163,17 @@ export const useRecentBookSalesQuery = () => {
   return useQuery({
     queryKey: QUERY_KEYS.bookKeys.recentSales.queryKey,
     queryFn: getRecentBookSales,
+    staleTime: 5 * 60 * 1000, // 5분
+  });
+};
+
+/**
+ * 인기 중고책 판매글 목록을 조회하는 쿼리 훅입니다.
+ */
+export const usePopularBookSalesQuery = () => {
+  return useQuery({
+    queryKey: QUERY_KEYS.bookKeys.popularSales.queryKey,
+    queryFn: getPopularBookSales,
     staleTime: 5 * 60 * 1000, // 5분
   });
 };

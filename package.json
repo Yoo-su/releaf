@@ -8,8 +8,8 @@
     "test": "turbo test"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "turbo": "latest"
+    "turbo": "2.6.3",
+    "typescript": "^5.0.0"
   },
   "packageManager": "pnpm@9.4.0"
 }

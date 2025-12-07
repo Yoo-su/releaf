@@ -1,5 +1,7 @@
 "use client";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+
 import { usePopularReviewsQuery } from "@/features/review/queries";
 import { Badge } from "@/shared/components/shadcn/badge";
 
@@ -32,6 +34,7 @@ export function PopularReviewList() {
   }
 
   // 5. 성공 렌더링
+  // 5. 성공 렌더링
   return (
     <section className="mb-12">
       <div className="flex items-center gap-2 mb-6">
@@ -44,7 +47,26 @@ export function PopularReviewList() {
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Mobile: Swiper */}
+      <div className="block md:hidden">
+        <Swiper
+          spaceBetween={20}
+          slidesPerView={1.1}
+          breakpoints={{
+            450: { slidesPerView: 1.2 },
+          }}
+          className="w-full !px-1 !pb-4"
+        >
+          {reviews.map((review) => (
+            <SwiperSlide key={review.id}>
+              <PopularReviewItem review={review} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+
+      {/* Desktop: Grid */}
+      <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {reviews.map((review) => (
           <PopularReviewItem key={review.id} review={review} />
         ))}

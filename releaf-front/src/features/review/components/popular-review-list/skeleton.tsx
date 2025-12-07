@@ -43,7 +43,16 @@ export function PopularReviewListSkeleton() {
         <Skeleton className="h-6 w-12 rounded-full" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="flex md:hidden gap-5 overflow-hidden">
+        {[...Array(2)].map((_, i) => (
+          <div key={i} className="min-w-[85%]">
+            <PopularReviewItemSkeleton />
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Skeleton: Grid */}
+      <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-5">
         {[...Array(3)].map((_, i) => (
           <PopularReviewItemSkeleton key={i} />
         ))}

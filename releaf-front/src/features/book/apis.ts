@@ -187,6 +187,14 @@ export const getRecentBookSales = async (): Promise<UsedBookSale[]> => {
 };
 
 /**
+ * 인기 판매글 목록을 조회합니다.
+ */
+export const getPopularBookSales = async (): Promise<UsedBookSale[]> => {
+  const { data } = await publicAxios.get<UsedBookSale[]>("/book/sales/popular");
+  return data;
+};
+
+/**
  * 책에 대한 요약 및 후기를 생성하거나 조회합니다.
  * @param title 책 제목
  * @param author 저자

@@ -11,6 +11,7 @@ export const bookKeys = createQueryKeys("book", {
   detail: (isbn: string) => [isbn],
   search: (query: string) => [query],
   marketSales: (params: SearchBookSalesParams) => ["market", params],
+  popularSales: null,
   mySales: null,
   relatedSales: ({
     isbn,
