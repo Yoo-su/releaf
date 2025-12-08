@@ -1,7 +1,7 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Metadata } from "next";
 
-import { getPopularReviews } from "@/features/review/apis";
+import { getPopularReviews, getReviewFeeds } from "@/features/review/apis";
 import { QUERY_KEYS } from "@/shared/constants/query-keys";
 import { getQueryClient } from "@/shared/libs/query-client";
 import { ReviewHomeView } from "@/views/review-home-view";
@@ -14,11 +14,17 @@ export const metadata: Metadata = {
 export default async function Page() {
   const queryClient = getQueryClient();
 
-  // 인기 리뷰 prefetch
-  await queryClient.prefetchQuery({
-    queryKey: QUERY_KEYS.reviewKeys.popular.queryKey,
-    queryFn: getPopularReviews,
-  });
+  // 인기 리뷰 및 피드 prefetch
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: QUERY_KEYS.reviewKeys.popular.queryKey,
+      queryFn: getPopularReviews,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: QUERY_KEYS.reviewKeys.feeds.queryKey,
+      queryFn: getReviewFeeds,
+    }),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
