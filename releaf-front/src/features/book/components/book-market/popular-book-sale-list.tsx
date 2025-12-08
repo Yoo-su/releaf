@@ -1,7 +1,5 @@
 "use client";
 
-import "swiper/css";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import { BookSaleCard } from "@/features/book/components/common/book-sale-card";

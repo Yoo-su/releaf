@@ -1,8 +1,5 @@
 "use client";
 
-import "swiper/css";
-import "swiper/css/free-mode";
-
 import { Search, X } from "lucide-react";
 import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
