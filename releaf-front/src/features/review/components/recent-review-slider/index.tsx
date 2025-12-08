@@ -1,7 +1,5 @@
 "use client";
 
-import "swiper/css";
-
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
