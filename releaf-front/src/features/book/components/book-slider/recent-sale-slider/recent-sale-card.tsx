@@ -24,6 +24,7 @@ export const RecentSaleCard = ({ sale }: RecentSaleCardProps) => {
             <Image
               src={sale.imageUrls[0] || "/placeholder.jpg"}
               alt={sale.title}
+              title={sale.title}
               fill
               sizes="160px"
               className="object-cover"

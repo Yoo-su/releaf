@@ -45,14 +45,14 @@ export const ChatItem = ({ room }: { room: ChatRoom }) => {
         <AvatarImage src={opponent?.profileImageUrl || ""} />
         <AvatarFallback>{opponent?.nickname.slice(0, 1)}</AvatarFallback>
       </Avatar>
-      <div className="flex-grow overflow-hidden">
+      <div className="grow overflow-hidden">
         <div className="flex justify-between items-center">
           <p className="font-semibold truncate text-gray-800">
             {opponent?.nickname}
           </p>
         </div>
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full flex-shrink-0">
+          <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full shrink-0">
             판매도서
           </span>
           <p className="text-sm text-gray-700 truncate font-semibold">
@@ -62,13 +62,13 @@ export const ChatItem = ({ room }: { room: ChatRoom }) => {
         <div className="flex justify-between items-start mt-1.5">
           <div className="flex items-center justify-between text-sm text-gray-500 w-10/12">
             <div className="flex items-center gap-1.5 truncate">
-              <MessageSquareText className="h-4 w-4 flex-shrink-0" />
+              <MessageSquareText className="h-4 w-4 shrink-0" />
               <p className="truncate">
                 {room.lastMessage?.content || "아직 메시지가 없습니다."}
               </p>
             </div>
             {room.lastMessage && (
-              <p className="text-xs text-gray-400 flex-shrink-0">
+              <p className="text-xs text-gray-400 shrink-0">
                 {formatLastMessageTime(room.lastMessage.createdAt)}
               </p>
             )}
@@ -78,14 +78,14 @@ export const ChatItem = ({ room }: { room: ChatRoom }) => {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 500, damping: 25 }}
-              className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white flex-shrink-0"
+              className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shrink-0"
             >
               {room.unreadCount}
             </motion.div>
           )}
         </div>
       </div>
-      <Avatar className="h-14 w-14 rounded-md flex-shrink-0">
+      <Avatar className="h-14 w-14 rounded-md shrink-0">
         <AvatarImage
           src={room.usedBookSale.book.image}
           alt={room.usedBookSale.book.title}

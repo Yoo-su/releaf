@@ -5,9 +5,9 @@ import { useInView } from "react-intersection-observer";
 
 import { Spinner } from "@/shared/components/shadcn/spinner";
 
-import { useInfiniteBookSalesQuery } from "../../queries";
-import { SearchBookSalesParams } from "../../types";
-import { BookSaleCard } from "../common/book-sale-card";
+import { useInfiniteBookSalesQuery } from "../queries";
+import { SearchBookSalesParams } from "../types";
+import { BookSaleCard } from "./common/book-sale-card";
 
 interface BookSaleGridProps {
   filterParams: SearchBookSalesParams;

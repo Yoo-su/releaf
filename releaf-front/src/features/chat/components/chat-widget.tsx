@@ -19,7 +19,7 @@ export const ChatWidget = () => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.95 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed bottom-24 right-6 z-[999] h-[70vh] w-[90vw] max-w-sm"
+          className="fixed bottom-24 right-6 z-999 h-[70vh] w-[90vw] max-w-sm"
         >
           <Card className="h-full w-full flex flex-col shadow-2xl overflow-hidden">
             {activeChatRoomId ? <ChatRoom /> : <ChatList />}

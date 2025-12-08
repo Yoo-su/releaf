@@ -55,10 +55,10 @@ export function PopularReviewList() {
           breakpoints={{
             450: { slidesPerView: 1.2 },
           }}
-          className="w-full px-1! pb-4!"
+          className="w-full px-1! pt-2! pb-4!"
         >
           {reviews.map((review) => (
-            <SwiperSlide key={review.id}>
+            <SwiperSlide key={review.id} className="h-auto!">
               <PopularReviewItem review={review} />
             </SwiperSlide>
           ))}
