@@ -69,6 +69,7 @@ export const BookSaleCard = ({
             <Image
               src={sale.imageUrls[0] || PLACEHOLDER_IMAGE}
               alt={sale.title}
+              title={sale.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               onError={(e) => {

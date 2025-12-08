@@ -30,7 +30,7 @@ import {
 import { KOREA_DISTRICTS } from "@/shared/constants/korea-districts";
 import { formatPrice } from "@/shared/utils/format-price";
 
-import { MAX_MARKET_PRICE } from "../../constants";
+import { MAX_MARKET_PRICE } from "../constants";
 
 const statusToKorean: { [key in SaleStatus]: string } = {
   FOR_SALE: "판매중",
