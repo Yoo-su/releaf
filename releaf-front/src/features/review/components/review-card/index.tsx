@@ -99,7 +99,7 @@ export function ReviewCard({
               {review.tags.slice(0, 3).map((tag: string) => (
                 <span
                   key={tag}
-                  className="text-[10px] text-stone-500 bg-stone-50 px-1.5 py-0.5 rounded-full border border-stone-100 whitespace-nowrap shrink-0"
+                  className="text-[10px] text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded-full border border-sky-100 whitespace-nowrap shrink-0"
                 >
                   #{tag}
                 </span>

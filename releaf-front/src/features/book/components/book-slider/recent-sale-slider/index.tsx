@@ -31,10 +31,7 @@ export const RecentSalesSlider = () => {
         Just Arrived
       </span>
       <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-        <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 via-teal-500 to-cyan-500">
-          새로운 만남,
-        </span>{" "}
-        방금 등록된 책
+        <span className="text-emerald-800">새로운 만남,</span> 방금 등록된 책
       </h2>
       <p className="mt-4 text-lg text-gray-500 max-w-2xl">
         다른 독자들이 소중히 읽은 책들을 만나보세요.
