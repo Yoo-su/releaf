@@ -18,19 +18,14 @@ export const RecentReviewSlider = () => {
 
   const SliderHeader = () => (
     <div className="text-right mb-12">
-      <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold tracking-wider text-amber-700 uppercase bg-amber-50 rounded-full">
+      <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold tracking-wider text-sky-600 uppercase bg-sky-50 rounded-full">
         Fresh Reviews
       </span>
       <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-        <span className="text-transparent bg-clip-text bg-linear-to-r from-stone-700 via-amber-800 to-orange-700">
-          진솔한 기록,
-        </span>{" "}
-        지금 막 올라온 리뷰
+        <span className="text-sky-600">가볍게 한 줄,</span> 최근 리뷰
       </h2>
       <p className="mt-4 text-lg text-gray-500 max-w-2xl ml-auto">
-        다른 독자들의 생생한 감상평을 통해
-        <br className="hidden sm:block" />
-        나만의 다음 책을 발견해보세요.
+        부담 없이 읽고, 부담 없이 써보세요.
       </p>
     </div>
   );
