@@ -14,7 +14,7 @@ export const DefaultFooter = () => {
         <div className="flex flex-col gap-12 md:flex-row md:justify-between">
           {/* 좌측 섹션: 브랜드 & 설명 */}
           <div className="space-y-4 md:max-w-xs">
-            <Link href={PATHS.HOME} className="flex items-center gap-2">
+            <Link href={PATHS.HOME} className="flex items-center gap-1.5">
               <Image
                 src="/logo.svg"
                 alt="bookjeok Logo"
@@ -22,7 +22,7 @@ export const DefaultFooter = () => {
                 height={28}
                 className="h-7 w-7"
               />
-              <span className="text-xl font-bold text-stone-800 font-serif tracking-tight">
+              <span className="font-(family-name:--font-bitcount) text-xl font-bold text-stone-800 tracking-tight">
                 bookjeok
               </span>
             </Link>
