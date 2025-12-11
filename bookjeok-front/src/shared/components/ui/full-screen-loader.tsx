@@ -51,7 +51,7 @@ export const FullScreenLoader = () => {
           {[...Array(3)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute inset-0 rounded-full bg-emerald-100/50"
+              className="absolute inset-0 rounded-full bg-sky-100/50"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 2.0, opacity: [0, 0.5, 0] }}
               transition={{
@@ -87,7 +87,7 @@ export const FullScreenLoader = () => {
         <div className="h-8 flex items-center justify-center">
           <motion.span
             key={loopNum} // 선택 사항: 단어가 바뀔 때 애니메이션을 적용하려면 사용
-            className="text-emerald-800 text-lg font-light leading-normal"
+            className="text-[#1a2a4b] text-lg font-medium leading-normal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
