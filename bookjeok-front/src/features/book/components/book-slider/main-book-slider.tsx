@@ -19,7 +19,6 @@ export const MainBookSlider = () => {
   const [activePublisher, setActivePublisher] = useState(MAIN_PUBLISHERS[0]);
   const swiperRef = useRef<any>(null);
 
-  // Tanstack Query를 사용해 데이터 조회
   const {
     data: books,
     isLoading,
@@ -28,9 +27,18 @@ export const MainBookSlider = () => {
 
   useEffect(() => {
     // 출판사가 변경되면 Swiper 인스턴스를 업데이트하여 루프 상태 등을 재설정
+    // requestAnimationFrame을 사용하여 DOM이 완전히 렌더링된 후 업데이트
     if (swiperRef.current) {
-      swiperRef.current.update();
-      swiperRef.current.slideTo(Math.floor((books?.length || 0) / 2), 0, false);
+      requestAnimationFrame(() => {
+        if (swiperRef.current) {
+          swiperRef.current.update();
+          swiperRef.current.slideTo(
+            Math.floor((books?.length || 0) / 2),
+            0,
+            false
+          );
+        }
+      });
     }
   }, [books]);
 
@@ -90,9 +98,11 @@ export const MainBookSlider = () => {
             grabCursor={true}
             centeredSlides={true}
             loop={books.length > 3} // 슬라이드가 충분히 많을 때만 루프
+            loopAdditionalSlides={3} // 빠른 스와이프 시 충분한 복제 슬라이드 확보
             slidesPerView={"auto"}
             spaceBetween={-50}
             initialSlide={Math.floor(books.length / 2)}
+            watchSlidesProgress={true} // 슬라이드 진행 상태 감시
             coverflowEffect={{
               rotate: 0,
               stretch: 80,
@@ -124,6 +134,7 @@ export const MainBookSlider = () => {
                       alt={book.title}
                       fill
                       sizes="(max-width: 768px) 240px, 300px"
+                      loading="eager" // 빠른 스와이프 시 하얀 화면 방지
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                       onError={(e) => {
                         e.currentTarget.src =
