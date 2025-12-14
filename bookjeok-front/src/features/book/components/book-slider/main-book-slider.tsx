@@ -23,7 +23,7 @@ export const MainBookSlider = () => {
     data: books,
     isLoading,
     isError,
-  } = useBookListQuery({ query: activePublisher });
+  } = useBookListQuery({ query: activePublisher, display: 10 });
 
   useEffect(() => {
     // 출판사가 변경되면 Swiper 인스턴스를 업데이트하여 루프 상태 등을 재설정
