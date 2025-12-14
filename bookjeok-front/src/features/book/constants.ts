@@ -8,8 +8,8 @@ export const MAIN_PUBLISHERS = [
   "민음사",
   "문학동네",
   "열린책들",
+  "은행나무",
   "다산책방",
-  "책세상",
 ];
 
 export const RECENT_BOOKS_KEY = "recentBooks";
