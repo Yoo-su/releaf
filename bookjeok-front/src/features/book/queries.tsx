@@ -101,6 +101,7 @@ export const useInfiniteBookSalesQuery = (params: SearchBookSalesParams) => {
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.hasNextPage ? allPages.length + 1 : undefined;
     },
+    staleTime: 60 * 5 * 1000, // 5분
   });
 };
 

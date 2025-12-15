@@ -55,6 +55,7 @@ export const useReviewFeedsQuery = (enabled: boolean = true) => {
     queryKey: QUERY_KEYS.reviewKeys.feeds.queryKey,
     queryFn: getReviewFeeds,
     enabled,
+    staleTime: 60 * 5 * 1000, // 5분
   });
 };
 
@@ -67,6 +68,7 @@ export const usePopularReviewsQuery = (enabled: boolean = true) => {
     queryKey: QUERY_KEYS.reviewKeys.popular.queryKey,
     queryFn: getPopularReviews,
     enabled,
+    staleTime: 60 * 5 * 1000, // 5분
   });
 };
 
