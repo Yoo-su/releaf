@@ -4,10 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { deleteImages } from "@/features/book/actions/delete-action";
-import {
-  revalidateHomePage,
-  revalidateReviewsPage,
-} from "@/features/review/actions/revalidate-action";
+import { revalidateReviewsPage } from "@/features/review/actions/revalidate-action";
 import {
   createReview,
   deleteReview,
@@ -132,7 +129,7 @@ export const useCreateReviewMutation = () => {
         queryKey: QUERY_KEYS.reviewKeys.list._def,
       });
       // 서버 캐시 즉시 무효화 (새 리뷰가 바로 보이도록)
-      await Promise.all([revalidateReviewsPage(), revalidateHomePage()]);
+      await revalidateReviewsPage();
       toast.success("리뷰가 작성되었습니다.");
     },
     onError: () => {
@@ -173,7 +170,7 @@ export const useUpdateReviewMutation = () => {
         queryKey: QUERY_KEYS.reviewKeys.list._def,
       });
       // 서버 캐시 즉시 무효화
-      await Promise.all([revalidateReviewsPage(), revalidateHomePage()]);
+      await revalidateReviewsPage();
       toast.success("리뷰가 수정되었습니다!");
     },
     onError: (error: any) => {
@@ -198,7 +195,7 @@ export const useDeleteReviewMutation = () => {
         queryKey: QUERY_KEYS.reviewKeys.list._def,
       });
       // 서버 캐시 즉시 무효화
-      await Promise.all([revalidateReviewsPage(), revalidateHomePage()]);
+      await revalidateReviewsPage();
       toast.success("리뷰가 삭제되었습니다.");
     },
     onError: () => {
