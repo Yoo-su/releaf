@@ -9,11 +9,3 @@ import { revalidatePath } from "next/cache";
 export async function revalidateBookMarketPage() {
   revalidatePath("/book/market");
 }
-
-/**
- * 홈페이지 캐시를 수동으로 무효화합니다.
- * 최근 판매글 섹션이 즉시 업데이트되도록 합니다.
- */
-export async function revalidateHomePage() {
-  revalidatePath("/");
-}
