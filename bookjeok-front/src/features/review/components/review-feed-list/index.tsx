@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -36,15 +37,32 @@ export function ReviewFeedList() {
     <div className="space-y-16">
       {feedsData.map((feed) => (
         <div key={feed.category} className="review-feed-section">
-          <div className="flex items-center justify-between mb-6 px-1">
-            <h2 className="text-2xl font-serif font-bold text-stone-900">
-              {feed.category}
-            </h2>
+          {/* 카테고리 헤더 */}
+          <div className="flex items-center justify-between mb-8 px-1">
+            {/* 카테고리 이름 */}
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-6 bg-emerald-500 rounded-full" />
+              <div>
+                <h2
+                  className="text-xl font-bold text-stone-900"
+                  style={{ fontFamily: "var(--font-nanum-gothic)" }}
+                >
+                  {feed.category}
+                </h2>
+                <p className="text-xs text-stone-400 mt-0.5">최신 리뷰</p>
+              </div>
+            </div>
+
+            {/* 더보기 버튼 */}
             <Link
               href={`/book/reviews?category=${feed.category}`}
-              className="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors"
+              className="group flex items-center gap-1 text-stone-500 hover:text-emerald-600 transition-colors"
             >
-              더보기
+              <span className="text-sm font-medium relative">
+                더보기
+                <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-emerald-500 transition-all duration-300 group-hover:w-full" />
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
 

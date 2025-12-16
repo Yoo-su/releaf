@@ -124,7 +124,14 @@ Next.js 13+의 App Router를 사용하여 라우팅을 관리합니다. 특히, 
 
 Google의 Gemini LLM을 활용하여 책 상세 정보 페이지에 'AI 요약'과 '이런 분에게 추천해요' 섹션을 구현했습니다. 백엔드 API를 통해 Gemini 모델을 호출하고, 도서 정보를 바탕으로 생성된 내용을 사용자에게 제공함으로써 책 선택에 도움을 주는 부가 가치를 창출했습니다.
 
----
+### 5. ISR + Server-Side Prefetching 성능 최적화
+
+Next.js의 **ISR(Incremental Static Regeneration)**과 TanStack Query의 **Server-Side Prefetching**을 결합하여 서버 부하를 최소화하면서 빠른 페이지 로드를 구현했습니다.
+
+- **`revalidate` 설정**: 정적 페이지를 5분(홈/마켓/리뷰) ~ 24시간(도서 상세) 간격으로 갱신하여, 동일 페이지에 다수 접속해도 API 호출은 한 번만 발생합니다.
+- **`staleTime` 동기화**: 클라이언트 `staleTime`을 서버 `revalidate`와 일치시켜 불필요한 클라이언트 refetch를 방지합니다.
+- **HydrationBoundary**: 서버에서 prefetch한 데이터를 클라이언트로 전달하여 네트워크 요청 없이 즉시 렌더링합니다.
+- **On-Demand Revalidation**: 판매글/리뷰 작성 시 `revalidatePath`를 호출하여 서버 캐시를 즉시 무효화, 새로고침해도 작성한 글이 바로 보이도록 처리했습니다.
 
 ## 🏁 시작하기 (Getting Started)
 
