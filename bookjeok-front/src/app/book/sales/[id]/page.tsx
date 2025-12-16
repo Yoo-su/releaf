@@ -9,6 +9,9 @@ import { QUERY_KEYS } from "@/shared/constants/query-keys";
 import { getQueryClient } from "@/shared/libs/query-client";
 import { BookSaleDetailView } from "@/views/book-sale-detail-view";
 
+// 판매 상태 변경이 빠르게 반영되도록 1분 간격으로 재검증
+export const revalidate = 60;
+
 type Props = {
   params: Promise<{ id: string }>;
 };
@@ -61,14 +64,13 @@ export default async function Page({ params }: Props) {
   const { id } = await params;
   const queryClient = getQueryClient();
 
-  // 캐시된 API 호출 (generateMetadata와 공유)
+  // 캐시된 API 호출 (generateMetadata와 공유, 중복 호출 없음)
   const sale = await getCachedBookSale(id);
 
-  // 서버에서 판매글 상세 정보 prefetch
-  await queryClient.prefetchQuery({
-    queryKey: QUERY_KEYS.bookKeys.saleDetail(id).queryKey,
-    queryFn: () => getBookSaleDetail(id),
-  });
+  // 이미 가져온 데이터를 QueryClient에 직접 설정 (추가 API 호출 없음)
+  if (sale) {
+    queryClient.setQueryData(QUERY_KEYS.bookKeys.saleDetail(id).queryKey, sale);
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
