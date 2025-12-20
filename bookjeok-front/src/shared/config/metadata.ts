@@ -12,7 +12,8 @@ export const metadata: Metadata = {
     title: "북적",
   },
   icons: {
-    // favicon.ico는 app 폴더에서 자동 인식됨
+    // 캐시 버스팅을 위해 버전 쿼리 추가 (Google favicon 업데이트 유도)
+    icon: "/favicon.ico?v=2",
     apple: "/logo.png",
   },
   description:
