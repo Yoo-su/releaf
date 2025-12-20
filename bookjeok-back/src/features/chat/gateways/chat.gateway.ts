@@ -22,7 +22,7 @@ import { ChatRoom } from '../entities/chat-room.entity';
 @UseGuards(SocketAuthGuard)
 @WebSocketGateway({
   cors: {
-    origin: process.env.CLIENT_DOMAIN || 'http://localhost:3000',
+    origin: process.env.CLIENT_DOMAIN!.split(',').map((s) => s.trim()),
     credentials: true,
   },
   namespace: 'chat',
