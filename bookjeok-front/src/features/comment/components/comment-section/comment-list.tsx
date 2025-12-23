@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/shared/components/shadcn/button";
 import { Skeleton } from "@/shared/components/shadcn/skeleton";
+import { Pagination } from "@/shared/components/ui/pagination";
 
 import { useCommentsQuery } from "../../queries";
 import { CommentTargetType } from "../../types";
@@ -71,116 +71,12 @@ export const CommentList = ({
       </div>
 
       {/* 페이지네이션 */}
-      {meta.totalPages > 1 && (
-        <Pagination
-          currentPage={meta.page}
-          totalPages={meta.totalPages}
-          onPageChange={onPageChange}
-        />
-      )}
-    </div>
-  );
-};
-
-/**
- * 페이지네이션 컴포넌트
- */
-const Pagination = ({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}) => {
-  // 표시할 페이지 번호 계산 (최대 5개)
-  const getPageNumbers = () => {
-    const pages: number[] = [];
-    let start = Math.max(1, currentPage - 2);
-    const end = Math.min(totalPages, start + 4);
-
-    // 시작 조정
-    if (end - start < 4) {
-      start = Math.max(1, end - 4);
-    }
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    return pages;
-  };
-
-  const pageNumbers = getPageNumbers();
-
-  return (
-    <div className="flex items-center justify-center gap-1 mt-6">
-      {/* 이전 버튼 */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="px-3"
-      >
-        ←
-      </Button>
-
-      {/* 페이지 번호들 */}
-      {pageNumbers[0] > 1 && (
-        <>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onPageChange(1)}
-            className="px-3"
-          >
-            1
-          </Button>
-          {pageNumbers[0] > 2 && (
-            <span className="px-2 text-muted-foreground">...</span>
-          )}
-        </>
-      )}
-
-      {pageNumbers.map((num) => (
-        <Button
-          key={num}
-          variant={num === currentPage ? "default" : "ghost"}
-          size="sm"
-          onClick={() => onPageChange(num)}
-          className="px-3"
-        >
-          {num}
-        </Button>
-      ))}
-
-      {pageNumbers[pageNumbers.length - 1] < totalPages && (
-        <>
-          {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
-            <span className="px-2 text-muted-foreground">...</span>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onPageChange(totalPages)}
-            className="px-3"
-          >
-            {totalPages}
-          </Button>
-        </>
-      )}
-
-      {/* 다음 버튼 */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="px-3"
-      >
-        →
-      </Button>
+      <Pagination
+        currentPage={meta.page}
+        totalPages={meta.totalPages}
+        onPageChange={onPageChange}
+        className="mt-6"
+      />
     </div>
   );
 };

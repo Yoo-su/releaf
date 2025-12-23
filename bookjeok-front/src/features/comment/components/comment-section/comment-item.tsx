@@ -239,20 +239,15 @@ export const CommentItem = ({
                 comment.isLiked
                   ? "text-rose-500"
                   : "text-muted-foreground/50 hover:text-rose-400",
-                !isAuthenticated && "cursor-not-allowed",
-                isLikePending && "opacity-50 pointer-events-none"
+                !isAuthenticated && "cursor-not-allowed"
               )}
             >
-              {isLikePending ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Heart
-                  className={cn(
-                    "h-3.5 w-3.5 transition-transform",
-                    comment.isLiked && "fill-current scale-110"
-                  )}
-                />
-              )}
+              <Heart
+                className={cn(
+                  "h-3.5 w-3.5 transition-transform",
+                  comment.isLiked && "fill-current scale-110"
+                )}
+              />
               {comment.likeCount > 0 && <span>{comment.likeCount}</span>}
             </button>
           </div>

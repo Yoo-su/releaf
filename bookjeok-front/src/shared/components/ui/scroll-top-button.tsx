@@ -40,14 +40,14 @@ export const ScrollTopButton = () => {
           whileHover={{ scale: 1.1, y: -5 }}
           whileTap={{ scale: 0.9 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          className="fixed bottom-8 right-8 z-50"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
         >
           <Button
             size="icon"
-            className="h-12 w-12 rounded-full shadow-2xl bg-gray-900 hover:bg-black text-white border border-gray-800 transition-colors"
+            className="h-10 w-10 rounded-full shadow-lg bg-white/70 dark:bg-black/50 backdrop-blur-md hover:bg-white/90 dark:hover:bg-black/70 text-gray-600 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700/50 transition-all"
             onClick={scrollToTop}
           >
-            <ArrowUp className="h-6 w-6" />
+            <ArrowUp className="h-5 w-5" />
             <span className="sr-only">맨 위로 스크롤</span>
           </Button>
         </motion.div>
