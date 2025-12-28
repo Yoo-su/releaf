@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2, MapPin, Navigation } from "lucide-react";
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CustomOverlayMap, Map, useKakaoLoader } from "react-kakao-maps-sdk";
 
@@ -11,7 +10,6 @@ import {
   InsightCard,
 } from "@/features/insights/components/insight-card";
 import { LocationSales, LocationStat } from "@/features/insights/types";
-import { PATHS } from "@/shared/constants/paths";
 
 // 색상 팔레트
 const COLORS = {
@@ -297,19 +295,11 @@ export const LocationHeatmap = ({ data }: LocationHeatmapProps) => {
                         {selectedSale.bookTitle}
                       </div>
                       <div
-                        className="mb-2 text-sm font-bold"
+                        className="text-sm font-bold"
                         style={{ color: COLORS.mustard.dark }}
                       >
                         {formatPrice(selectedSale.price)}
                       </div>
-                      <Link
-                        href={PATHS.BOOK_SALES_DETAIL(String(selectedSale.id))}
-                        className="block rounded-md py-1.5 text-center text-xs font-medium text-white transition-opacity hover:opacity-90"
-                        style={{ backgroundColor: COLORS.matcha.medium }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        상세보기
-                      </Link>
                     </div>
                     <div className="absolute -bottom-2 left-1/2 -translate-x-1/2">
                       <div className="h-3 w-3 rotate-45 bg-white shadow ring-1 ring-gray-100" />
