@@ -18,4 +18,5 @@ export const PATHS = {
   MY_PAGE_WISHLIST: "/my-page/wishlist",
   BOOK_MARKET: "/book/market",
   USER_PROFILE: (id: number) => `/users/${id}`,
+  INSIGHTS: "/insights",
 } as const;
