@@ -9,12 +9,10 @@ import { BookMarketView } from "@/views/book-market-view";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "중고책 마켓 | 내 주변 중고 도서 거래",
+  title: "중고책 마켓",
   description:
     "다양한 중고 서적을 탐색하고 저렴하게 구매하세요. 지역별 중고책 거래, 판매 등록까지 한 번에. 베스트셀러부터 희귀본까지 북적 중고마켓에서 만나보세요.",
   keywords: [
-    "bookjeok 중고책",
-    "bookjeok 중고서적",
     "북적 중고책",
     "북적 중고서적",
     "중고책",
@@ -24,6 +22,17 @@ export const metadata: Metadata = {
     "중고책 구매",
     "중고서적",
   ],
+  openGraph: {
+    title: "중고책 마켓 | 북적",
+    description: "중고책을 사고파는 가장 쉬운 방법",
+    images: ["/logo.png"],
+  },
+  twitter: {
+    card: "summary",
+    title: "중고책 마켓 | 북적",
+    description: "중고책을 사고파는 가장 쉬운 방법",
+    images: ["/logo.png"],
+  },
 };
 
 export default async function Page() {

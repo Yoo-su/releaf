@@ -20,6 +20,7 @@ import { LlmModule } from '@/features/llm/llm.module';
 import { ReviewModule } from '@/features/review/review.module';
 import { Review } from '@/features/review/entities/review.entity';
 import { CommentModule } from '@/features/comment/comment.module';
+import { InsightsModule } from '@/features/insights/insights.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { CommentModule } from '@/features/comment/comment.module';
     LlmModule,
     ReviewModule,
     CommentModule,
+    InsightsModule,
   ],
   controllers: [],
   providers: [],

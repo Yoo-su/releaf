@@ -1,0 +1,68 @@
+"use client";
+
+import { ActivityTrendChart } from "@/features/insights/components/activity-trend-chart";
+import { CategoryChart } from "@/features/insights/components/category-chart";
+import { InsightsHeader } from "@/features/insights/components/insights-header";
+import { LocationHeatmap } from "@/features/insights/components/location-heatmap";
+import { PopularTagsList } from "@/features/insights/components/popular-tags-list";
+import { PriceHistogram } from "@/features/insights/components/price-histogram";
+import { ReactionDonutChart } from "@/features/insights/components/reaction-donut-chart";
+import { useInsightsQuery } from "@/features/insights/queries";
+import { FullScreenLoader } from "@/shared/components/ui/full-screen-loader";
+
+/**
+ * 인사이트 페이지 메인 뷰
+ */
+export const InsightsView = () => {
+  const { data, isLoading, isError } = useInsightsQuery();
+
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="text-center">
+          <p className="mb-2 text-lg font-medium text-gray-900">
+            데이터를 불러오지 못했어요
+          </p>
+          <p className="text-sm text-gray-500">잠시 후 다시 시도해주세요</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pb-12">
+      {/* 헤더 및 요약 */}
+      <InsightsHeader summary={data.summary} />
+
+      {/* 섹션별 구분 */}
+      <div className="space-y-6">
+        {/* 지도 섹션 */}
+        <LocationHeatmap data={data.locationStats} />
+
+        {/* 활동 추이 */}
+        <ActivityTrendChart data={data.activityTrend} />
+
+        {/* 2열 그리드: 카테고리 + 가격 */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* 카테고리별 리뷰 */}
+          <CategoryChart data={data.categoryStats} />
+
+          {/* 가격 분포 */}
+          <PriceHistogram data={data.priceDistribution} />
+        </div>
+
+        {/* 리액션 분포 */}
+        <ReactionDonutChart data={data.reactionStats} />
+
+        {/* 인기 태그 */}
+        <PopularTagsList data={data.popularTags} />
+      </div>
+    </div>
+  );
+};
+
+export default InsightsView;

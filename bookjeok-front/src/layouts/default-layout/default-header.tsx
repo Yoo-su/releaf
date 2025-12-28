@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BarChart3,
   List,
   MessageSquareQuote,
   PenLine,
@@ -32,6 +33,7 @@ import {
 import { PATHS } from "@/shared/constants/paths";
 
 import { Logo } from "../common/logo";
+import { MobileNavSheet } from "./mobile-nav-sheet";
 import UserPopover from "./user-popover";
 
 export const DefaultHeader = () => {
@@ -39,13 +41,20 @@ export const DefaultHeader = () => {
   return (
     <header className="sticky top-0 left-0 z-50 w-full bg-white/80 backdrop-blur-sm border-b border-gray-200">
       <div className="flex items-center justify-between max-w-4xl w-full px-4 py-3 mx-auto">
-        {/* 좌측: 로고와 메뉴 */}
-        <div className="flex items-center gap-4">
+        {/* 좌측: 모바일 메뉴 + 로고 */}
+        <div className="flex items-center gap-2">
+          {/* 모바일 햄버거 메뉴 */}
+          <MobileNavSheet />
+
           <Link href={PATHS.HOME}>
             <Logo />
           </Link>
-          {/* 향후 다른 메뉴 버튼들이 추가될 네비게이션 영역 */}
-          <nav className="flex items-center gap-1" aria-label="메인 메뉴">
+
+          {/* 데스크탑 네비게이션 (md 이상에서만 표시) */}
+          <nav
+            className="hidden md:flex items-center gap-1 ml-2"
+            aria-label="메인 메뉴"
+          >
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -168,6 +177,28 @@ export const DefaultHeader = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* 인사이트 링크 */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    asChild
+                    className="rounded-full cursor-pointer text-gray-600 hover:text-gray-900"
+                    aria-label="서비스 인사이트 페이지로 이동"
+                  >
+                    <Link href={PATHS.INSIGHTS}>
+                      <BarChart3 className="w-5 h-5" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>서비스 인사이트</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </nav>
         </div>
 
