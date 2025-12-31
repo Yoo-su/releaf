@@ -42,4 +42,10 @@ export class GetReviewsQueryDto {
   @Type(() => Number)
   @IsInt()
   userId?: number;
+
+  @ApiPropertyOptional({ description: '제외할 리뷰 ID' })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  excludeId?: number;
 }

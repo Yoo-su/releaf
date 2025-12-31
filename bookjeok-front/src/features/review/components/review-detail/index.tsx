@@ -13,6 +13,7 @@ import { NotFoundRedirect } from "@/shared/components/ui/not-found-redirect";
 import { ScrollTopButton } from "@/shared/components/ui/scroll-top-button";
 import { PATHS } from "@/shared/constants/paths";
 
+import { RecommendReviews } from "../recommend-reviews";
 import { ReviewDetailActions } from "./actions";
 import { ReviewDetailContent } from "./content";
 import { ReviewDetailHeader } from "./header";
@@ -63,6 +64,9 @@ export const ReviewDetail = ({ id, initialReview }: ReviewDetailProps) => {
           targetType={CommentTargetType.REVIEW}
           targetId={String(id)}
         />
+
+        {/* 추천 리뷰 섹션 */}
+        <RecommendReviews id={id} category={review.category} />
 
         {/* 네비게이션 & 편집 버튼 */}
         <div className="flex items-center justify-between pt-8 mt-8 border-t border-stone-100">
