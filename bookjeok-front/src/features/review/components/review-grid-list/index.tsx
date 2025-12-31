@@ -11,7 +11,7 @@ import { PATHS } from "@/shared/constants/paths";
 
 import { ReviewCard } from "../review-card";
 import { ReviewCardSkeleton } from "../review-card/skeleton";
-import { ReviewGridListSkeleton } from "./review-grid-list-skeleton";
+import { ReviewGridListSkeleton } from "./skeleton";
 
 interface ReviewGridListProps {
   searchQuery: string;
