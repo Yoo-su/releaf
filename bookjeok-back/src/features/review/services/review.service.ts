@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, In, EntityManager } from 'typeorm';
+import { DataSource, Repository, In, EntityManager, Brackets } from 'typeorm';
 
 import { Book } from '@/features/book/entities/book.entity';
 import { Review } from '@/features/review/entities/review.entity';
@@ -114,17 +114,27 @@ export class ReviewService {
    * @returns 리뷰 목록 및 메타데이터
    */
   async findAll(query: GetReviewsQueryDto): Promise<GetReviewsResponseDto> {
-    const { page = 1, limit = 10, bookIsbn, tag, search, category } = query;
+    const {
+      page = 1,
+      limit = 10,
+      bookIsbn,
+      tag,
+      search,
+      category,
+      userId,
+      excludeId,
+    } = query;
     const skip = (page - 1) * limit;
 
     const qb = this.reviewsRepository.createQueryBuilder('review');
     qb.leftJoinAndSelect('review.user', 'user');
     qb.leftJoinAndSelect('review.book', 'book');
-    qb.leftJoinAndSelect('review.tagEntities', 'tags'); // 태그 엔티티 로드
+    qb.leftJoinAndSelect('review.tagEntities', 'tags');
     qb.orderBy('review.createdAt', 'DESC');
     qb.skip(skip);
     qb.take(limit);
 
+    // 필터링
     if (bookIsbn) {
       qb.andWhere('review.bookIsbn = :bookIsbn', { bookIsbn });
     }
@@ -133,43 +143,44 @@ export class ReviewService {
       qb.andWhere('review.category = :category', { category });
     }
 
-    if (query.userId) {
-      qb.andWhere('review.userId = :userId', { userId: query.userId });
+    if (userId) {
+      qb.andWhere('review.userId = :userId', { userId });
     }
 
+    if (excludeId) {
+      qb.andWhere('review.id != :excludeId', { excludeId });
+    }
+
+    // 태그 검색 (Inner Join으로 필터링)
     if (tag) {
-      const tags = Array.isArray(tag) ? tag : tag.split(',');
-      // 태그 테이블과 조인하여 검색 (인덱스 활용)
-      // 이미 위에서 leftJoinAndSelect로 'tags' 알리어스를 썼으므로 여기서는 필터링만 함
-      // 하지만 필터링을 위해 innerJoin을 쓰면 결과가 줄어들 수 있음.
-      // 검색 조건에 맞는 리뷰만 가져오되, 그 리뷰의 *모든* 태그를 가져와야 함.
-      // 따라서 필터링용 조인은 별도로 하거나, 서브쿼리를 써야 함.
-      // 간단하게는:
+      const tags = (Array.isArray(tag) ? tag : tag.split(',')).map(
+        (t: string) => t.trim(),
+      );
       qb.innerJoin(
         'review.tagEntities',
         'filterTag',
         'filterTag.name IN (:...searchTags)',
-        { searchTags: tags.map((t: string) => t.trim()) },
+        { searchTags: tags },
       );
     }
 
+    // 키워드 검색
     if (search) {
-      const { Brackets } = await import('typeorm');
       qb.andWhere(
         new Brackets((subQb) => {
+          const searchParam = { search: `%${search}%` };
           subQb
-            .where('review.title LIKE :search', { search: `%${search}%` })
-            .orWhere('review.content LIKE :search', { search: `%${search}%` })
-            .orWhere('tags.name LIKE :search', { search: `%${search}%` })
-            .orWhere('book.title LIKE :search', { search: `%${search}%` })
-            .orWhere('user.nickname LIKE :search', { search: `%${search}%` });
+            .where('review.title LIKE :search', searchParam)
+            .orWhere('review.content LIKE :search', searchParam)
+            .orWhere('tags.name LIKE :search', searchParam)
+            .orWhere('book.title LIKE :search', searchParam)
+            .orWhere('user.nickname LIKE :search', searchParam);
         }),
       );
     }
 
     const [reviews, total] = await qb.getManyAndCount();
 
-    // 태그 엔티티를 문자열 배열로 변환하여 DTO 매핑
     const reviewDtos = reviews.map((review) => ({
       ...review,
       tags: review.tagEntities?.map((t) => t.name) || [],
@@ -266,6 +277,66 @@ export class ReviewService {
       .getMany();
 
     return this.attachReactionCounts(reviews);
+  }
+
+  /**
+   * 추천 리뷰를 조회합니다. (같은 작가의 다른 책 + 같은 카테고리)
+   * @param id 기준 리뷰 ID
+   * @returns 추천 리뷰 목록
+   */
+  async getRecommendedReviews(id: number): Promise<ReviewResponseDto[]> {
+    const currentReview = await this.reviewsRepository.findOne({
+      where: { id },
+      relations: ['book'],
+    });
+
+    if (!currentReview) {
+      throw new NotFoundException(`Review with ID ${id} not found`);
+    }
+
+    const { book, category } = currentReview;
+    const author = book.author;
+    const limit = 4;
+    const recommendations: Review[] = [];
+
+    // 1. 같은 작가가 쓴 다른 책의 리뷰 조회 (최대 2개)
+    if (author) {
+      const authorReviews = await this.reviewsRepository
+        .createQueryBuilder('review')
+        .leftJoinAndSelect('review.user', 'user')
+        .leftJoinAndSelect('review.book', 'book')
+        .leftJoinAndSelect('review.tagEntities', 'tagEntities')
+        .where('review.id != :id', { id })
+        .andWhere('book.author = :author', { author })
+        .andWhere('book.isbn != :isbn', { isbn: book.isbn }) // 같은 책 제외
+        .orderBy('review.createdAt', 'DESC')
+        .take(2)
+        .getMany();
+
+      recommendations.push(...authorReviews);
+    }
+
+    // 2. 나머지는 같은 카테고리의 최신 리뷰로 채움
+    const remainingLimit = limit - recommendations.length;
+
+    if (remainingLimit > 0) {
+      const excludedIds = [id, ...recommendations.map((r) => r.id)];
+
+      const categoryReviews = await this.reviewsRepository
+        .createQueryBuilder('review')
+        .leftJoinAndSelect('review.user', 'user')
+        .leftJoinAndSelect('review.book', 'book')
+        .leftJoinAndSelect('review.tagEntities', 'tagEntities')
+        .where('review.id NOT IN (:...ids)', { ids: excludedIds })
+        .andWhere('review.category = :category', { category })
+        .orderBy('review.createdAt', 'DESC')
+        .take(remainingLimit)
+        .getMany();
+
+      recommendations.push(...categoryReviews);
+    }
+
+    return this.attachReactionCounts(recommendations);
   }
 
   /**

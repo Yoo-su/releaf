@@ -48,6 +48,7 @@ export interface GetReviewsParams {
   search?: string;
   category?: string | null;
   userId?: number;
+  excludeId?: number;
   enabled?: boolean;
 }
 

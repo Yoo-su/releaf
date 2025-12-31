@@ -70,6 +70,7 @@ export const getReviews = async ({
   search,
   category,
   userId,
+  excludeId,
 }: GetReviewsParams) => {
   const params = new URLSearchParams();
   params.append("page", page.toString());
@@ -79,6 +80,7 @@ export const getReviews = async ({
   if (search) params.append("search", search);
   if (category) params.append("category", category);
   if (userId) params.append("userId", userId.toString());
+  if (excludeId) params.append("excludeId", excludeId.toString());
 
   const { data } = await publicAxios.get<GetReviewsResponse>(
     `${API_PATHS.review.base}?${params.toString()}`
@@ -115,6 +117,18 @@ export const getPopularReviews = async () => {
  */
 export const getReview = async (id: number) => {
   const { data } = await publicAxios.get<Review>(API_PATHS.review.detail(id));
+  return data;
+};
+
+/**
+ * 추천 리뷰(복합 로직)를 조회합니다.
+ * @param id 현재 리뷰 ID
+ * @returns 추천 리뷰 목록
+ */
+export const getRecommendedReviews = async (id: number) => {
+  const { data } = await publicAxios.get<Review[]>(
+    `${API_PATHS.review.detail(id)}/recommend`
+  );
   return data;
 };
 
