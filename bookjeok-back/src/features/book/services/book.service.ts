@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Book } from '../entities/book.entity';
@@ -18,6 +14,7 @@ import {
   applyLocationFilter,
   applySorting,
 } from '../utils/book-query.builder';
+import { BusinessException } from '@/shared/exceptions';
 
 @Injectable()
 export class BookService {
@@ -56,7 +53,7 @@ export class BookService {
   ): Promise<UsedBookSale> {
     const user = await this.userService.findById(userId);
     if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
+      throw new BusinessException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     return this.dataSource.transaction(async (manager) => {
@@ -99,12 +96,12 @@ export class BookService {
     });
 
     if (!sale) {
-      throw new Error('판매글을 찾을 수 없습니다.');
+      throw new BusinessException('SALE_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     // 판매글의 작성자와 현재 로그인한 사용자가 동일한지 확인
     if (sale.user.id !== userId) {
-      throw new ForbiddenException('판매글을 수정할 권한이 없습니다.');
+      throw new BusinessException('SALE_FORBIDDEN', HttpStatus.FORBIDDEN);
     }
 
     sale.status = status;
@@ -216,7 +213,7 @@ export class BookService {
     });
 
     if (!sale) {
-      throw new NotFoundException(`Sale with ID ${id} not found.`);
+      throw new BusinessException('SALE_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
     return sale;
   }
@@ -350,11 +347,11 @@ export class BookService {
     });
 
     if (!sale) {
-      throw new NotFoundException('판매글을 찾을 수 없습니다.');
+      throw new BusinessException('SALE_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     if (sale.user.id !== userId) {
-      throw new ForbiddenException('판매글을 수정할 권한이 없습니다.');
+      throw new BusinessException('SALE_FORBIDDEN', HttpStatus.FORBIDDEN);
     }
 
     // DTO의 내용과 기존 판매글 데이터를 병합합니다.
@@ -381,11 +378,11 @@ export class BookService {
     });
 
     if (!sale) {
-      throw new NotFoundException('판매글을 찾을 수 없습니다.');
+      throw new BusinessException('SALE_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     if (sale.user.id !== userId) {
-      throw new ForbiddenException('판매글을 삭제할 권한이 없습니다.');
+      throw new BusinessException('SALE_FORBIDDEN', HttpStatus.FORBIDDEN);
     }
 
     await this.usedBookSaleRepository.remove(sale);

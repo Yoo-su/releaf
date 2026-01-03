@@ -6,6 +6,8 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app/app.module';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
+import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
+import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,7 +25,16 @@ async function bootstrap() {
     ],
   });
 
-  app.useGlobalInterceptors(new TransformInterceptor());
+  // 전역 필터 등록 (에러 응답 표준화)
+  app.useGlobalFilters(new GlobalExceptionFilter());
+
+  // 전역 인터셉터 등록 (로깅이 먼저, 그 다음 응답 변환)
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(),
+    new TransformInterceptor(),
+  );
+
+  // 전역 파이프 등록 (입력값 검증)
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -58,4 +69,4 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 8000, '0.0.0.0');
 }
-bootstrap();
+void bootstrap();

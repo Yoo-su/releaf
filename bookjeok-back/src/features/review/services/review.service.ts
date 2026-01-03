@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, In, EntityManager, Brackets } from 'typeorm';
 
@@ -13,6 +9,7 @@ import {
   ReviewReactionType,
 } from '@/features/review/entities/review-reaction.entity';
 import { Tag } from '@/features/review/entities/tag.entity';
+import { BusinessException } from '@/shared/exceptions';
 
 import { ReviewImageHelper } from '../helpers/review-image.helper';
 
@@ -242,7 +239,7 @@ export class ReviewService {
     });
 
     if (!review) {
-      throw new NotFoundException(`Review with ID ${id} not found`);
+      throw new BusinessException('REVIEW_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     const [reviewWithCounts] = await this.attachReactionCounts([review]);
@@ -291,7 +288,7 @@ export class ReviewService {
     });
 
     if (!currentReview) {
-      throw new NotFoundException(`Review with ID ${id} not found`);
+      throw new BusinessException('REVIEW_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     const { book, category } = currentReview;
@@ -422,7 +419,7 @@ export class ReviewService {
     await this.dataSource.transaction(async (manager) => {
       const review = await manager.findOne(Review, { where: { id } });
       if (!review) {
-        throw new NotFoundException(`Review with ID ${id} not found`);
+        throw new BusinessException('REVIEW_NOT_FOUND', HttpStatus.NOT_FOUND);
       }
 
       const existingReaction = await manager.findOne(ReviewReaction, {
@@ -473,13 +470,11 @@ export class ReviewService {
     });
 
     if (!review) {
-      throw new NotFoundException(`Review with ID ${id} not found`);
+      throw new BusinessException('REVIEW_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     if (review.userId !== userId) {
-      throw new UnauthorizedException(
-        'You are not authorized to update this review',
-      );
+      throw new BusinessException('REVIEW_FORBIDDEN', HttpStatus.FORBIDDEN);
     }
 
     let removedImages: string[] = [];
@@ -530,13 +525,11 @@ export class ReviewService {
     });
 
     if (!review) {
-      throw new NotFoundException(`Review with ID ${id} not found`);
+      throw new BusinessException('REVIEW_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     if (review.userId !== userId) {
-      throw new UnauthorizedException(
-        'You are not authorized to delete this review',
-      );
+      throw new BusinessException('REVIEW_FORBIDDEN', HttpStatus.FORBIDDEN);
     }
 
     const images = this.reviewImageHelper.extractImageUrls(review.content);

@@ -1,17 +1,13 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { DataSource } from 'typeorm';
 import { AuthModule } from '@/features/auth/auth.module';
 import { UserModule } from '@/features/user/user.module';
 import { User } from '@/features/user/entities/user.entity';
-import { LoggerMiddleware } from '@/shared/middlewares/logger.middleware';
 import { BookModule } from '@/features/book/book.module';
 import { UsedBookSale } from '@/features/book/entities/used-book-sale.entity';
 import { Book } from '@/features/book/entities/book.entity';
@@ -24,6 +20,13 @@ import { InsightsModule } from '@/features/insights/insights.module';
 
 @Module({
   imports: [
+    // Rate Limiting 설정 (1분에 100개 요청)
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 60초 (1분)
+        limit: 100, // 100개 요청
+      },
+    ]),
     CacheModule.register({
       isGlobal: true,
       ttl: 0, // 기본 TTL, 인터셉터에서 재정의됨
@@ -64,17 +67,19 @@ import { InsightsModule } from '@/features/insights/insights.module';
     InsightsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    // 전역 Rate Limiting Guard
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
-export class AppModule implements NestModule, OnModuleInit {
+export class AppModule implements OnModuleInit {
   constructor(private readonly dataSource: DataSource) {}
 
   async onModuleInit() {
     await this.dataSource.query('CREATE EXTENSION IF NOT EXISTS cube');
     await this.dataSource.query('CREATE EXTENSION IF NOT EXISTS earthdistance');
-  }
-
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
