@@ -1,13 +1,10 @@
-import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Book } from '@/features/book/entities/book.entity';
 import { Review } from '@/features/review/entities/review.entity';
+import { BusinessException } from '@/shared/exceptions';
 
 import { Comment, CommentTargetType } from '../entities/comment.entity';
 import { CommentLike } from '../entities/comment-like.entity';
@@ -176,7 +173,7 @@ export class CommentService {
     const comment = await this.findCommentOrThrow(id);
 
     if (comment.userId !== userId) {
-      throw new ForbiddenException('본인이 작성한 댓글만 수정할 수 있습니다.');
+      throw new BusinessException('COMMENT_FORBIDDEN', HttpStatus.FORBIDDEN);
     }
 
     await this.commentRepository.update(id, dto);
@@ -194,7 +191,7 @@ export class CommentService {
     const comment = await this.findCommentOrThrow(id);
 
     if (comment.userId !== userId) {
-      throw new ForbiddenException('본인이 작성한 댓글만 삭제할 수 있습니다.');
+      throw new BusinessException('COMMENT_FORBIDDEN', HttpStatus.FORBIDDEN);
     }
 
     await this.commentRepository.delete(id);
@@ -255,7 +252,7 @@ export class CommentService {
   private async findCommentOrThrow(id: number): Promise<Comment> {
     const comment = await this.commentRepository.findOne({ where: { id } });
     if (!comment) {
-      throw new NotFoundException('댓글을 찾을 수 없습니다.');
+      throw new BusinessException('COMMENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
     return comment;
   }
