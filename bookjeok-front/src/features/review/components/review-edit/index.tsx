@@ -1,11 +1,13 @@
 "use client";
 
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { ReviewForm } from "@/features/review/components/review-form";
 import { useUpdateReviewMutation } from "@/features/review/mutations";
-import { useReviewDetailQuery } from "@/features/review/queries";
+import { useReviewForEditQuery } from "@/features/review/queries";
 import { ReviewFormValues } from "@/features/review/types";
 import { PATHS } from "@/shared/constants/paths";
 
@@ -18,14 +20,25 @@ interface ReviewEditProps {
 export const ReviewEdit = ({ id }: ReviewEditProps) => {
   const router = useRouter();
 
-  // React Query를 사용하여 리뷰 데이터 조회 (캐시 활용)
-  const { data: review, isLoading, error } = useReviewDetailQuery(id, !!id);
+  // 수정용 전용 API 사용 (본인 리뷰만 조회 가능)
+  const { data: review, isLoading, error } = useReviewForEditQuery(id);
 
   const {
     mutateAsync: updateReview,
     isPending: isSubmitting,
     isSuccess,
   } = useUpdateReviewMutation();
+
+  // 403 에러 처리 (권한 없음)
+  useEffect(() => {
+    if (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 403) {
+        toast.error("수정 권한이 없습니다.");
+        router.replace(PATHS.MY_PAGE);
+      }
+    }
+  }, [error, router]);
 
   const handleSubmit = async (
     data: ReviewFormValues,
@@ -42,9 +55,7 @@ export const ReviewEdit = ({ id }: ReviewEditProps) => {
 
   // 에러 또는 데이터 없음
   if (error || !review) {
-    toast.error("리뷰를 불러오는데 실패했습니다.");
-    router.push(PATHS.MY_PAGE);
-    return null;
+    return <ReviewEditSkeleton />;
   }
 
   // 리뷰 데이터를 폼 초기값으로 변환

@@ -13,6 +13,7 @@ export const API_PATHS = {
     mySales: "/user/my-sales",
     saleStatus: (saleId: number) => `/book/sales/${saleId}/status`,
     saleDetail: (saleId: string) => `/book/sales/${saleId}`,
+    saleForEdit: (saleId: string | number) => `/book/sales/${saleId}/edit`,
     relatedSales: (isbn: string) => `/book/${isbn}/sales`,
     updateSale: (saleId: number) => `/book/sales/${saleId}`,
     deleteSale: (saleId: number) => `/book/sales/${saleId}`,

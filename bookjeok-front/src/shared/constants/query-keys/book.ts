@@ -26,6 +26,7 @@ export const bookKeys = createQueryKeys("book", {
     limit,
   }: UseInfiniteRelatedSalesQueryProps) => [isbn, city, district, limit],
   saleDetail: (saleId: string) => [saleId],
+  saleForEdit: (saleId: string | number) => ["edit", saleId],
   recentSales: null,
   popularBooks: null,
 });

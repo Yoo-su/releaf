@@ -44,7 +44,8 @@ export class ChatController {
   @Get('rooms/:roomId/messages')
   @ApiOperation({
     summary: '채팅 메시지 조회',
-    description: '특정 채팅방의 메시지 목록을 페이지네이션으로 조회합니다.',
+    description:
+      '특정 채팅방의 메시지 목록을 페이지네이션으로 조회합니다. 참여자만 조회 가능합니다.',
   })
   @ApiQuery({
     name: 'page',
@@ -57,13 +58,15 @@ export class ChatController {
     description: '페이지 당 메시지 수 (기본값: 20)',
   })
   @ApiResponse({ status: 200, description: '메시지 목록을 반환합니다.' })
+  @ApiResponse({ status: 403, description: '채팅방 접근 권한이 없습니다.' })
   @ApiParam({ name: 'roomId', description: '채팅방 ID' })
   async getMessages(
     @Param('roomId', ParseIntPipe) roomId: number,
     @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
     @Query('limit', new ParseIntPipe({ optional: true })) limit: number = 20,
+    @CurrentUser() user: User,
   ) {
-    return await this.chatService.getChatMessages(roomId, page, limit);
+    return await this.chatService.getChatMessages(roomId, user.id, page, limit);
   }
 
   @Post('rooms')

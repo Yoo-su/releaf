@@ -269,12 +269,28 @@ export class ChatService {
 
   /**
    * 특정 채팅방의 메시지 목록을 페이지네이션으로 조회합니다.
+   * 채팅방 참여자만 조회할 수 있습니다.
    * @param roomId 채팅방 ID
+   * @param userId 요청자 ID (참여자 검증용)
    * @param page 페이지 번호
    * @param limit 페이지 당 메시지 수
    * @returns 메시지 목록 및 메타데이터
    */
-  async getChatMessages(roomId: number, page: number, limit: number) {
+  async getChatMessages(
+    roomId: number,
+    userId: number,
+    page: number,
+    limit: number,
+  ) {
+    // 채팅방 참여자 검증
+    const participant = await this.chatParticipantRepository.findOne({
+      where: { chatRoom: { id: roomId }, user: { id: userId } },
+    });
+
+    if (!participant) {
+      throw new ForbiddenException('이 채팅방에 접근할 권한이 없습니다.');
+    }
+
     const [messages, total] = await this.chatMessageRepository.findAndCount({
       where: { chatRoom: { id: roomId } },
       relations: ['sender'],

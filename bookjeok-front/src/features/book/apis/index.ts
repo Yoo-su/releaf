@@ -123,6 +123,21 @@ export const getBookSaleDetail = async (saleId: string) => {
 };
 
 /**
+ * 수정을 위한 판매글 조회 (본인 글만 조회 가능)
+ * 본인 글이 아닌 경우 403 Forbidden 에러가 발생합니다.
+ * @param saleId 판매글 ID
+ * @returns 판매글 상세 정보 (본인 글만)
+ */
+export const getSaleForEdit = async (
+  saleId: string | number
+): Promise<UsedBookSale> => {
+  const { data } = await privateAxios.get<UsedBookSale>(
+    API_PATHS.book.saleForEdit(saleId)
+  );
+  return data;
+};
+
+/**
  * 특정 책(ISBN)에 대한 관련 판매글 목록을 페이지네이션으로 조회합니다.
  * @param params 조회 파라미터 (ISBN, 페이지, 지역 등)
  * @returns 관련 판매글 목록

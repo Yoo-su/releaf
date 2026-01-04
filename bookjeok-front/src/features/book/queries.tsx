@@ -12,6 +12,7 @@ import {
   getPopularBookSales,
   getRecentBookSales,
   getRelatedSales,
+  getSaleForEdit,
   searchBookSales,
 } from "./apis";
 import { DEFAULT_DISPLAY } from "./constants";
@@ -121,6 +122,19 @@ export const useBookSaleDetailQuery = (saleId: string) => {
       return result;
     },
     enabled: !!saleId,
+  });
+};
+
+/**
+ * 수정용 판매글 조회 (본인 글만 조회 가능)
+ * 권한이 없으면 403 에러 발생
+ */
+export const useBookSaleForEditQuery = (saleId: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.bookKeys.saleForEdit(saleId).queryKey,
+    queryFn: () => getSaleForEdit(saleId),
+    enabled: !!saleId,
+    retry: false, // 403 에러 시 재시도 안함
   });
 };
 

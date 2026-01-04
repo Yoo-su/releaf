@@ -6,6 +6,7 @@ import {
   getRecommendedReviews,
   getReview,
   getReviewFeeds,
+  getReviewForEdit,
   getReviews,
 } from "@/features/review/apis";
 import {
@@ -79,6 +80,19 @@ export const useReviewDetailQuery = (
     queryFn: () => getReview(id),
     enabled,
     initialData,
+  });
+};
+
+/**
+ * 수정용 리뷰 조회 (본인 리뷰만 조회 가능)
+ * 권한이 없으면 403 에러 발생
+ */
+export const useReviewForEditQuery = (id: number) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.reviewKeys.forEdit(id).queryKey,
+    queryFn: () => getReviewForEdit(id),
+    enabled: !!id,
+    retry: false, // 403 에러 시 재시도 안함
   });
 };
 

@@ -21,8 +21,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     enabled: !!user,
   });
 
-  // Effect 1: Manages event listener lifecycle.
-  // This is stable and only runs on auth/connection changes, fixing the churn.
+  // Effect 1: 이벤트 리스너 생명주기 관리
+  // 인증/연결 상태 변경 시에만 실행되어 불필요한 재등록을 방지합니다.
   useEffect(() => {
     if (user && isConnected) {
       registerChatEventListeners();
@@ -37,7 +37,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     unregisterChatEventListeners,
   ]);
 
-  // Effect 2: Handles the one-time action of joining rooms.
+  // Effect 2: 채팅방 입장 처리 (일회성 동작)
   useEffect(() => {
     if (isConnected && socket && isRoomsLoaded && rooms && !hasJoinedRooms) {
       const roomIds = rooms.map((room) => room.id);
@@ -58,7 +58,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           }
         );
       } else {
-        // No rooms to join, but mark as joined to prevent re-attempts this session.
+        // 입장할 채팅방이 없어도 hasJoinedRooms를 true로 설정하여 재시도 방지
         setHasJoinedRooms(true);
       }
     }
@@ -71,7 +71,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     setHasJoinedRooms,
   ]);
 
-  // Effect 3: Resets the joined status on logout or disconnection.
+  // Effect 3: 로그아웃 또는 연결 해제 시 입장 상태 초기화
   useEffect(() => {
     if (!user || !isConnected) {
       setHasJoinedRooms(false);

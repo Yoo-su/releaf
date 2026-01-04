@@ -49,21 +49,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
 
     if (nickname) {
-      // isTyping: true
+      // 타이핑 시작
       const timeoutId = setTimeout(() => {
         set((state) => {
           const newTypingUsers = { ...state.typingUsers };
           delete newTypingUsers[roomId];
           return { typingUsers: newTypingUsers };
         });
-      }, 4000); // 4초 뒤 자동 만료
+      }, 4000); // 4초 후 자동 만료
 
       set((state) => ({
         typingUsers: { ...state.typingUsers, [roomId]: nickname },
         typingTimeouts: { ...state.typingTimeouts, [roomId]: timeoutId },
       }));
     } else {
-      // isTyping: false
+      // 타이핑 종료
       set((state) => {
         const newTypingUsers = { ...state.typingUsers };
         delete newTypingUsers[roomId];

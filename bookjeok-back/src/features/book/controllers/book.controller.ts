@@ -125,6 +125,24 @@ export class BookController {
     return await this.bookService.findPopularBooks();
   }
 
+  @Get('sales/:id/edit')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: '판매글 수정용 데이터 조회',
+    description:
+      '본인의 판매글 데이터만 반환합니다. 본인 글이 아니면 403 Forbidden.',
+  })
+  @ApiResponse({ status: 200, description: '판매글 수정 데이터를 반환합니다.' })
+  @ApiResponse({ status: 403, description: '수정 권한이 없습니다.' })
+  @ApiResponse({ status: 404, description: '판매글을 찾을 수 없습니다.' })
+  @ApiParam({ name: 'id', description: '판매글 ID' })
+  async getSaleForEdit(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
+    return await this.bookService.findSaleForEdit(id, user.id);
+  }
+
   @Post(':isbn/view')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(BookViewCountInterceptor)

@@ -219,6 +219,30 @@ export class BookService {
   }
 
   /**
+   * 수정을 위한 판매글 조회 (소유권 검증 포함)
+   * 본인의 판매글만 조회 가능하며, 타인의 글 접근 시 403 FORBIDDEN을 반환합니다.
+   * @param id 판매글 ID
+   * @param userId 요청자 ID
+   * @returns 판매글 정보 (본인 글만)
+   */
+  async findSaleForEdit(id: number, userId: number) {
+    const sale = await this.usedBookSaleRepository.findOne({
+      where: { id },
+      relations: ['user', 'book'],
+    });
+
+    if (!sale) {
+      throw new BusinessException('SALE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+
+    if (sale.user.id !== userId) {
+      throw new BusinessException('SALE_FORBIDDEN', HttpStatus.FORBIDDEN);
+    }
+
+    return sale;
+  }
+
+  /**
    * 조건에 따라 판매글 목록을 검색합니다.
    * @param queryDto 검색 조건 DTO
    * @returns 판매글 목록 및 메타데이터
