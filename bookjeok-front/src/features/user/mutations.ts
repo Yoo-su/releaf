@@ -4,8 +4,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useAuthStore } from "@/features/auth/store";
-import { privateAxios } from "@/shared/libs/axios";
 import { QUERY_KEYS } from "@/shared/constants/query-keys";
+import { privateAxios } from "@/shared/libs/axios";
 
 import { BookInfo } from "../book/types";
 import { addToWishlist, removeFromWishlist } from "./apis";
