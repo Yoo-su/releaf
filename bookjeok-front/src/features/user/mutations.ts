@@ -1,9 +1,10 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useAuthStore } from "@/features/auth/store";
+import { QUERY_KEYS } from "@/shared/constants/query-keys";
 import { privateAxios } from "@/shared/libs/axios";
 
 import { BookInfo } from "../book/types";
@@ -38,8 +39,11 @@ export const useWithdrawMutation = () => {
 
 /**
  * 위시리스트에 추가하는 뮤테이션 훅입니다.
+ * 성공 시 위시리스트 목록과 해당 아이템의 상태를 무효화합니다.
  */
 export const useAddToWishlistMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({
       type,
@@ -50,13 +54,29 @@ export const useAddToWishlistMutation = () => {
       id: string | number;
       bookData?: BookInfo;
     }) => addToWishlist(type, id, bookData),
+    onSuccess: (_, variables) => {
+      // 위시리스트 목록 캐시 무효화
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.userKeys.wishlist.queryKey,
+      });
+      // 해당 아이템의 위시리스트 상태 캐시 무효화
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.userKeys.wishlistCheck(
+          variables.type,
+          variables.id
+        ).queryKey,
+      });
+    },
   });
 };
 
 /**
  * 위시리스트에서 제거하는 뮤테이션 훅입니다.
+ * 성공 시 위시리스트 목록과 해당 아이템의 상태를 무효화합니다.
  */
 export const useRemoveFromWishlistMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({
       type,
@@ -65,5 +85,18 @@ export const useRemoveFromWishlistMutation = () => {
       type: "BOOK" | "SALE";
       id: string | number;
     }) => removeFromWishlist(type, id),
+    onSuccess: (_, variables) => {
+      // 위시리스트 목록 캐시 무효화
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.userKeys.wishlist.queryKey,
+      });
+      // 해당 아이템의 위시리스트 상태 캐시 무효화
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.userKeys.wishlistCheck(
+          variables.type,
+          variables.id
+        ).queryKey,
+      });
+    },
   });
 };

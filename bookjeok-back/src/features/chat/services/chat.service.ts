@@ -309,6 +309,7 @@ export class ChatService {
 
   /**
    * 메시지를 저장하고 채팅방의 업데이트 시간을 갱신합니다.
+   * 채팅방 참여자만 메시지를 보낼 수 있습니다.
    * @param content 메시지 내용
    * @param roomId 채팅방 ID
    * @param sender 보낸 사람
@@ -319,6 +320,21 @@ export class ChatService {
     roomId: number,
     sender: User,
   ): Promise<ChatMessage> {
+    // 참여자 검증: 활성 상태인 참여자만 메시지 전송 가능
+    const participant = await this.chatParticipantRepository.findOne({
+      where: {
+        chatRoom: { id: roomId },
+        user: { id: sender.id },
+        isActive: true,
+      },
+    });
+
+    if (!participant) {
+      throw new ForbiddenException(
+        '이 채팅방에 메시지를 보낼 권한이 없습니다.',
+      );
+    }
+
     const chatRoom = await this.chatRoomRepository.findOneBy({ id: roomId });
     if (!chatRoom) throw new NotFoundException('Chat room not found');
 
