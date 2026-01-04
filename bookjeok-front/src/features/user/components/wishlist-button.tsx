@@ -19,6 +19,7 @@ interface WishlistButtonProps {
   id: string | number;
   className?: string;
   bookData?: BookInfo;
+  initialIsWishlisted?: boolean;
 }
 
 export const WishlistButton = ({
@@ -26,14 +27,22 @@ export const WishlistButton = ({
   id,
   className,
   bookData,
+  initialIsWishlisted,
 }: WishlistButtonProps) => {
   const user = useAuthStore((state) => state.user);
+
+  // initialIsWishlisted가 주어지면 쿼리를 실행하지 않음 (이미 상태를 알고 있음)
+  const shouldFetch = !!user && initialIsWishlisted === undefined;
+
   const { data: statusData, isLoading } = useWishlistStatusQuery(
     type,
     id,
-    !!user
+    shouldFetch
   );
-  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const [isWishlisted, setIsWishlisted] = useState(
+    initialIsWishlisted ?? false
+  );
 
   const addToWishlistMutation = useAddToWishlistMutation();
   const removeFromWishlistMutation = useRemoveFromWishlistMutation();
@@ -43,6 +52,13 @@ export const WishlistButton = ({
       setIsWishlisted(statusData.isWishlisted);
     }
   }, [statusData]);
+
+  // initialIsWishlisted가 변경되면 상태 업데이트 (단, 사용자가 인터랙션 한 후에는 무시될 수 있음)
+  useEffect(() => {
+    if (initialIsWishlisted !== undefined) {
+      setIsWishlisted(initialIsWishlisted);
+    }
+  }, [initialIsWishlisted]);
 
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -70,8 +86,10 @@ export const WishlistButton = ({
     }
   };
 
-  // 로딩 중이거나 비로그인 상태면 disabled
-  if (isLoading || !user) {
+  // 로딩 중이거나 비로그인 상태면 disabled (단, 초기값이 있으면 로딩 무시)
+  const isButtonLoading = isLoading && initialIsWishlisted === undefined;
+
+  if (isButtonLoading || !user) {
     return (
       <Button
         variant="ghost"

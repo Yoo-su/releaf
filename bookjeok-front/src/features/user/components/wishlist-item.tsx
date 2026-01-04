@@ -45,6 +45,7 @@ export const WishlistItem = ({ item }: WishlistItemProps) => {
                   type="BOOK"
                   id={item.book.isbn}
                   className="text-red-500 hover:bg-red-50"
+                  initialIsWishlisted={true}
                 />
               </div>
             </div>
@@ -105,6 +106,7 @@ export const WishlistItem = ({ item }: WishlistItemProps) => {
                   type="SALE"
                   id={sale.id}
                   className="text-red-500 hover:bg-red-50"
+                  initialIsWishlisted={true}
                 />
               </div>
             </div>
