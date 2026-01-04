@@ -15,6 +15,9 @@ export const reviewKeys = createQueryKeys("review", {
   detail: (id: number) => ({
     queryKey: [id],
   }),
+  forEdit: (id: number) => ({
+    queryKey: ["edit", id],
+  }),
   recommend: (id: number) => ({
     queryKey: [id],
   }),

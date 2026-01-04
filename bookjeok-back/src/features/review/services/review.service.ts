@@ -248,6 +248,32 @@ export class ReviewService {
   }
 
   /**
+   * 수정을 위한 리뷰 조회 (소유권 검증 포함)
+   * 본인의 리뷰만 조회 가능하며, 타인의 리뷰 접근 시 403 FORBIDDEN을 반환합니다.
+   * @param id 리뷰 ID
+   * @param userId 요청자 ID
+   * @returns 리뷰 정보 (본인 리뷰만)
+   */
+  async findOneForEdit(id: number, userId: number): Promise<ReviewResponseDto> {
+    const review = await this.reviewsRepository.findOne({
+      where: { id },
+      relations: ['user', 'book', 'tagEntities'],
+    });
+
+    if (!review) {
+      throw new BusinessException('REVIEW_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+
+    if (review.userId !== userId) {
+      throw new BusinessException('REVIEW_FORBIDDEN', HttpStatus.FORBIDDEN);
+    }
+
+    const [reviewWithCounts] = await this.attachReactionCounts([review]);
+
+    return reviewWithCounts;
+  }
+
+  /**
    * 리뷰 조회수를 증가시킵니다.
    * @param id 리뷰 ID
    */

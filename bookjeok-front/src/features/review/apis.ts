@@ -12,6 +12,7 @@ const API_PATHS = {
   review: {
     base: "/reviews",
     detail: (id: number) => `/reviews/${id}`,
+    forEdit: (id: number) => `/reviews/${id}/edit`,
   },
 };
 
@@ -117,6 +118,17 @@ export const getPopularReviews = async () => {
  */
 export const getReview = async (id: number) => {
   const { data } = await publicAxios.get<Review>(API_PATHS.review.detail(id));
+  return data;
+};
+
+/**
+ * 수정을 위한 리뷰 조회 (본인 리뷰만 조회 가능)
+ * 본인 리뷰가 아닌 경우 403 Forbidden 에러가 발생합니다.
+ * @param id 리뷰 ID
+ * @returns 리뷰 상세 정보 (본인 리뷰만)
+ */
+export const getReviewForEdit = async (id: number) => {
+  const { data } = await privateAxios.get<Review>(API_PATHS.review.forEdit(id));
   return data;
 };
 

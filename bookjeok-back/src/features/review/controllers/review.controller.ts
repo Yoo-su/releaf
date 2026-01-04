@@ -103,6 +103,34 @@ export class ReviewController {
     return await this.reviewService.findPopular();
   }
 
+  @Get(':id/edit')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: '리뷰 수정용 데이터 조회',
+    description:
+      '본인의 리뷰 데이터만 반환합니다. 본인 리뷰가 아니면 403 Forbidden.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '리뷰 수정 데이터를 반환합니다.',
+    type: ReviewResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: '수정 권한이 없습니다.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: '리뷰를 찾을 수 없습니다.',
+  })
+  @ApiParam({ name: 'id', description: '리뷰 ID' })
+  async getReviewForEdit(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ): Promise<ReviewResponseDto> {
+    return await this.reviewService.findOneForEdit(id, user.id);
+  }
+
   @Get(':id')
   @UseInterceptors(ViewCountInterceptor)
   @ApiOperation({
