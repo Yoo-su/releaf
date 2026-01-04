@@ -1,4 +1,11 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { LlmService } from '../services/llm.service';
 import { BookSummaryDto } from '../dtos/book-summary.dto';
 
@@ -6,6 +13,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('AI 요약 (LLM)')
 @Controller('llm')
+@UseGuards(AuthGuard('jwt'))
 export class LlmController {
   constructor(private readonly llmService: LlmService) {}
 

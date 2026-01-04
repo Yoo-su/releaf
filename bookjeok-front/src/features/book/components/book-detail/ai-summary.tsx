@@ -1,12 +1,17 @@
+"use client";
+
 import {
   AlertTriangle,
   BotMessageSquare,
   CheckCircle2,
   Loader2,
+  LogIn,
   Sparkles,
   User,
 } from "lucide-react";
+import Link from "next/link";
 
+import { useAuthStore } from "@/features/auth/store";
 import { Badge } from "@/shared/components/shadcn/badge";
 import {
   Card,
@@ -15,6 +20,7 @@ import {
   CardTitle,
 } from "@/shared/components/shadcn/card";
 import { Separator } from "@/shared/components/shadcn/separator";
+import { PATHS } from "@/shared/constants/paths";
 
 interface AIResponse {
   summary: string;
@@ -38,6 +44,9 @@ export const AISummary = ({
   isRequested,
   onRequestSummary,
 }: BookSummaryProps) => {
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = !!user;
+
   return (
     <Card className="overflow-hidden border-emerald-100 shadow-sm bg-linear-to-br from-emerald-50/50 to-white">
       <CardHeader className="flex flex-row items-center gap-3 pb-4 border-b border-emerald-50">
@@ -68,16 +77,28 @@ export const AISummary = ({
                 AI가 책의 줄거리, 핵심 포인트, 추천 대상을 빠르게
                 요약해드립니다.
                 <br />
-                버튼을 눌러 요약 정보를 확인해보세요.
+                {isLoggedIn
+                  ? "버튼을 눌러 요약 정보를 확인해보세요."
+                  : "로그인 후 이용하실 수 있습니다."}
               </p>
             </div>
-            <button
-              onClick={onRequestSummary}
-              className="mt-4 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors shadow-sm hover:shadow-md flex items-center gap-2"
-            >
-              <Sparkles className="w-4 h-4" />
-              AI 요약 보기
-            </button>
+            {isLoggedIn ? (
+              <button
+                onClick={onRequestSummary}
+                className="mt-4 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors shadow-sm hover:shadow-md flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                AI 요약 보기
+              </button>
+            ) : (
+              <Link
+                href={PATHS.LOGIN}
+                className="mt-4 px-6 py-2.5 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors shadow-sm hover:shadow-md flex items-center gap-2"
+              >
+                <LogIn className="w-4 h-4" />
+                로그인하고 AI 요약 보기
+              </Link>
+            )}
           </div>
         ) : isLoading ? (
           <div className="flex flex-col items-center justify-center py-12 gap-4">
