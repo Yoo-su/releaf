@@ -41,6 +41,7 @@ interface ReadingLogFormDialogProps {
   initialMemo?: string;
   mode: "create" | "edit";
   open: boolean;
+  isPending?: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (memo: string) => void;
 }
@@ -50,6 +51,7 @@ export function ReadingLogFormDialog({
   initialMemo = "",
   mode,
   open,
+  isPending = false,
   onOpenChange,
   onSubmit,
 }: ReadingLogFormDialogProps) {
@@ -122,9 +124,10 @@ export function ReadingLogFormDialog({
                   <FormControl>
                     <Textarea
                       placeholder="이 책은 어떠셨나요? 짧은 감상을 남겨주세요."
-                      className="resize-none h-24 focus-visible:ring-1 focus-visible:ring-offset-0"
+                      className="resize-none h-24 focus-visible:ring-1 focus-visible:ring-offset-0 disabled:opacity-50"
                       style={{ borderColor: READING_LOG_COLORS.matcha.light }}
                       maxLength={MAX_MEMO_LENGTH}
+                      disabled={isPending}
                       {...field}
                     />
                   </FormControl>
@@ -141,6 +144,7 @@ export function ReadingLogFormDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 className="h-11"
+                disabled={isPending}
               >
                 취소
               </Button>
@@ -148,8 +152,19 @@ export function ReadingLogFormDialog({
                 type="submit"
                 className="h-11 font-bold text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: READING_LOG_COLORS.matcha.medium }}
+                disabled={isPending}
+                onMouseDown={(e) => e.preventDefault()}
               >
-                {mode === "create" ? "기록하기" : "수정하기"}
+                {isPending ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <span>처리중...</span>
+                  </div>
+                ) : mode === "create" ? (
+                  "기록하기"
+                ) : (
+                  "수정하기"
+                )}
               </Button>
             </DialogFooter>
           </form>

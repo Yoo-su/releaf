@@ -263,6 +263,7 @@ export function DayDetailsDialog({
         mode="create"
         book={selectedBookForCreate}
         open={!!selectedBookForCreate}
+        isPending={createMutation.isPending}
         onOpenChange={(open) => !open && setSelectedBookForCreate(null)}
         onSubmit={handleCreateLog}
       />
@@ -281,6 +282,7 @@ export function DayDetailsDialog({
         }
         initialMemo={editingLog?.memo}
         open={!!editingLog}
+        isPending={updateMutation.isPending}
         onOpenChange={(open) => !open && setEditingLog(null)}
         onSubmit={handleUpdateLog}
       />

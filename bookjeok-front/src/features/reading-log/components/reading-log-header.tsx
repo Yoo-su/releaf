@@ -9,7 +9,7 @@ import { Switch } from "@/shared/components/shadcn/switch";
 
 export function ReadingLogHeader() {
   const { data: user } = useMyProfileQuery();
-  const { mutate: updateUser } = useUpdateUserMutation();
+  const { mutate: updateUser, isPending } = useUpdateUserMutation();
   const [isPublic, setIsPublic] = useState(true);
 
   useEffect(() => {
@@ -36,6 +36,7 @@ export function ReadingLogHeader() {
         <Switch
           id="public-mode"
           checked={isPublic}
+          disabled={isPending}
           onCheckedChange={handleToggle}
         />
         <div className="flex flex-col">

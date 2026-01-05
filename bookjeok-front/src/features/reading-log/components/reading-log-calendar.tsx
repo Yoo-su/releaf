@@ -19,6 +19,7 @@ import { Button } from "@/shared/components/shadcn/button";
 
 import { useReadingLogsQuery } from "../queries";
 import { DayDetailsDialog } from "./day-details-dialog";
+import { ReadingLogCalendarSkeleton } from "./reading-log-calendar-skeleton";
 import { ReadingLogDayCell } from "./reading-log-day-cell";
 
 export function ReadingLogCalendar() {
@@ -27,7 +28,7 @@ export function ReadingLogCalendar() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // API 호출
-  const { data: logs = [] } = useReadingLogsQuery(
+  const { data: logs = [], isFetching } = useReadingLogsQuery(
     currentDate.getFullYear(),
     currentDate.getMonth() + 1
   );
@@ -57,6 +58,10 @@ export function ReadingLogCalendar() {
     return logs.filter((log) => log.date === dateStr);
   };
 
+  if (isFetching) {
+    return <ReadingLogCalendarSkeleton />;
+  }
+
   return (
     <div className="w-full max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between px-2">
@@ -68,6 +73,7 @@ export function ReadingLogCalendar() {
             variant="outline"
             size="icon"
             onClick={handlePrevMonth}
+            disabled={isFetching}
             className="hover:bg-teal-50 hover:text-teal-600 border-gray-200"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -76,6 +82,7 @@ export function ReadingLogCalendar() {
             variant="outline"
             size="icon"
             onClick={handleNextMonth}
+            disabled={isFetching}
             className="hover:bg-teal-50 hover:text-teal-600 border-gray-200"
           >
             <ChevronRight className="w-4 h-4" />
