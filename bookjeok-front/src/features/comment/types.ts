@@ -11,6 +11,7 @@ export enum CommentTargetType {
  */
 export interface CommentUser {
   id: number;
+  handle: string;
   nickname: string;
   profileImageUrl: string | null;
 }

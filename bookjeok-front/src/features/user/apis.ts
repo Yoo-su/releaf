@@ -19,11 +19,38 @@ export const getUserStats = async (): Promise<UserStats> => {
  * @returns 공개 프로필 정보
  */
 export const getPublicProfile = async (
-  userId: number
+  handle: string
 ): Promise<PublicUserProfile> => {
   const { data } = await publicAxios.get<PublicUserProfile>(
-    `/user/profile/${userId}`
+    `/user/profile/${handle}`
   );
+  return data;
+};
+
+/**
+ * 내 프로필 정보를 조회합니다.
+ * @returns 내 프로필 정보
+ */
+export const getMyProfile = async () => {
+  const { data } = await privateAxios.get<
+    PublicUserProfile & { email: string; isReadingLogPublic: boolean }
+  >("/user");
+  return data;
+};
+
+export interface UpdateUserProfileParams {
+  nickname?: string;
+  profileImageUrl?: string;
+  isReadingLogPublic?: boolean;
+}
+
+/**
+ * 내 프로필 정보를 수정합니다.
+ * @param params 수정할 프로필 정보
+ * @returns 수정된 사용자 정보
+ */
+export const updateProfile = async (params: UpdateUserProfileParams) => {
+  const { data } = await privateAxios.patch("/user", params);
   return data;
 };
 

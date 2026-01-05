@@ -296,6 +296,7 @@ export class BookService {
         'sale.district',
         'sale.viewCount',
         'user.id',
+        'user.handle',
         'user.nickname',
         'user.profileImageUrl',
         'book',
@@ -325,6 +326,7 @@ export class BookService {
         'sale.district',
         'sale.viewCount',
         'user.id',
+        'user.handle',
         'user.nickname',
         'user.profileImageUrl',
         'book', // book 객체 전체 선택

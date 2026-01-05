@@ -8,6 +8,7 @@ import Link from "next/link";
 
 import { SaleStatusBadge } from "@/features/book/components/common/sale-status-badge";
 import { SaleStatus } from "@/features/book/types";
+import { ReadingTimeline } from "@/features/reading-log/components/reading-timeline";
 import { usePublicProfileQuery } from "@/features/user/queries";
 import { Card, CardContent, CardHeader } from "@/shared/components/shadcn/card";
 import { Skeleton } from "@/shared/components/shadcn/skeleton";
@@ -15,11 +16,11 @@ import { NotFoundRedirect } from "@/shared/components/ui/not-found-redirect";
 import { PATHS } from "@/shared/constants/paths";
 
 interface UserProfileViewProps {
-  userId: number;
+  handle: string;
 }
 
-export const UserProfileView = ({ userId }: UserProfileViewProps) => {
-  const { data: profile, isLoading, error } = usePublicProfileQuery(userId);
+export const UserProfileView = ({ handle }: UserProfileViewProps) => {
+  const { data: profile, isLoading, error } = usePublicProfileQuery(handle);
 
   if (isLoading) {
     return <UserProfileSkeleton />;
@@ -97,6 +98,13 @@ export const UserProfileView = ({ userId }: UserProfileViewProps) => {
           </CardContent>
         </Card>
       </div>
+
+      {/* 독서 기록 타임라인 */}
+      {profile.readingLogs && profile.readingLogs.length > 0 && (
+        <div className="mb-8">
+          <ReadingTimeline logs={profile.readingLogs} />
+        </div>
+      )}
 
       {/* 최근 리뷰 */}
       {profile.recentReviews.length > 0 && (

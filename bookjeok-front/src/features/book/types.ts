@@ -106,6 +106,7 @@ export enum SaleStatus {
  */
 export interface SaleAuthor {
   id: number;
+  handle: string;
   nickname: string;
   profileImageUrl: string | null;
 }

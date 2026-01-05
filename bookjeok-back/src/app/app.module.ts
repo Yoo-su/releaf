@@ -17,6 +17,8 @@ import { ReviewModule } from '@/features/review/review.module';
 import { Review } from '@/features/review/entities/review.entity';
 import { CommentModule } from '@/features/comment/comment.module';
 import { InsightsModule } from '@/features/insights/insights.module';
+import { ReadingLog } from '@/features/reading-log/entities/reading-log.entity';
+import { ReadingLogModule } from '@/features/reading-log/reading-log.module';
 
 @Module({
   imports: [
@@ -42,7 +44,7 @@ import { InsightsModule } from '@/features/insights/insights.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [User, Book, UsedBookSale, Review],
+        entities: [User, Book, UsedBookSale, Review, ReadingLog],
         synchronize: configService.get<string>('NODE_ENV') !== 'production', // 개발 환경에서만 true로 설정
         autoLoadEntities: true,
         extra: {
@@ -65,6 +67,7 @@ import { InsightsModule } from '@/features/insights/insights.module';
     ReviewModule,
     CommentModule,
     InsightsModule,
+    ReadingLogModule,
   ],
   controllers: [],
   providers: [

@@ -14,6 +14,8 @@ import { UserService } from '../services/user.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { User } from '../entities/user.entity';
 import { BookInfoDto } from '@/features/book/dtos/book-info.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
+import { Patch } from '@nestjs/common';
 
 import {
   ApiTags,
@@ -63,20 +65,37 @@ export class UserController {
     return user;
   }
 
-  @Get('profile/:id')
+  @Patch()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: '내 정보 수정',
+    description: '로그인한 사용자의 정보를 수정합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '수정된 사용자 정보를 반환합니다.',
+  })
+  async updateProfile(
+    @CurrentUser() user: User,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.userService.updateUser(user.id, updateUserDto);
+  }
+
+  @Get('profile/:handle')
   @ApiOperation({
     summary: '공개 프로필 조회',
     description:
       '다른 사용자의 공개 프로필 정보(닉네임, 프로필 이미지, 활동 통계 등)를 조회합니다.',
   })
-  @ApiParam({ name: 'id', description: '사용자 ID' })
+  @ApiParam({ name: 'handle', description: '사용자 핸들' })
   @ApiResponse({
     status: 200,
     description: '공개 프로필 정보를 반환합니다.',
   })
   @ApiResponse({ status: 404, description: '사용자를 찾을 수 없습니다.' })
-  async getPublicProfile(@Param('id', ParseIntPipe) id: number) {
-    return await this.userService.getPublicProfile(id);
+  async getPublicProfile(@Param('handle') handle: string) {
+    return await this.userService.getPublicProfileByHandle(handle);
   }
 
   @Delete('me')
