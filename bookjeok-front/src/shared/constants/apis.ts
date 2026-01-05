@@ -3,7 +3,14 @@ export const API_PATHS = {
     login: (provider: "naver" | "kakao") => `/auth/${provider}`,
     logout: "/auth/logout",
     refresh: "/auth/refresh",
+  },
+  user: {
+    base: "/user",
     profile: "/user/profile",
+    publicProfile: (handle: string) => `/user/profile/${handle}`,
+    stats: "/user/stats",
+    wishlist: "/user/wishlist",
+    wishlistCheck: "/user/wishlist/check",
   },
   book: {
     list: "/book-list",
@@ -21,6 +28,7 @@ export const API_PATHS = {
     popularBooks: "/book/popular",
     recordView: (isbn: string) => `/book/${isbn}/view`,
     summary: "/llm/book-summary",
+    popularSales: "/book/sales/popular",
   },
   art: {
     list: "/art-list",
@@ -37,5 +45,25 @@ export const API_PATHS = {
     my: "/comments/my",
     detail: (id: number) => `/comments/${id}`,
     like: (id: number) => `/comments/${id}/like`,
+  },
+  readingLog: {
+    base: "/reading-logs",
+    stats: "/reading-logs/stats",
+    list: "/reading-logs/list",
+    detail: (id: string) => `/reading-logs/${id}`,
+  },
+  review: {
+    base: "/reviews",
+    detail: (id: number | string) => `/reviews/${id}`,
+    edit: (id: number | string) => `/reviews/${id}/edit`,
+    feeds: "/reviews/feeds",
+    popular: "/reviews/popular",
+    recommend: (id: number | string) => `/reviews/${id}/recommend`,
+    myReaction: (id: number | string) => `/reviews/${id}/reaction`,
+    toggleReaction: (id: number | string) => `/reviews/${id}/reactions`,
+  },
+  insights: {
+    base: "/insights",
+    locationSales: "/insights/location-sales",
   },
 };

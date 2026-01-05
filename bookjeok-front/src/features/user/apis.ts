@@ -1,15 +1,16 @@
+import { API_PATHS } from "@/shared/constants/apis";
 import { privateAxios, publicAxios } from "@/shared/libs/axios";
 
 import { BookInfo } from "../book/types";
 import { UserStats } from "./queries";
-import { PublicUserProfile } from "./types";
+import { PublicUserProfile, WishlistItem } from "./types";
 
 /**
  * 사용자의 활동 통계(판매, 채팅, 리뷰 수 등)를 조회합니다.
  * @returns 사용자 통계 정보
  */
 export const getUserStats = async (): Promise<UserStats> => {
-  const { data } = await privateAxios.get<UserStats>("/user/stats");
+  const { data } = await privateAxios.get<UserStats>(API_PATHS.user.stats);
   return data;
 };
 
@@ -22,7 +23,7 @@ export const getPublicProfile = async (
   handle: string
 ): Promise<PublicUserProfile> => {
   const { data } = await publicAxios.get<PublicUserProfile>(
-    `/user/profile/${handle}`
+    API_PATHS.user.publicProfile(handle)
   );
   return data;
 };
@@ -34,7 +35,7 @@ export const getPublicProfile = async (
 export const getMyProfile = async () => {
   const { data } = await privateAxios.get<
     PublicUserProfile & { email: string; isReadingLogPublic: boolean }
-  >("/user");
+  >(API_PATHS.user.profile);
   return data;
 };
 
@@ -50,7 +51,7 @@ export interface UpdateUserProfileParams {
  * @returns 수정된 사용자 정보
  */
 export const updateProfile = async (params: UpdateUserProfileParams) => {
-  const { data } = await privateAxios.patch("/user", params);
+  const { data } = await privateAxios.patch(API_PATHS.user.base, params);
   return data;
 };
 
@@ -66,7 +67,7 @@ export const addToWishlist = async (
   id: string | number,
   bookData?: BookInfo
 ) => {
-  const { data } = await privateAxios.post("/user/wishlist", {
+  const { data } = await privateAxios.post(API_PATHS.user.wishlist, {
     type,
     id,
     bookData,
@@ -84,20 +85,20 @@ export const removeFromWishlist = async (
   type: "BOOK" | "SALE",
   id: string | number
 ) => {
-  const { data } = await privateAxios.delete("/user/wishlist", {
+  const { data } = await privateAxios.delete(API_PATHS.user.wishlist, {
     params: { type, id },
   });
   return data;
 };
-
-import { WishlistItem } from "./types";
 
 /**
  * 내 위시리스트 목록을 조회합니다.
  * @returns 위시리스트 목록
  */
 export const getWishlist = async () => {
-  const { data } = await privateAxios.get<WishlistItem[]>("/user/wishlist");
+  const { data } = await privateAxios.get<WishlistItem[]>(
+    API_PATHS.user.wishlist
+  );
   return data;
 };
 
@@ -112,7 +113,7 @@ export const checkWishlistStatus = async (
   id: string | number
 ) => {
   const { data } = await privateAxios.get<{ isWishlisted: boolean }>(
-    "/user/wishlist/check",
+    API_PATHS.user.wishlistCheck,
     {
       params: { type, id },
     }

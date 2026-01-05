@@ -1,3 +1,4 @@
+import { API_PATHS } from "@/shared/constants/apis";
 import { publicAxios } from "@/shared/libs/axios";
 
 import { InsightsResponse, LocationSales } from "./types";
@@ -7,7 +8,9 @@ import { InsightsResponse, LocationSales } from "./types";
  * 로그인 없이 접근 가능합니다.
  */
 export const getInsights = async (): Promise<InsightsResponse> => {
-  const { data } = await publicAxios.get<InsightsResponse>("/insights");
+  const { data } = await publicAxios.get<InsightsResponse>(
+    API_PATHS.insights.base
+  );
   return data;
 };
 
@@ -19,7 +22,7 @@ export const getLocationSales = async (
   district: string
 ): Promise<LocationSales[]> => {
   const { data } = await publicAxios.get<LocationSales[]>(
-    "/insights/location-sales",
+    API_PATHS.insights.locationSales,
     {
       params: { city, district },
     }

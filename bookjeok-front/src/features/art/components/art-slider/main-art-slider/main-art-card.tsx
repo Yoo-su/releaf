@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { ArtItem } from "@/features/art/types";
 import { Badge } from "@/shared/components/shadcn/badge";
+import { PATHS } from "@/shared/constants/paths";
 
 interface MainArtCardProps {
   item: ArtItem;
@@ -11,7 +12,7 @@ interface MainArtCardProps {
 
 export const MainArtCard = ({ item }: MainArtCardProps) => {
   return (
-    <Link href={`/art/${item.mt20id}`} passHref>
+    <Link href={PATHS.ART_DETAIL(item.mt20id)} passHref>
       <div className="group relative w-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1 border border-stone-100">
         {/* 포스터 이미지 */}
         <div className="relative aspect-3/4 overflow-hidden">

@@ -8,6 +8,6 @@ import { User } from "./types";
  * @returns 사용자 정보
  */
 export const getUserProfile = async () => {
-  const { data: user } = await privateAxios.get<User>(API_PATHS.auth.profile);
+  const { data: user } = await privateAxios.get<User>(API_PATHS.user.profile);
   return user;
 };
