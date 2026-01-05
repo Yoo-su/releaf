@@ -1,11 +1,10 @@
 import {
   Injectable,
-  OnModuleInit,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThanOrEqual, IsNull, DataSource } from 'typeorm';
+import { Repository, MoreThanOrEqual, DataSource } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { SocialLoginDto } from '@/features/auth/dtos/social-login.dto';
 import {
@@ -21,7 +20,7 @@ import { ReviewReaction } from '@/features/review/entities/review-reaction.entit
 import { ReadingLog } from '@/features/reading-log/entities/reading-log.entity';
 
 @Injectable()
-export class UserService implements OnModuleInit {
+export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -37,32 +36,6 @@ export class UserService implements OnModuleInit {
     private readonly reviewRepository: Repository<Review>,
     private readonly dataSource: DataSource,
   ) {}
-
-  async onModuleInit() {
-    await this.migrateHandles();
-  }
-
-  /**
-   * 핸들이 없는 기존 유저들에게 핸들을 부여하는 마이그레이션 로직
-   */
-  private async migrateHandles() {
-    const usersWithoutHandle = await this.userRepository.find({
-      where: { handle: IsNull() },
-    });
-
-    if (usersWithoutHandle.length > 0) {
-      console.log(
-        `[Migration] Found ${usersWithoutHandle.length} users without handle. Generating handles...`,
-      );
-
-      for (const user of usersWithoutHandle) {
-        user.handle = `user_${Math.random().toString(36).substring(2, 10)}`;
-        await this.userRepository.save(user);
-      }
-
-      console.log('[Migration] Handle migration completed.');
-    }
-  }
 
   /**
    * 소셜 제공자 ID로 유저를 조회합니다.
