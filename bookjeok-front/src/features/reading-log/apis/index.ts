@@ -11,10 +11,46 @@ export interface CreateReadingLogParams {
   memo?: string;
 }
 
+export interface ReadingLogStats {
+  monthlyCount: number;
+  yearlyCount: number;
+}
+
+export interface ReadingLogListResponse {
+  items: ReadingLog[];
+  nextCursor: string | null;
+}
+
 export const getReadingLogs = async (year: number, month: number) => {
   const response = await privateAxios.get<ReadingLog[]>(`/reading-logs`, {
     params: { year, month },
   });
+  return response.data;
+};
+
+export const getReadingLogStats = async (year: number, month: number) => {
+  const response = await privateAxios.get<ReadingLogStats>(
+    `/reading-logs/stats`,
+    {
+      params: { year, month },
+    }
+  );
+  return response.data;
+};
+
+export const getReadingLogsInfinite = async ({
+  pageParam,
+  limit = 10,
+}: {
+  pageParam?: string | null;
+  limit?: number;
+}) => {
+  const response = await privateAxios.get<ReadingLogListResponse>(
+    `/reading-logs/list`,
+    {
+      params: { cursorId: pageParam, limit },
+    }
+  );
   return response.data;
 };
 

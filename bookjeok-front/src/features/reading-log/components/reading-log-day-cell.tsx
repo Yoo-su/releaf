@@ -91,7 +91,7 @@ export function ReadingLogDayCell({
 
       {/* 데스크탑 뷰: 책 목록 표시 */}
       <div className="hidden sm:flex flex-1 flex-col gap-1 overflow-hidden px-1">
-        {logs.slice(0, 3).map((log) => (
+        {logs.slice(0, 2).map((log) => (
           <TooltipProvider key={log.id}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -129,12 +129,12 @@ export function ReadingLogDayCell({
             </Tooltip>
           </TooltipProvider>
         ))}
-        {logs.length > 3 && (
+        {logs.length > 2 && (
           <div
             className="text-[10px] pl-1"
             style={{ color: READING_LOG_COLORS.gray.subText }}
           >
-            + {logs.length - 3}권 더보기
+            + {logs.length - 2}권 더보기
           </div>
         )}
       </div>

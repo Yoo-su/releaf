@@ -62,6 +62,48 @@ export class ReadingLogController {
     return this.readingLogService.findAllByMonth(req.user.id, year, month);
   }
 
+  @Get('stats')
+  @ApiOperation({
+    summary: '독서 통계 조회',
+    description: '이번 달/올해 읽은 권수를 반환합니다.',
+  })
+  @ApiQuery({ name: 'year', example: 2024 })
+  @ApiQuery({ name: 'month', example: 1 })
+  getStats(
+    @Request() req,
+    @Query('year') year: number,
+    @Query('month') month: number,
+  ) {
+    return this.readingLogService.getStats(req.user.id, year, month);
+  }
+
+  @Get('list')
+  @ApiOperation({
+    summary: '독서 기록 리스트 조회 (Infinite Scroll)',
+    description: '독서 기록을 커서 기반 페이지네이션으로 조회합니다.',
+  })
+  @ApiQuery({
+    name: 'cursorId',
+    required: false,
+    description: '마지막 로드된 ID',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: '가져올 개수 (기본 10)',
+  })
+  findAllInfinite(
+    @Request() req,
+    @Query('cursorId') cursorId?: string,
+    @Query('limit') limit?: number,
+  ) {
+    return this.readingLogService.findAllInfinite(
+      req.user.id,
+      cursorId,
+      limit ? Number(limit) : 10,
+    );
+  }
+
   @Patch(':id')
   @ApiOperation({
     summary: '독서 기록 수정',

@@ -11,26 +11,27 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns";
-import { ko } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-
-import { Button } from "@/shared/components/shadcn/button";
 
 import { useReadingLogsQuery } from "../queries";
 import { DayDetailsDialog } from "./day-details-dialog";
 import { ReadingLogCalendarSkeleton } from "./reading-log-calendar-skeleton";
+import { ReadingLogControls, ReadingLogViewMode } from "./reading-log-controls";
 import { ReadingLogDayCell } from "./reading-log-day-cell";
+import { ReadingLogListView } from "./reading-log-list-view";
+import { ReadingLogStats } from "./reading-log-stats";
 
 export function ReadingLogCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ReadingLogViewMode>("calendar");
 
-  // API 호출
+  // API 호출 (달력 모드일 때만)
   const { data: logs = [], isFetching } = useReadingLogsQuery(
     currentDate.getFullYear(),
-    currentDate.getMonth() + 1
+    currentDate.getMonth() + 1,
+    { enabled: viewMode === "calendar" }
   );
 
   const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
@@ -58,70 +59,58 @@ export function ReadingLogCalendar() {
     return logs.filter((log) => log.date === dateStr);
   };
 
-  if (isFetching) {
-    return <ReadingLogCalendarSkeleton />;
-  }
-
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-4">
-      <div className="flex items-center justify-between px-2">
-        <h2 className="text-2xl font-bold text-gray-800">
-          {format(currentDate, "yyyy년 M월", { locale: ko })}
-        </h2>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handlePrevMonth}
-            disabled={isFetching}
-            className="hover:bg-teal-50 hover:text-teal-600 border-gray-200"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleNextMonth}
-            disabled={isFetching}
-            className="hover:bg-teal-50 hover:text-teal-600 border-gray-200"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+    <div className="w-full max-w-5xl mx-auto space-y-6">
+      <ReadingLogStats currentDate={currentDate} />
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {/* 요일 헤더 */}
-        <div className="grid grid-cols-7 border-b border-gray-100 bg-gray-50/50">
-          {weekDayNames.map((day, i) => (
-            <div
-              key={day}
-              className={`py-3 text-center text-sm font-semibold ${
-                i === 0
-                  ? "text-rose-500"
-                  : i === 6
-                    ? "text-blue-500"
-                    : "text-gray-500"
-              }`}
-            >
-              {day}
-            </div>
-          ))}
-        </div>
+      <ReadingLogControls
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
+        onPrevMonth={handlePrevMonth}
+        onNextMonth={handleNextMonth}
+        isLoading={isFetching}
+      />
 
-        {/* 캘린더 그리드 */}
-        <div className="grid grid-cols-7 auto-rows-[minmax(120px,1fr)] divide-x divide-y divide-gray-100">
-          {calendarDays.map((day) => (
-            <ReadingLogDayCell
-              key={day.toISOString()}
-              date={day}
-              logs={getLogsForDate(day)}
-              isCurrentMonth={isSameMonth(day, monthStart)}
-              onClick={() => handleDayClick(day)}
-            />
-          ))}
+      {viewMode === "list" ? (
+        <ReadingLogListView />
+      ) : isFetching ? (
+        <ReadingLogCalendarSkeleton />
+      ) : (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* 요일 헤더 */}
+          <div className="grid grid-cols-7 border-b border-gray-100 bg-gray-50/50">
+            {weekDayNames.map((day, i) => (
+              <div
+                key={day}
+                className={`py-3 text-center text-sm font-semibold ${
+                  i === 0
+                    ? "text-rose-500"
+                    : i === 6
+                      ? "text-blue-500"
+                      : "text-gray-500"
+                }`}
+              >
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* 캘린더 그리드 */}
+          <div className="grid grid-cols-7 auto-rows-[160px] divide-x divide-y divide-gray-100">
+            {calendarDays.map((day) => (
+              <ReadingLogDayCell
+                key={day.toISOString()}
+                date={day}
+                logs={getLogsForDate(day)}
+                isCurrentMonth={isSameMonth(day, monthStart)}
+                onClick={() => handleDayClick(day)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <DayDetailsDialog
         date={selectedDate}
