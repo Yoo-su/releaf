@@ -6,6 +6,7 @@ import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import { useReviewFeedsQuery } from "@/features/review/queries";
+import { PATHS } from "@/shared/constants/paths";
 
 import { ReviewCard } from "../review-card";
 import { ReviewFeedListSkeleton } from "./skeleton";
@@ -56,7 +57,7 @@ export function ReviewFeedList() {
             {/* 더보기 버튼 (리뷰가 4개 이상일 때만 표시) */}
             {feed.reviews.length >= 4 && (
               <Link
-                href={`/book/reviews?category=${feed.category}`}
+                href={`${PATHS.REVIEWS}?category=${feed.category}`}
                 className="group flex items-center gap-1 text-stone-500 hover:text-emerald-600 transition-colors"
               >
                 <span className="text-sm font-medium relative">

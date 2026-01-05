@@ -12,6 +12,7 @@ import {
 import { Button } from "@/shared/components/shadcn/button";
 import { Spinner } from "@/shared/components/shadcn/spinner";
 import { Textarea } from "@/shared/components/shadcn/textarea";
+import { PATHS } from "@/shared/constants/paths";
 import { cn } from "@/shared/utils";
 
 import { MAX_COMMENT_LENGTH } from "../../constants";
@@ -50,7 +51,7 @@ export const CommentForm = ({ targetType, targetId }: CommentFormProps) => {
         <p className="text-muted-foreground">
           댓글을 작성하려면{" "}
           <Link
-            href="/login"
+            href={PATHS.LOGIN}
             className="text-primary underline hover:no-underline"
           >
             로그인

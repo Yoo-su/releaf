@@ -206,7 +206,9 @@ export const getRecentBookSales = async (): Promise<UsedBookSale[]> => {
  * 인기 판매글 목록을 조회합니다.
  */
 export const getPopularBookSales = async (): Promise<UsedBookSale[]> => {
-  const { data } = await publicAxios.get<UsedBookSale[]>("/book/sales/popular");
+  const { data } = await publicAxios.get<UsedBookSale[]>(
+    API_PATHS.book.popularSales
+  );
   return data;
 };
 

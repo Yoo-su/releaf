@@ -13,7 +13,7 @@ import {
   getReadingLogStats,
   updateReadingLog,
 } from "./apis";
-import { CreateReadingLogParams, UpdateReadingLogParams } from "./apis";
+import { CreateReadingLogParams, UpdateReadingLogParams } from "./types";
 
 export const readingLogKeys = {
   all: ["reading-logs"] as const,
