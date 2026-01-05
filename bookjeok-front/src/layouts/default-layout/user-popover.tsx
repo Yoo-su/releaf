@@ -95,6 +95,13 @@ export default function UserPopover() {
           <Button
             variant="ghost"
             className="justify-start w-full h-auto px-3 py-2"
+            asChild
+          >
+            <Link href={PATHS.READING_LOG}>독서 기록</Link>
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start w-full h-auto px-3 py-2"
             onClick={handleLogout}
           >
             로그아웃

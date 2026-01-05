@@ -6,6 +6,7 @@ import { QUERY_KEYS } from "@/shared/constants/query-keys";
 
 import {
   checkWishlistStatus,
+  getMyProfile,
   getPublicProfile,
   getUserStats,
   getWishlist,
@@ -39,13 +40,23 @@ export const useMyStatsQuery = () => {
  * 공개 사용자 프로필 조회
  */
 export const usePublicProfileQuery = (
-  userId: number,
+  handle: string,
   enabled: boolean = true
 ) => {
   return useQuery<PublicUserProfile>({
-    queryKey: QUERY_KEYS.userKeys.profile(userId).queryKey,
-    queryFn: () => getPublicProfile(userId),
-    enabled: enabled && !!userId,
+    queryKey: QUERY_KEYS.userKeys.profile(handle).queryKey,
+    queryFn: () => getPublicProfile(handle),
+    enabled: enabled && !!handle,
+  });
+};
+
+/**
+ * 내 프로필 조회
+ */
+export const useMyProfileQuery = () => {
+  return useQuery({
+    queryKey: QUERY_KEYS.userKeys.me.queryKey,
+    queryFn: getMyProfile,
   });
 };
 

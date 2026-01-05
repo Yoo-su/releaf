@@ -2,6 +2,7 @@ import { BookInfo } from "@/features/book/types";
 
 export interface ReviewUser {
   id: number;
+  handle: string;
   nickname: string;
   profileImageUrl: string | null;
 }

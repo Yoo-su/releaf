@@ -1,6 +1,7 @@
 import { UsedBookSale } from '@/features/book/entities/used-book-sale.entity';
 import { ChatParticipant } from '@/features/chat/entities/chat-participant.entity';
 import { ReadReceipt } from '@/features/chat/entities/read-receipt.entity';
+import { ReadingLog } from '@/features/reading-log/entities/reading-log.entity';
 import { Review } from '@/features/review/entities/review.entity';
 import {
   Entity,
@@ -30,6 +31,9 @@ export class User {
   @Column()
   nickname: string;
 
+  @Column({ unique: true, nullable: true })
+  handle: string;
+
   @Column({ name: 'profileImageUrl', nullable: true })
   profileImageUrl: string;
 
@@ -42,6 +46,9 @@ export class User {
   @Column({ nullable: true })
   deletedAt: Date;
 
+  @Column({ default: true })
+  isReadingLogPublic: boolean;
+
   @OneToMany(() => UsedBookSale, (sale) => sale.user)
   usedBookSales: UsedBookSale[];
 
@@ -53,4 +60,7 @@ export class User {
 
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
+
+  @OneToMany(() => ReadingLog, (readingLog) => readingLog.user)
+  readingLogs: ReadingLog[];
 }

@@ -20,6 +20,7 @@ import { cn } from "@/shared/utils/cn";
 
 interface UserInfo {
   id: number;
+  handle: string;
   nickname: string;
   profileImageUrl?: string | null;
 }
@@ -123,7 +124,7 @@ export function UserAvatarMenu({
       <DropdownMenuContent align={menuAlign} side={menuSide} className="w-40">
         <DropdownMenuItem asChild>
           <Link
-            href={PATHS.USER_PROFILE(user.id)}
+            href={PATHS.USER_PROFILE(user.handle)}
             className="flex items-center gap-2"
           >
             <UserIcon className="w-4 h-4" />

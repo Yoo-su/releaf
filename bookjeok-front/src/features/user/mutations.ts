@@ -8,7 +8,12 @@ import { QUERY_KEYS } from "@/shared/constants/query-keys";
 import { privateAxios } from "@/shared/libs/axios";
 
 import { BookInfo } from "../book/types";
-import { addToWishlist, removeFromWishlist } from "./apis";
+import {
+  addToWishlist,
+  removeFromWishlist,
+  updateProfile,
+  UpdateUserProfileParams,
+} from "./apis";
 
 /**
  * 회원 탈퇴를 처리하는 뮤테이션 훅입니다.
@@ -97,6 +102,29 @@ export const useRemoveFromWishlistMutation = () => {
           variables.id
         ).queryKey,
       });
+    },
+  });
+};
+
+/**
+ * 사용자 프로필 업데이트 뮤테이션
+ */
+export const useUpdateUserMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: UpdateUserProfileParams) => updateProfile(params),
+    onSuccess: () => {
+      // 내 프로필 쿼리 무효화 (또는 업데이트된 데이터로 setQueryData)
+      toast.success("프로필이 업데이트되었습니다.");
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.userKeys.me.queryKey,
+      });
+      // 공개 프로필도 무효화? 보통 내 프로필만 보면 됨.
+    },
+    onError: (error: any) => {
+      toast.error("프로필 수정 중 오류가 발생했습니다.");
+      console.error(error);
     },
   });
 };

@@ -29,21 +29,19 @@ export class AuthService {
     const { provider, providerId, nickname, profileImg } = socialLoginDto;
     const user = await this.userService.findByProviderId(provider, providerId);
     if (user) {
-      let isChanged = false;
+      const updates: Partial<User> = {};
 
       // 프로필 이미지 및 닉네임이 변경되었다면 업데이트
       if (profileImg && user.profileImageUrl !== profileImg) {
-        user.profileImageUrl = profileImg;
-        isChanged = true;
+        updates.profileImageUrl = profileImg;
       }
 
       if (nickname && user.nickname !== nickname) {
-        user.nickname = nickname;
-        isChanged = true;
+        updates.nickname = nickname;
       }
 
-      if (isChanged) {
-        await this.userService.updateUser(user);
+      if (Object.keys(updates).length > 0) {
+        return await this.userService.updateUser(user.id, updates);
       }
       return user;
     }

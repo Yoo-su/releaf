@@ -1,6 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, MoreThanOrEqual, IsNull, DataSource } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { SocialLoginDto } from '@/features/auth/dtos/social-login.dto';
 import {
@@ -8,16 +13,15 @@ import {
   SaleStatus,
 } from '@/features/book/entities/used-book-sale.entity';
 import { ChatParticipant } from '@/features/chat/entities/chat-participant.entity';
-import { DataSource } from 'typeorm';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { Wishlist } from '../entities/wishlist.entity';
 import { Book } from '@/features/book/entities/book.entity';
 import { BookInfoDto } from '@/features/book/dtos/book-info.dto';
 import { Review } from '@/features/review/entities/review.entity';
 import { ReviewReaction } from '@/features/review/entities/review-reaction.entity';
+import { ReadingLog } from '@/features/reading-log/entities/reading-log.entity';
 
 @Injectable()
-export class UserService {
+export class UserService implements OnModuleInit {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -33,6 +37,32 @@ export class UserService {
     private readonly reviewRepository: Repository<Review>,
     private readonly dataSource: DataSource,
   ) {}
+
+  async onModuleInit() {
+    await this.migrateHandles();
+  }
+
+  /**
+   * 핸들이 없는 기존 유저들에게 핸들을 부여하는 마이그레이션 로직
+   */
+  private async migrateHandles() {
+    const usersWithoutHandle = await this.userRepository.find({
+      where: { handle: IsNull() },
+    });
+
+    if (usersWithoutHandle.length > 0) {
+      console.log(
+        `[Migration] Found ${usersWithoutHandle.length} users without handle. Generating handles...`,
+      );
+
+      for (const user of usersWithoutHandle) {
+        user.handle = `user_${Math.random().toString(36).substring(2, 10)}`;
+        await this.userRepository.save(user);
+      }
+
+      console.log('[Migration] Handle migration completed.');
+    }
+  }
 
   /**
    * 소셜 제공자 ID로 유저를 조회합니다.
@@ -55,17 +85,36 @@ export class UserService {
    * @returns 생성된 유저
    */
   async createUser(socialLoginDto: SocialLoginDto): Promise<User> {
-    const newUser = this.userRepository.create(socialLoginDto);
+    const handle = `user_${Math.random().toString(36).substring(2, 10)}`;
+    const newUser = this.userRepository.create({ ...socialLoginDto, handle });
     return await this.userRepository.save(newUser);
   }
 
   /**
+   * 핸들로 유저를 조회합니다.
+   * @param handle 유저 핸들
+   * @returns 유저 엔티티 또는 null
+   */
+  async findByHandle(handle: string): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { handle } });
+  }
+
+  /**
    * 유저 정보를 업데이트합니다.
-   * @param user 업데이트할 유저 엔티티
+   * @param userId 유저 ID
+   * @param updateUserDto 업데이트할 유저 정보
    * @returns 업데이트된 유저
    */
-  async updateUser(user: User): Promise<User> {
-    return await this.userRepository.save(user);
+  async updateUser(
+    userId: number,
+    updateUserDto: Partial<User>,
+  ): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const updatedUser = this.userRepository.merge(user, updateUserDto);
+    return await this.userRepository.save(updatedUser);
   }
 
   /**
@@ -83,16 +132,46 @@ export class UserService {
    * @param userId 사용자 ID
    * @returns 공개 프로필 정보
    */
-  async getPublicProfile(userId: number) {
-    // 1. 사용자 기본 정보 조회
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      select: ['id', 'nickname', 'profileImageUrl', 'createdAt', 'deletedAt'],
+  /**
+   * 핸들로 공개 사용자 프로필을 조회합니다.
+   * @param handle 사용자 핸들
+   */
+  async getPublicProfileByHandle(handle: string) {
+    // 1. 사용자 기본 정보 조회 (핸들 우선, 없으면 ID로 시도 - 마이그레이션 과도기용)
+    let user = await this.userRepository.findOne({
+      where: { handle },
+      select: [
+        'id',
+        'nickname',
+        'handle',
+        'profileImageUrl',
+        'createdAt',
+        'deletedAt',
+        'isReadingLogPublic',
+      ],
     });
+
+    // Fallback: 숫자로만 된 문자열이면 ID로 조회 시도
+    if (!user && !isNaN(Number(handle))) {
+      user = await this.userRepository.findOne({
+        where: { id: Number(handle) },
+        select: [
+          'id',
+          'nickname',
+          'handle',
+          'profileImageUrl',
+          'createdAt',
+          'deletedAt',
+          'isReadingLogPublic',
+        ],
+      });
+    }
 
     if (!user || user.deletedAt) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
+
+    const userId = user.id;
 
     // 2. 통계 조회
     const [salesCount, reviewsCount] = await Promise.all([
@@ -120,8 +199,13 @@ export class UserService {
       take: 3,
     });
 
+    const readingLogs = user.isReadingLogPublic
+      ? await this.getPublicReadingLogs(userId)
+      : [];
+
     return {
       id: user.id,
+      handle: user.handle, // Return handle
       nickname: user.nickname,
       profileImageUrl: user.profileImageUrl,
       createdAt: user.createdAt,
@@ -144,7 +228,30 @@ export class UserService {
         status: sale.status,
         createdAt: sale.createdAt,
       })),
+      readingLogs,
     };
+  }
+
+  /**
+   * (Deprecated) Legacy ID support
+   */
+  async getPublicProfile(userId: number) {
+    return this.getPublicProfileByHandle(userId.toString());
+  }
+
+  private async getPublicReadingLogs(userId: number) {
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    const dateString = threeMonthsAgo.toISOString().split('T')[0];
+
+    const logs = await this.dataSource.getRepository(ReadingLog).find({
+      where: {
+        user: { id: userId },
+        date: MoreThanOrEqual(dateString),
+      },
+      order: { date: 'DESC' },
+    });
+    return logs;
   }
 
   /**

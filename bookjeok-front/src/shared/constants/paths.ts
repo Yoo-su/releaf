@@ -17,6 +17,7 @@ export const PATHS = {
   MY_COMMENTS: "/my-page/comments",
   MY_PAGE_WISHLIST: "/my-page/wishlist",
   BOOK_MARKET: "/book/market",
-  USER_PROFILE: (id: number) => `/users/${id}`,
+  USER_PROFILE: (handle: string) => `/users/${handle}`,
   INSIGHTS: "/insights",
+  READING_LOG: "/my-page/reading-log",
 } as const;
