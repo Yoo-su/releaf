@@ -67,14 +67,14 @@ export const MainArtSlider = ({
       </div>
 
       {/* 장르 필터 칩 */}
-      <div className="flex flex-wrap justify-center gap-2 py-2 px-4 sm:px-8">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 py-2 px-4 sm:px-8 max-w-md sm:max-w-none mx-auto">
         {chips.map((chip) => (
           <Button
             key={chip.genreCode}
             variant={activeGenre === chip.genreCode ? "default" : "outline"}
             size="sm"
             className={cn(
-              "rounded-full cursor-pointer px-5 py-2 transition-all duration-300 font-medium",
+              "rounded-full cursor-pointer px-5 py-2 transition-all duration-300 font-medium w-full sm:w-auto",
               activeGenre === chip.genreCode
                 ? "bg-rose-500 text-white shadow-lg shadow-rose-200 scale-105 border-rose-500 hover:bg-rose-600"
                 : "text-stone-600 bg-white border-stone-200 hover:bg-stone-50 hover:border-stone-300"
