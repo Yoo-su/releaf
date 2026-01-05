@@ -201,7 +201,7 @@ const UserProfileSkeleton = () => (
   <div className="container mx-auto px-4 py-8 max-w-4xl">
     <Card className="mb-8">
       <CardContent className="flex items-center gap-6 p-6">
-        <Skeleton className="w-24 h-24 rounded-full" />
+        <Skeleton className="w-24 h-24 rounded-full shrink-0" />
         <div className="flex-1 space-y-2">
           <Skeleton className="h-7 w-32" />
           <Skeleton className="h-4 w-48" />
