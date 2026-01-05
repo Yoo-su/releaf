@@ -46,6 +46,74 @@ export class ReadingLogService {
   }
 
   /**
+   * 독서 기록 통계를 조회합니다.
+   * @param userId 사용자 ID
+   * @param year 연도
+   * @param month 월
+   */
+  async getStats(userId: number, year: number, month: number) {
+    const qb = this.readingLogRepository.createQueryBuilder('log');
+
+    // 이번 달 읽은 권수
+    const monthlyCount = await qb
+      .clone()
+      .where('log.userId = :userId', { userId })
+      .andWhere("TO_CHAR(log.date, 'YYYY-MM') = :monthStr", {
+        monthStr: `${year}-${String(month).padStart(2, '0')}`,
+      })
+      .getCount();
+
+    // 올해 읽은 권수
+    const yearlyCount = await qb
+      .clone()
+      .where('log.userId = :userId', { userId })
+      .andWhere("TO_CHAR(log.date, 'YYYY') = :yearStr", {
+        yearStr: String(year),
+      })
+      .getCount();
+
+    return { monthlyCount, yearlyCount };
+  }
+
+  /**
+   * 독서 기록을 페이지네이션으로 조회합니다. (Infinite Scroll용)
+   * @param userId 사용자 ID
+   * @param cursorId 마지막으로 로드된 기록의 ID (없으면 처음부터)
+   * @param limit 가져올 개수
+   */
+  async findAllInfinite(userId: number, cursorId?: string, limit = 10) {
+    const query = this.readingLogRepository
+      .createQueryBuilder('log')
+      .where('log.userId = :userId', { userId })
+      .orderBy('log.date', 'DESC') // 최근 날짜 순
+      .addOrderBy('log.createdAt', 'DESC') // 같은 날짜면 최신 작성 순
+      .take(limit + 1); // 다음 페이지 존재 여부 확인을 위해 +1
+
+    if (cursorId) {
+      const cursorLog = await this.readingLogRepository.findOne({
+        where: { id: cursorId },
+      });
+      if (cursorLog) {
+        query.andWhere(
+          '(log.date < :date OR (log.date = :date AND log.createdAt < :createdAt))',
+          { date: cursorLog.date, createdAt: cursorLog.createdAt },
+        );
+      }
+    }
+
+    const items = await query.getMany();
+    const hasNextPage = items.length > limit;
+    if (hasNextPage) {
+      items.pop(); // 확인용 +1 제거
+    }
+
+    return {
+      items,
+      nextCursor: hasNextPage ? items[items.length - 1].id : null,
+    };
+  }
+
+  /**
    * 독서 기록을 수정합니다.
    * @param userId 사용자 ID (본인 확인용)
    * @param id 독서 기록 ID
