@@ -56,6 +56,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       images,
     },
+    alternates: {
+      canonical: `https://bookjeok.com/book/sales/${id}`,
+    },
   };
 }
 

@@ -1,16 +1,36 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ReadingLog } from '../entities/reading-log.entity';
 import { CreateReadingLogDto } from '../dto/create-reading-log.dto';
 import { UpdateReadingLogDto } from '../dto/update-reading-log.dto';
+import { User } from '@/features/user/entities/user.entity';
+import { BusinessException } from '@/shared/exceptions/business.exception';
 
 @Injectable()
 export class ReadingLogService {
   constructor(
     @InjectRepository(ReadingLog)
     private readonly readingLogRepository: Repository<ReadingLog>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
+
+  /**
+   * 독서 기록 설정을 조회합니다.
+   * @param userId 사용자 ID
+   * @returns 독서 기록 공개 여부
+   */
+  async getSettings(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: ['isReadingLogPublic'],
+    });
+    if (!user) {
+      throw new BusinessException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    return { isReadingLogPublic: user.isReadingLogPublic };
+  }
 
   /**
    * 새로운 독서 기록을 생성합니다.
@@ -129,7 +149,10 @@ export class ReadingLogService {
       where: { id, userId },
     });
     if (!log) {
-      throw new NotFoundException('Reading log not found');
+      throw new BusinessException(
+        'READING_LOG_NOT_FOUND',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     // 변경 사항 적용
@@ -150,7 +173,10 @@ export class ReadingLogService {
       where: { id, userId },
     });
     if (!log) {
-      throw new NotFoundException('Reading log not found');
+      throw new BusinessException(
+        'READING_LOG_NOT_FOUND',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.readingLogRepository.remove(log);
   }

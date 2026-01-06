@@ -1,10 +1,4 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-  forwardRef,
-} from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { ChatRoom } from '../entities/chat-room.entity';
@@ -14,6 +8,7 @@ import { User } from '@/features/user/entities/user.entity';
 import { UsedBookSale } from '@/features/book/entities/used-book-sale.entity';
 import { ReadReceipt } from '../entities/read-receipt.entity';
 import { ChatGateway } from '../gateways/chat.gateway';
+import { BusinessException } from '@/shared/exceptions/business.exception';
 
 @Injectable()
 export class ChatService {
@@ -45,11 +40,11 @@ export class ChatService {
       relations: ['user'],
     });
     if (!sale) {
-      throw new NotFoundException('Sale not found.');
+      throw new BusinessException('SALE_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
     const sellerId = sale.user.id;
     if (buyerId === sellerId) {
-      throw new ForbiddenException('You cannot start a chat with yourself.');
+      throw new BusinessException('CHAT_SELF_CHAT', HttpStatus.FORBIDDEN);
     }
 
     const existingRoom = await this.chatRoomRepository
@@ -123,7 +118,10 @@ export class ChatService {
       });
 
       if (!reloadedRoom) {
-        throw new NotFoundException('Failed to retrieve the chat room.');
+        throw new BusinessException(
+          'CHAT_FAILED_RETRIEVE',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
 
       return reloadedRoom;
@@ -170,7 +168,10 @@ export class ChatService {
       });
 
       if (!createdRoom)
-        throw new NotFoundException('Failed to retrieve created room');
+        throw new BusinessException(
+          'CHAT_FAILED_RETRIEVE',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
 
       this.chatGateway.notifyNewRoom(sellerId, createdRoom);
 
@@ -288,7 +289,7 @@ export class ChatService {
     });
 
     if (!participant) {
-      throw new ForbiddenException('이 채팅방에 접근할 권한이 없습니다.');
+      throw new BusinessException('CHAT_FORBIDDEN', HttpStatus.FORBIDDEN);
     }
 
     const [messages, total] = await this.chatMessageRepository.findAndCount({
@@ -330,13 +331,12 @@ export class ChatService {
     });
 
     if (!participant) {
-      throw new ForbiddenException(
-        '이 채팅방에 메시지를 보낼 권한이 없습니다.',
-      );
+      throw new BusinessException('CHAT_FORBIDDEN', HttpStatus.FORBIDDEN);
     }
 
     const chatRoom = await this.chatRoomRepository.findOneBy({ id: roomId });
-    if (!chatRoom) throw new NotFoundException('Chat room not found');
+    if (!chatRoom)
+      throw new BusinessException('CHAT_ROOM_NOT_FOUND', HttpStatus.NOT_FOUND);
 
     // 메시지가 추가되면 해당 채팅방의 updatedAt을 갱신하여 목록 정렬에 사용
     chatRoom.updatedAt = new Date();
@@ -403,7 +403,7 @@ export class ChatService {
       });
 
       if (!participant || !participant.isActive) {
-        throw new NotFoundException('Chat room not found or already left.');
+        throw new BusinessException('CHAT_ALREADY_LEFT', HttpStatus.NOT_FOUND);
       }
 
       // 2. 내 참여 상태를 false로 변경
