@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from "react";
 
-import { useUpdateUserMutation } from "@/features/user/mutations";
 import { Label } from "@/shared/components/shadcn/label";
 import { Switch } from "@/shared/components/shadcn/switch";
 
-import { useReadingLogSettingsQuery } from "../queries";
+import {
+  useReadingLogSettingsQuery,
+  useUpdateReadingLogSettingsMutation,
+} from "../queries";
 
 export function ReadingLogHeader() {
   const { data: settings } = useReadingLogSettingsQuery();
-  const { mutate: updateUser, isPending } = useUpdateUserMutation();
+  const { mutate: updateSettings, isPending } =
+    useUpdateReadingLogSettingsMutation();
   const [isPublic, setIsPublic] = useState(true);
 
   useEffect(() => {
@@ -21,7 +24,7 @@ export function ReadingLogHeader() {
 
   const handleToggle = (checked: boolean) => {
     setIsPublic(checked);
-    updateUser({ isReadingLogPublic: checked });
+    updateSettings(checked);
   };
 
   return (
@@ -33,21 +36,22 @@ export function ReadingLogHeader() {
         </p>
       </div>
 
-      <div className="flex items-center space-x-2 bg-secondary/50 p-3 rounded-lg">
+      <div className="flex items-center space-x-4 bg-secondary/30 p-3 rounded-lg border border-border/50">
         <Switch
           id="public-mode"
           checked={isPublic}
           disabled={isPending}
           onCheckedChange={handleToggle}
+          className="data-[state=checked]:bg-blue-600"
         />
-        <div className="flex flex-col">
-          <Label htmlFor="public-mode" className="font-medium">
-            프로필 공개
+        <div className="flex flex-col w-[240px]">
+          <Label htmlFor="public-mode" className="font-medium cursor-pointer">
+            독서 기록 공개
           </Label>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground mt-0.5">
             {isPublic
-              ? "내 프로필에 독서 기록 타임라인이 표시됩니다."
-              : "나만 볼 수 있습니다."}
+              ? "다른 사용자가 내 기록을 볼 수 있습니다."
+              : "나만 볼 수 있도록 비공개합니다."}
           </span>
         </div>
       </div>

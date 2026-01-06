@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
@@ -11,9 +11,4 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   profileImageUrl?: string;
-
-  @ApiProperty({ description: '독서 기록 공개 여부', required: false })
-  @IsBoolean()
-  @IsOptional()
-  isReadingLogPublic?: boolean;
 }

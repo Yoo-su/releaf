@@ -33,6 +33,23 @@ export class ReadingLogService {
   }
 
   /**
+   * 독서 기록 설정을 업데이트합니다.
+   * @param userId 사용자 ID
+   * @param isReadingLogPublic 독서 기록 공개 여부
+   * @returns 업데이트된 독서 기록 공개 여부
+   */
+  async updateSettings(userId: number, isReadingLogPublic: boolean) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new BusinessException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    user.isReadingLogPublic = isReadingLogPublic;
+    const updatedUser = await this.userRepository.save(user);
+
+    return { isReadingLogPublic: updatedUser.isReadingLogPublic };
+  }
+
+  /**
    * 새로운 독서 기록을 생성합니다.
    * @param userId 사용자 ID
    * @param createReadingLogDto 독서 기록 생성 DTO
