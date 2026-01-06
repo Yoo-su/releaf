@@ -121,16 +121,19 @@ export function DayDetailsDialog({
     );
   };
 
-  const handleRemoveLog = (id: string) => {
+  const handleRemoveLog = (log: ReadingLog) => {
     if (confirm("정말 삭제하시겠습니까?")) {
-      deleteMutation.mutate(id, {
-        onSuccess: () => {
-          toast.success("기록이 삭제되었습니다.");
-        },
-        onError: () => {
-          toast.error("삭제 중 오류가 발생했습니다.");
-        },
-      });
+      deleteMutation.mutate(
+        { id: log.id, date: log.date },
+        {
+          onSuccess: () => {
+            toast.success("기록이 삭제되었습니다.");
+          },
+          onError: () => {
+            toast.error("삭제 중 오류가 발생했습니다.");
+          },
+        }
+      );
     }
   };
 
@@ -226,7 +229,7 @@ export function DayDetailsDialog({
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                            onClick={() => handleRemoveLog(log.id)}
+                            onClick={() => handleRemoveLog(log)}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>

@@ -1,14 +1,5 @@
-import { ReadingLogCalendar } from "@/features/reading-log/components/reading-log-calendar";
-import { ReadingLogHeader } from "@/features/reading-log/components/reading-log-header";
-
-// ...
+import { ReadingLogView } from "@/views/reading-log-view";
 
 export default function ReadingLogPage() {
-  return (
-    <div className="container py-8 md:py-12 space-y-8">
-      <ReadingLogHeader />
-
-      <ReadingLogCalendar />
-    </div>
-  );
+  return <ReadingLogView />;
 }
