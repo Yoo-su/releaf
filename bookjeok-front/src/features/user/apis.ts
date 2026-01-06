@@ -42,7 +42,6 @@ export const getMyProfile = async () => {
 export interface UpdateUserProfileParams {
   nickname?: string;
   profileImageUrl?: string;
-  isReadingLogPublic?: boolean;
 }
 
 /**

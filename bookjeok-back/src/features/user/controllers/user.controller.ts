@@ -7,7 +7,6 @@ import {
   Body,
   Query,
   Param,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from '../services/user.service';
@@ -16,6 +15,7 @@ import { User } from '../entities/user.entity';
 import { BookInfoDto } from '@/features/book/dtos/book-info.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { Patch } from '@nestjs/common';
+import { MyProfileResponseDto } from '../dtos/my-profile-response.dto';
 
 import {
   ApiTags,
@@ -60,9 +60,13 @@ export class UserController {
     summary: '내 프로필 조회',
     description: '로그인한 사용자의 프로필 정보를 조회합니다.',
   })
-  @ApiResponse({ status: 200, description: '사용자 프로필 정보를 반환합니다.' })
+  @ApiResponse({
+    status: 200,
+    description: '사용자 프로필 정보를 반환합니다.',
+    type: MyProfileResponseDto,
+  })
   getUser(@CurrentUser() user: User) {
-    return user;
+    return new MyProfileResponseDto(user);
   }
 
   @Patch()
@@ -74,12 +78,17 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: '수정된 사용자 정보를 반환합니다.',
+    type: MyProfileResponseDto,
   })
   async updateProfile(
     @CurrentUser() user: User,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return await this.userService.updateUser(user.id, updateUserDto);
+    const updatedUser = await this.userService.updateUser(
+      user.id,
+      updateUserDto,
+    );
+    return new MyProfileResponseDto(updatedUser);
   }
 
   @Get('profile/:handle')

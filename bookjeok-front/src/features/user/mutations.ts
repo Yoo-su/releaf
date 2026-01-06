@@ -114,13 +114,18 @@ export const useUpdateUserMutation = () => {
 
   return useMutation({
     mutationFn: (params: UpdateUserProfileParams) => updateProfile(params),
-    onSuccess: () => {
+    onSuccess: (data) => {
       // 내 프로필 쿼리 무효화 (또는 업데이트된 데이터로 setQueryData)
       toast.success("프로필이 업데이트되었습니다.");
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.userKeys.me.queryKey,
-      });
-      // 공개 프로필도 무효화? 보통 내 프로필만 보면 됨.
+
+      // 내 프로필 캐시 업데이트
+      queryClient.setQueryData(
+        QUERY_KEYS.userKeys.me.queryKey,
+        (oldData: any) => {
+          if (!oldData) return data;
+          return { ...oldData, ...data };
+        }
+      );
     },
     onError: (error: any) => {
       toast.error("프로필 수정 중 오류가 발생했습니다.");

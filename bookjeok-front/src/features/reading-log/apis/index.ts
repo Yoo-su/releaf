@@ -82,6 +82,23 @@ export const getReadingLogSettings = async () => {
 };
 
 /**
+ * 독서 기록 설정을 수정합니다.
+ *
+ * @param isReadingLogPublic - 독서 기록 공개 여부
+ * @returns 수정된 독서 기록 설정
+ *
+ * @example
+ * const settings = await updateReadingLogSettings(true);
+ */
+export const updateReadingLogSettings = async (isReadingLogPublic: boolean) => {
+  const response = await privateAxios.patch<ReadingLogSettings>(
+    API_PATHS.readingLog.settings,
+    { isReadingLogPublic }
+  );
+  return response.data;
+};
+
+/**
  * 독서 기록을 무한 스크롤 방식으로 조회합니다.
  * 커서 기반 페이지네이션을 사용합니다.
  *

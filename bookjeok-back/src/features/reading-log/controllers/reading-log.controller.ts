@@ -21,7 +21,9 @@ import {
   ApiTags,
   ApiQuery,
   ApiParam,
+  ApiBody,
 } from '@nestjs/swagger';
+import { UpdateReadingLogSettingsDto } from '../dtos/update-reading-log-settings.dto';
 
 @ApiTags('독서 기록 (Reading Log)')
 @Controller('reading-logs')
@@ -88,6 +90,23 @@ export class ReadingLogController {
   })
   getSettings(@Request() req) {
     return this.readingLogService.getSettings(req.user.id);
+  }
+
+  @Patch('settings')
+  @ApiOperation({
+    summary: '독서 기록 설정 수정',
+    description: '독서 기록 공개 여부를 수정합니다.',
+  })
+  @ApiBody({ type: UpdateReadingLogSettingsDto })
+  @ApiResponse({
+    status: 200,
+    description: '수정된 독서 기록 설정 정보를 반환합니다.',
+  })
+  updateSettings(@Request() req, @Body() dto: UpdateReadingLogSettingsDto) {
+    return this.readingLogService.updateSettings(
+      req.user.id,
+      dto.isReadingLogPublic,
+    );
   }
 
   @Get('list')

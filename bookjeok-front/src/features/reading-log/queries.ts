@@ -22,6 +22,7 @@ import {
   getReadingLogsInfinite,
   getReadingLogStats,
   updateReadingLog,
+  updateReadingLogSettings,
 } from "./apis";
 import { CreateReadingLogParams, UpdateReadingLogParams } from "./types";
 
@@ -98,6 +99,78 @@ export const useReadingLogSettingsQuery = () => {
   return useQuery({
     queryKey: QUERY_KEYS.readingLog.settings.queryKey,
     queryFn: getReadingLogSettings,
+  });
+};
+
+/**
+ * 독서 기록 설정을 수정하는 뮤테이션 훅
+ *
+ * 독서 기록 공개 여부를 변경할 때 사용합니다.
+ * 성공 시 캐시를 즉시 업데이트하여 UI에 반영합니다.
+ */
+export const useUpdateReadingLogSettingsMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (isReadingLogPublic: boolean) =>
+      updateReadingLogSettings(isReadingLogPublic),
+    onMutate: async (newIsPublic) => {
+      // 1. 진행 중인 쿼리 취소
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.readingLog.settings.queryKey,
+      });
+
+      // 2. 이전 값 스냅샷 저장
+      const previousSettings = queryClient.getQueryData(
+        QUERY_KEYS.readingLog.settings.queryKey
+      );
+
+      // 3. 낙관적 업데이트 적용
+      queryClient.setQueryData(QUERY_KEYS.readingLog.settings.queryKey, {
+        isReadingLogPublic: newIsPublic,
+      });
+
+      // 내 프로필 캐시도 낙관적 업데이트 (선택적)
+      const previousProfile = queryClient.getQueryData(
+        QUERY_KEYS.userKeys.me.queryKey
+      );
+      if (previousProfile) {
+        queryClient.setQueryData(
+          QUERY_KEYS.userKeys.me.queryKey,
+          (old: any) => ({
+            ...old,
+            isReadingLogPublic: newIsPublic,
+          })
+        );
+      }
+
+      // 4. 컨텍스트 반환 (롤백용)
+      return { previousSettings, previousProfile };
+    },
+    onError: (err, newIsPublic, context) => {
+      // 실패 시 롤백
+      if (context?.previousSettings) {
+        queryClient.setQueryData(
+          QUERY_KEYS.readingLog.settings.queryKey,
+          context.previousSettings
+        );
+      }
+      if (context?.previousProfile) {
+        queryClient.setQueryData(
+          QUERY_KEYS.userKeys.me.queryKey,
+          context.previousProfile
+        );
+      }
+    },
+    onSuccess: (data) => {
+      // 성공 시 서버에서 받은 최신 데이터로 캐시 확정 (Refetch 방지)
+      queryClient.setQueryData(QUERY_KEYS.readingLog.settings.queryKey, data);
+
+      queryClient.setQueryData(QUERY_KEYS.userKeys.me.queryKey, (old: any) => ({
+        ...old,
+        isReadingLogPublic: data.isReadingLogPublic,
+      }));
+    },
   });
 };
 
