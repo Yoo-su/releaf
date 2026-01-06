@@ -9,4 +9,5 @@ export const readingLogKeys = createQueryKeys("readingLog", {
     queryKey: [year, month],
   }),
   infinite: null,
+  settings: null,
 });

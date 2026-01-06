@@ -94,6 +94,14 @@ export const ERROR_CODES = {
   },
 
   // ============================================
+  // 독서 기록 관련 에러 (READING_LOG)
+  // ============================================
+  READING_LOG_NOT_FOUND: {
+    code: 'READING_LOG_001',
+    message: '독서 기록을 찾을 수 없습니다.',
+  },
+
+  // ============================================
   // 채팅 관련 에러 (CHAT)
   // ============================================
   CHAT_ROOM_NOT_FOUND: {
@@ -103,6 +111,30 @@ export const ERROR_CODES = {
   CHAT_FORBIDDEN: {
     code: 'CHAT_002',
     message: '채팅방에 접근할 권한이 없습니다.',
+  },
+  CHAT_SELF_CHAT: {
+    code: 'CHAT_003',
+    message: '자기 자신과 채팅을 시작할 수 없습니다.',
+  },
+  CHAT_FAILED_RETRIEVE: {
+    code: 'CHAT_004',
+    message: '채팅방 정보를 불러오는데 실패했습니다.',
+  },
+  CHAT_ALREADY_LEFT: {
+    code: 'CHAT_005',
+    message: '이미 나간 채팅방입니다.',
+  },
+
+  // ============================================
+  // 위시리스트 관련 에러 (WISHLIST)
+  // ============================================
+  WISHLIST_NOT_FOUND: {
+    code: 'WISHLIST_001',
+    message: '위시리스트 항목을 찾을 수 없습니다.',
+  },
+  WISHLIST_INVALID_STATUS: {
+    code: 'WISHLIST_002',
+    message: '판매 중인 상품만 위시리스트에 추가할 수 있습니다.',
   },
 
   // ============================================

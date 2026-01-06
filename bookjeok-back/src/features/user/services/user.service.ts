@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThanOrEqual, DataSource } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -18,6 +14,7 @@ import { BookInfoDto } from '@/features/book/dtos/book-info.dto';
 import { Review } from '@/features/review/entities/review.entity';
 import { ReviewReaction } from '@/features/review/entities/review-reaction.entity';
 import { ReadingLog } from '@/features/reading-log/entities/reading-log.entity';
+import { BusinessException } from '@/shared/exceptions/business.exception';
 
 @Injectable()
 export class UserService {
@@ -84,7 +81,7 @@ export class UserService {
   ): Promise<User> {
     const user = await this.findById(userId);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new BusinessException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
     const updatedUser = this.userRepository.merge(user, updateUserDto);
     return await this.userRepository.save(updatedUser);
@@ -141,7 +138,7 @@ export class UserService {
     }
 
     if (!user || user.deletedAt) {
-      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+      throw new BusinessException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     const userId = user.id;
@@ -294,7 +291,7 @@ export class UserService {
       });
 
       if (!user) {
-        throw new NotFoundException('사용자를 찾을 수 없습니다.');
+        throw new BusinessException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
       }
 
       // 1. 사용자 정보 익명화
@@ -390,9 +387,7 @@ export class UserService {
           });
           await this.bookRepository.save(book);
         } else {
-          throw new NotFoundException(
-            'Book not found and no data provided to create it',
-          );
+          throw new BusinessException('BOOK_NOT_FOUND', HttpStatus.NOT_FOUND);
         }
       }
       wishlist.book = book;
@@ -400,9 +395,13 @@ export class UserService {
       const sale = await this.usedBookSaleRepository.findOne({
         where: { id: id as number },
       });
-      if (!sale) throw new NotFoundException('Sale not found');
+      if (!sale)
+        throw new BusinessException('SALE_NOT_FOUND', HttpStatus.NOT_FOUND);
       if (sale.status !== SaleStatus.FOR_SALE) {
-        throw new BadRequestException('Only items for sale can be wishlisted');
+        throw new BusinessException(
+          'WISHLIST_INVALID_STATUS',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       wishlist.usedBookSale = sale;
     }
@@ -432,7 +431,7 @@ export class UserService {
     });
 
     if (!wishlist) {
-      throw new NotFoundException('Wishlist item not found');
+      throw new BusinessException('WISHLIST_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
 
     return await this.wishlistRepository.remove(wishlist);

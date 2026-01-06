@@ -3,20 +3,21 @@
 import { useEffect, useState } from "react";
 
 import { useUpdateUserMutation } from "@/features/user/mutations";
-import { useMyProfileQuery } from "@/features/user/queries";
 import { Label } from "@/shared/components/shadcn/label";
 import { Switch } from "@/shared/components/shadcn/switch";
 
+import { useReadingLogSettingsQuery } from "../queries";
+
 export function ReadingLogHeader() {
-  const { data: user } = useMyProfileQuery();
+  const { data: settings } = useReadingLogSettingsQuery();
   const { mutate: updateUser, isPending } = useUpdateUserMutation();
   const [isPublic, setIsPublic] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      setIsPublic(user.isReadingLogPublic ?? true);
+    if (settings) {
+      setIsPublic(settings.isReadingLogPublic ?? true);
     }
-  }, [user]);
+  }, [settings]);
 
   const handleToggle = (checked: boolean) => {
     setIsPublic(checked);

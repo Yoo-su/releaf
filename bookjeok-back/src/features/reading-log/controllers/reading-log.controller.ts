@@ -77,6 +77,19 @@ export class ReadingLogController {
     return this.readingLogService.getStats(req.user.id, year, month);
   }
 
+  @Get('settings')
+  @ApiOperation({
+    summary: '독서 기록 설정 조회',
+    description: '독서 기록 공개 여부 등 설정을 조회합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '독서 기록 설정을 반환합니다.',
+  })
+  getSettings(@Request() req) {
+    return this.readingLogService.getSettings(req.user.id);
+  }
+
   @Get('list')
   @ApiOperation({
     summary: '독서 기록 리스트 조회 (Infinite Scroll)',

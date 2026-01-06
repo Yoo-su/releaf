@@ -50,6 +50,7 @@ export const API_PATHS = {
     base: "/reading-logs",
     stats: "/reading-logs/stats",
     list: "/reading-logs/list",
+    settings: "/reading-logs/settings",
     detail: (id: string) => `/reading-logs/${id}`,
   },
   review: {
