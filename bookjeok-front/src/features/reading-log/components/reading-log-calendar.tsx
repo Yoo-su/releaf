@@ -13,6 +13,7 @@ import {
 } from "date-fns";
 import { useState } from "react";
 
+import { useReadingLogPrefetch } from "../hooks/use-reading-log-prefetch";
 import { useReadingLogsQuery } from "../queries";
 import { DayDetailsDialog } from "./day-details-dialog";
 import { ReadingLogCalendarSkeleton } from "./reading-log-calendar-skeleton";
@@ -26,6 +27,9 @@ export function ReadingLogCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ReadingLogViewMode>("calendar");
+
+  // 인접한 월 데이터 prefetch
+  useReadingLogPrefetch(currentDate.getFullYear(), currentDate.getMonth() + 1);
 
   // API 호출 (달력 모드일 때만)
   const { data: logs = [], isFetching } = useReadingLogsQuery(

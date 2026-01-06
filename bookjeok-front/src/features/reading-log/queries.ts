@@ -5,6 +5,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
+import { QUERY_KEYS } from "@/shared/constants/query-keys";
+
 import {
   createReadingLog,
   deleteReadingLog,
@@ -15,13 +17,10 @@ import {
 } from "./apis";
 import { CreateReadingLogParams, UpdateReadingLogParams } from "./types";
 
-export const readingLogKeys = {
-  all: ["reading-logs"] as const,
-  list: (year: number, month: number) =>
-    [...readingLogKeys.all, "list", year, month] as const,
-  stats: (year: number, month: number) =>
-    [...readingLogKeys.all, "stats", year, month] as const,
-  infinite: () => [...readingLogKeys.all, "infinite"] as const,
+// 날짜 문자열에서 년/월 추출 헬퍼
+const extractYearMonth = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return { year: date.getFullYear(), month: date.getMonth() + 1 };
 };
 
 export const useReadingLogsQuery = (
@@ -30,7 +29,7 @@ export const useReadingLogsQuery = (
   options?: { enabled?: boolean }
 ) => {
   return useQuery({
-    queryKey: readingLogKeys.list(year, month),
+    queryKey: QUERY_KEYS.readingLog.list(year, month).queryKey,
     queryFn: () => getReadingLogs(year, month),
     enabled: options?.enabled,
   });
@@ -38,14 +37,14 @@ export const useReadingLogsQuery = (
 
 export const useReadingLogStatsQuery = (year: number, month: number) => {
   return useQuery({
-    queryKey: readingLogKeys.stats(year, month),
+    queryKey: QUERY_KEYS.readingLog.stats(year, month).queryKey,
     queryFn: () => getReadingLogStats(year, month),
   });
 };
 
 export const useReadingLogsInfiniteQuery = () => {
   return useInfiniteQuery({
-    queryKey: readingLogKeys.infinite(),
+    queryKey: QUERY_KEYS.readingLog.infinite.queryKey,
     queryFn: getReadingLogsInfinite,
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -57,8 +56,18 @@ export const useCreateReadingLogMutation = () => {
 
   return useMutation({
     mutationFn: (params: CreateReadingLogParams) => createReadingLog(params),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: readingLogKeys.all });
+    onSuccess: (data) => {
+      const { year, month } = extractYearMonth(data.date);
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.readingLog.list(year, month).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.readingLog.stats(year, month).queryKey,
+      });
+      // 리스트 뷰용 infinite 쿼리도 무효화
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.readingLog.infinite.queryKey,
+      });
     },
   });
 };
@@ -67,9 +76,18 @@ export const useDeleteReadingLogMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => deleteReadingLog(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: readingLogKeys.all });
+    mutationFn: ({ id }: { id: string; date: string }) => deleteReadingLog(id),
+    onSuccess: (_, variables) => {
+      const { year, month } = extractYearMonth(variables.date);
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.readingLog.list(year, month).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.readingLog.stats(year, month).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.readingLog.infinite.queryKey,
+      });
     },
   });
 };
@@ -79,8 +97,17 @@ export const useUpdateReadingLogMutation = () => {
 
   return useMutation({
     mutationFn: (params: UpdateReadingLogParams) => updateReadingLog(params),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: readingLogKeys.all });
+    onSuccess: (data) => {
+      const { year, month } = extractYearMonth(data.date);
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.readingLog.list(year, month).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.readingLog.stats(year, month).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.readingLog.infinite.queryKey,
+      });
     },
   });
 };

@@ -4,6 +4,7 @@ import { bookKeys } from "./book";
 import { chatKeys } from "./chat";
 import { commentKeys } from "./comment";
 import { insightsKeys } from "./insights";
+import { readingLogKeys } from "./reading-log";
 import { reviewKeys } from "./review";
 import { userKeys } from "./user";
 
@@ -16,4 +17,5 @@ export const QUERY_KEYS = {
   insightsKeys,
   userKeys,
   reviewKeys,
+  readingLog: readingLogKeys,
 } as const;

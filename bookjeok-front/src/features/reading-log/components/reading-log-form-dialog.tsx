@@ -153,7 +153,6 @@ export function ReadingLogFormDialog({
                 className="h-11 font-bold text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: READING_LOG_COLORS.matcha.medium }}
                 disabled={isPending}
-                onMouseDown={(e) => e.preventDefault()}
               >
                 {isPending ? (
                   <div className="flex items-center gap-2">
