@@ -7,7 +7,6 @@ import Image from "next/image";
 import { useMemo, useRef } from "react";
 
 import { Card } from "@/shared/components/shadcn/card";
-import { cn } from "@/shared/utils";
 
 import { ReadingLog } from "../types";
 
@@ -33,7 +32,7 @@ export function ReadingTimeline({ logs }: ReadingTimelineProps) {
       groups[key].push(log);
     });
 
-    // Sort keys descending (though logs are already sorted, just to be safe)
+    // 키 내림차순 정렬 (로그가 이미 정렬되어 있지만 안전을 위해)
     return Object.keys(groups)
       .sort((a, b) => b.localeCompare(a))
       .reduce(
@@ -53,7 +52,9 @@ export function ReadingTimeline({ logs }: ReadingTimelineProps) {
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between px-1">
         <h3 className="text-lg font-semibold">최근 읽은 책</h3>
-        <span className="text-xs text-muted-foreground">Recent Timeline</span>
+        <span className="text-xs text-muted-foreground">
+          독서 기록 타임라인
+        </span>
       </div>
 
       <div
@@ -78,7 +79,7 @@ export function ReadingTimeline({ logs }: ReadingTimelineProps) {
                     transition={{ delay: groupIndex * 0.2 + index * 0.1 }}
                     className="relative pt-6"
                   >
-                    {/* Timeline Line & Dot */}
+                    {/* 타임라인 선 및 점 */}
                     <div className="absolute top-0 left-1/2 -ml-px h-6 w-[2px] bg-primary/20">
                       <div className="absolute top-0 left-1/2 -ml-[3px] h-[6px] w-[6px] rounded-full bg-primary ring-4 ring-background" />
                     </div>
@@ -95,7 +96,7 @@ export function ReadingTimeline({ logs }: ReadingTimelineProps) {
                             />
                           ) : (
                             <div className="flex h-full items-center justify-center bg-secondary text-muted-foreground text-xs">
-                              No Image
+                              이미지 없음
                             </div>
                           )}
                         </div>

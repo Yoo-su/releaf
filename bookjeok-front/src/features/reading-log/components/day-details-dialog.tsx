@@ -49,11 +49,11 @@ export function DayDetailsDialog({
 }: DayDetailsDialogProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  // State for Create
+  // 생성 모드 상태
   const [selectedBookForCreate, setSelectedBookForCreate] =
     useState<Book | null>(null);
 
-  // State for Edit
+  // 수정 모드 상태
   const [editingLog, setEditingLog] = useState<ReadingLog | null>(null);
 
   const createMutation = useCreateReadingLogMutation();
@@ -261,7 +261,7 @@ export function DayDetailsDialog({
         </DialogContent>
       </Dialog>
 
-      {/* Create Dialog */}
+      {/* 새 기록 생성 다이얼로그 */}
       <ReadingLogFormDialog
         mode="create"
         book={selectedBookForCreate}
@@ -271,7 +271,7 @@ export function DayDetailsDialog({
         onSubmit={handleCreateLog}
       />
 
-      {/* Edit Dialog */}
+      {/* 기록 수정 다이얼로그 */}
       <ReadingLogFormDialog
         mode="edit"
         book={
