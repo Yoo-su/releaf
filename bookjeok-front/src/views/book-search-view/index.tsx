@@ -29,7 +29,6 @@ export default function BookSearchView() {
       </section>
 
       {/* 메인 검색 영역 감시 */}
-      {/* 메인 검색 영역 감시 */}
       <div ref={ref}>
         <BookSearchInput />
       </div>
