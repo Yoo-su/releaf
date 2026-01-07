@@ -1,6 +1,6 @@
 "use client";
 
-import { format, setMonth, setYear } from "date-fns";
+import { setMonth, setYear } from "date-fns";
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -39,7 +39,7 @@ export function ReadingLogControls({
   onNextMonth,
   isLoading,
 }: ReadingLogControlsProps) {
-  // Generate year options (Current year + 1 down to 2020)
+  // 연도 선택 옵션 생성 (현재 연도 + 1 년 동안 2020년까지)
   const currentYear = new Date().getFullYear();
   const years = Array.from(
     { length: currentYear - 2020 + 2 },
@@ -57,7 +57,7 @@ export function ReadingLogControls({
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
-      {/* Left: Navigation (Visible only in Calendar mode) */}
+      {/* 왼쪽: 네비게이션 (달력 모드에서만 표시) */}
       <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
         {viewMode === "calendar" ? (
           <>
@@ -124,7 +124,7 @@ export function ReadingLogControls({
         )}
       </div>
 
-      {/* Right: View Toggle */}
+      {/* 오른쪽: 뷰 모드 토글 */}
       <div className="flex items-center bg-gray-100 p-1 rounded-lg">
         <button
           onClick={() => onViewModeChange("calendar")}

@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Fragment, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import { Card } from "@/shared/components/shadcn/card";
 import { Skeleton } from "@/shared/components/shadcn/skeleton";
 
 import { READING_LOG_COLORS } from "../constants";
@@ -107,7 +106,7 @@ export function ReadingLogListView() {
         );
       })}
 
-      {/* Infinite Scroll Trigger */}
+      {/* 무한 스크롤 트리거 */}
       <div ref={ref} className="h-4 w-full">
         {isFetchingNextPage && (
           <div className="py-4 space-y-4">

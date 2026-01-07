@@ -10,7 +10,7 @@ export function ReadingLogCalendarSkeleton() {
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-4">
-      {/* Header Skeleton */}
+      {/* 헤더 스켈레톤 */}
       <div className="flex items-center justify-between px-2">
         <Skeleton className="h-8 w-32" />
         <div className="flex gap-2">
@@ -24,7 +24,7 @@ export function ReadingLogCalendarSkeleton() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {/* Days Header */}
+        {/* 요일 헤더 */}
         <div className="grid grid-cols-7 border-b border-gray-100 bg-gray-50/50">
           {weekDayNames.map((day, i) => (
             <div
@@ -42,7 +42,7 @@ export function ReadingLogCalendarSkeleton() {
           ))}
         </div>
 
-        {/* Grid Skeleton */}
+        {/* 그리드 스켈레톤 */}
         <div className="grid grid-cols-7 auto-rows-[minmax(120px,1fr)] divide-x divide-y divide-gray-100">
           {Array.from({ length: 35 }).map((_, i) => (
             <div key={i} className="p-2 flex flex-col gap-2 h-full">
