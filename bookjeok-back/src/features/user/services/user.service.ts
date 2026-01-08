@@ -100,14 +100,10 @@ export class UserService {
   }
 
   /**
-   * 공개 사용자 프로필을 조회합니다.
-   * 민감 정보를 제외한 공개 가능한 정보만 반환합니다.
-   * @param userId 사용자 ID
-   * @returns 공개 프로필 정보
-   */
-  /**
    * 핸들로 공개 사용자 프로필을 조회합니다.
+   * 민감 정보를 제외한 공개 가능한 정보만 반환합니다.
    * @param handle 사용자 핸들
+   * @returns 공개 프로필 정보
    */
   async getPublicProfileByHandle(handle: string) {
     // 1. 사용자 기본 정보 조회 (핸들 우선, 없으면 ID로 시도 - 마이그레이션 과도기용)
@@ -178,7 +174,7 @@ export class UserService {
 
     return {
       id: user.id,
-      handle: user.handle, // Return handle
+      handle: user.handle,
       nickname: user.nickname,
       profileImageUrl: user.profileImageUrl,
       createdAt: user.createdAt,
@@ -206,16 +202,17 @@ export class UserService {
   }
 
   /**
-   * (Deprecated) Legacy ID support
+   * ID로 공개 프로필을 조회합니다.
+   * @deprecated 핸들 기반 조회로 마이그레이션 중, getPublicProfileByHandle 사용 권장
    */
   async getPublicProfile(userId: number) {
     return this.getPublicProfileByHandle(userId.toString());
   }
 
   private async getPublicReadingLogs(userId: number) {
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-    const dateString = threeMonthsAgo.toISOString().split('T')[0];
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const dateString = sixMonthsAgo.toISOString().split('T')[0];
 
     const logs = await this.dataSource.getRepository(ReadingLog).find({
       where: {
@@ -300,7 +297,7 @@ export class UserService {
       // 1. 사용자 정보 익명화
       const timestamp = new Date().getTime();
       user.nickname = '(알수없음)';
-      user.profileImageUrl = null as any;
+      user.profileImageUrl = null;
       user.providerId = `deleted_${user.id}_${timestamp}`;
       user.email = `deleted_${user.id}_${timestamp}`;
       user.deletedAt = new Date();
@@ -367,61 +364,76 @@ export class UserService {
     id: string | number,
     bookData?: BookInfoDto,
   ) {
-    // 이미 찜했는지 확인
-    const existing = await this.wishlistRepository.findOne({
-      where: {
-        user: { id: userId },
-        ...(type === 'BOOK'
-          ? { book: { isbn: id as string } }
-          : { usedBookSale: { id: id as number } }),
-      },
-    });
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    if (existing) {
-      return existing; // 이미 찜한 경우 그대로 반환 (또는 에러 처리)
-    }
-
-    const wishlist = new Wishlist();
-    wishlist.user = { id: userId } as User;
-
-    if (type === 'BOOK') {
-      let book = await this.bookRepository.findOne({
-        where: { isbn: id as string },
+    try {
+      // 이미 찜했는지 확인
+      const existing = await queryRunner.manager.findOne(Wishlist, {
+        where: {
+          user: { id: userId },
+          ...(type === 'BOOK'
+            ? { book: { isbn: id as string } }
+            : { usedBookSale: { id: id as number } }),
+        },
       });
 
-      if (!book) {
-        if (bookData) {
-          // DB에 책이 없고, 책 정보가 제공된 경우 새로 생성
-          book = this.bookRepository.create({
-            isbn: bookData.isbn,
-            title: bookData.title,
-            author: bookData.author,
-            publisher: bookData.publisher,
-            description: bookData.description,
-            image: bookData.image,
-          });
-          await this.bookRepository.save(book);
-        } else {
-          throw new BusinessException('BOOK_NOT_FOUND', HttpStatus.NOT_FOUND);
+      if (existing) {
+        await queryRunner.commitTransaction();
+        return existing;
+      }
+
+      const wishlist = new Wishlist();
+      wishlist.user = { id: userId } as User;
+
+      if (type === 'BOOK') {
+        let book = await queryRunner.manager.findOne(Book, {
+          where: { isbn: id as string },
+        });
+
+        if (!book) {
+          if (bookData) {
+            // DB에 책이 없고, 책 정보가 제공된 경우 새로 생성
+            book = queryRunner.manager.create(Book, {
+              isbn: bookData.isbn,
+              title: bookData.title,
+              author: bookData.author,
+              publisher: bookData.publisher,
+              description: bookData.description,
+              image: bookData.image,
+            });
+            await queryRunner.manager.save(book);
+          } else {
+            throw new BusinessException('BOOK_NOT_FOUND', HttpStatus.NOT_FOUND);
+          }
         }
+        wishlist.book = book;
+      } else {
+        const sale = await queryRunner.manager.findOne(UsedBookSale, {
+          where: { id: id as number },
+        });
+        if (!sale) {
+          throw new BusinessException('SALE_NOT_FOUND', HttpStatus.NOT_FOUND);
+        }
+        if (sale.status !== SaleStatus.FOR_SALE) {
+          throw new BusinessException(
+            'WISHLIST_INVALID_STATUS',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        wishlist.usedBookSale = sale;
       }
-      wishlist.book = book;
-    } else {
-      const sale = await this.usedBookSaleRepository.findOne({
-        where: { id: id as number },
-      });
-      if (!sale)
-        throw new BusinessException('SALE_NOT_FOUND', HttpStatus.NOT_FOUND);
-      if (sale.status !== SaleStatus.FOR_SALE) {
-        throw new BusinessException(
-          'WISHLIST_INVALID_STATUS',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      wishlist.usedBookSale = sale;
-    }
 
-    return await this.wishlistRepository.save(wishlist);
+      const savedWishlist = await queryRunner.manager.save(wishlist);
+      await queryRunner.commitTransaction();
+      return savedWishlist;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   /**
