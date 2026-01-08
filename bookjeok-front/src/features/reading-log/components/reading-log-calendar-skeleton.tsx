@@ -29,7 +29,7 @@ export function ReadingLogCalendarSkeleton() {
           {weekDayNames.map((day, i) => (
             <div
               key={day}
-              className={`py-3 text-center text-sm font-semibold ${
+              className={`py-2 sm:py-3 text-center text-xs sm:text-sm font-semibold ${
                 i === 0
                   ? "text-rose-500/50"
                   : i === 6
@@ -42,14 +42,21 @@ export function ReadingLogCalendarSkeleton() {
           ))}
         </div>
 
-        {/* 그리드 스켈레톤 */}
-        <div className="grid grid-cols-7 auto-rows-[minmax(120px,1fr)] divide-x divide-y divide-gray-100">
+        {/* 그리드 스켈레톤 - 모바일과 데스크탑 반응형 */}
+        <div className="grid grid-cols-7 auto-rows-[80px] sm:auto-rows-[160px] divide-x divide-y divide-gray-100">
           {Array.from({ length: 35 }).map((_, i) => (
-            <div key={i} className="p-2 flex flex-col gap-2 h-full">
+            <div
+              key={i}
+              className="p-1 sm:p-2 flex flex-col gap-1 sm:gap-2 h-full"
+            >
               <div className="flex justify-between items-start">
-                <Skeleton className="h-6 w-6 rounded-full" />
+                <Skeleton className="h-5 w-5 sm:h-6 sm:w-6 rounded-full" />
               </div>
-              <div className="flex-1 flex flex-col gap-1">
+              {/* 모바일: 중앙 뱃지만, 데스크탑: 책 목록 */}
+              <div className="flex-1 flex items-center justify-center sm:hidden">
+                <Skeleton className="h-4 w-8 rounded-full" />
+              </div>
+              <div className="hidden sm:flex flex-1 flex-col gap-1">
                 <Skeleton className="h-10 w-full rounded-md" />
                 <Skeleton className="h-10 w-full rounded-md" />
               </div>

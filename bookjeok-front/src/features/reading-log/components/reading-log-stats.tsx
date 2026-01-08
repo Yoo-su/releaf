@@ -24,9 +24,9 @@ export function ReadingLogStats({ currentDate }: ReadingLogStatsProps) {
 
   if (isLoading) {
     return (
-      <div className="flex gap-4 mb-6">
-        <Skeleton className="h-20 flex-1 rounded-xl" />
-        <Skeleton className="h-20 flex-1 rounded-xl" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        <Skeleton className="h-20 rounded-xl" />
+        <Skeleton className="h-20 rounded-xl" />
       </div>
     );
   }

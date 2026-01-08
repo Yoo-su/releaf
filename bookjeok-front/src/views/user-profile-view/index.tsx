@@ -39,27 +39,27 @@ export const UserProfileView = ({ handle }: UserProfileViewProps) => {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* 프로필 헤더 */}
       <Card className="mb-8">
-        <CardContent className="flex items-center gap-6 p-6">
-          <div className="relative w-24 h-24 rounded-full bg-stone-100 flex items-center justify-center overflow-hidden shrink-0">
+        <CardContent className="flex items-center gap-4 sm:gap-6 p-4 sm:p-6">
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-stone-100 flex items-center justify-center overflow-hidden shrink-0">
             {profile.profileImageUrl ? (
               <Image
                 src={profile.profileImageUrl}
                 alt={profile.nickname}
                 fill
-                sizes="96px"
+                sizes="(max-width: 640px) 80px, 96px"
                 className="object-cover"
               />
             ) : (
-              <User className="w-12 h-12 text-stone-400" />
+              <User className="w-10 h-10 sm:w-12 sm:h-12 text-stone-400" />
             )}
           </div>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold text-stone-900">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-stone-900 truncate">
               {profile.nickname}
             </h1>
-            <div className="flex items-center gap-1 text-sm text-stone-500 mt-1">
-              <Calendar className="w-4 h-4" />
-              <span>
+            <div className="flex items-center gap-1 text-xs sm:text-sm text-stone-500 mt-1">
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="truncate">
                 {format(new Date(profile.createdAt), "yyyy년 M월 가입", {
                   locale: ko,
                 })}
@@ -70,30 +70,34 @@ export const UserProfileView = ({ handle }: UserProfileViewProps) => {
       </Card>
 
       {/* 활동 통계 */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-8">
         <Card>
-          <CardContent className="flex items-center gap-4 p-4">
-            <div className="p-3 rounded-full bg-emerald-50">
-              <ShoppingBag className="w-5 h-5 text-emerald-600" />
+          <CardContent className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
+            <div className="p-2 sm:p-3 rounded-full bg-emerald-50 shrink-0">
+              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-stone-900">
+            <div className="min-w-0">
+              <p className="text-xl sm:text-2xl font-bold text-stone-900">
                 {profile.stats.salesCount}
               </p>
-              <p className="text-sm text-stone-500">판매 중인 도서</p>
+              <p className="text-xs sm:text-sm text-stone-500 truncate">
+                판매 중인 도서
+              </p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="flex items-center gap-4 p-4">
-            <div className="p-3 rounded-full bg-blue-50">
-              <BookOpen className="w-5 h-5 text-blue-600" />
+          <CardContent className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
+            <div className="p-2 sm:p-3 rounded-full bg-blue-50 shrink-0">
+              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-stone-900">
+            <div className="min-w-0">
+              <p className="text-xl sm:text-2xl font-bold text-stone-900">
                 {profile.stats.reviewsCount}
               </p>
-              <p className="text-sm text-stone-500">작성한 리뷰</p>
+              <p className="text-xs sm:text-sm text-stone-500 truncate">
+                작성한 리뷰
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -200,17 +204,17 @@ export const UserProfileView = ({ handle }: UserProfileViewProps) => {
 const UserProfileSkeleton = () => (
   <div className="container mx-auto px-4 py-8 max-w-4xl">
     <Card className="mb-8">
-      <CardContent className="flex items-center gap-6 p-6">
-        <Skeleton className="w-24 h-24 rounded-full shrink-0" />
-        <div className="flex-1 space-y-2">
-          <Skeleton className="h-7 w-32" />
-          <Skeleton className="h-4 w-48" />
+      <CardContent className="flex items-center gap-4 sm:gap-6 p-4 sm:p-6">
+        <Skeleton className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shrink-0" />
+        <div className="flex-1 min-w-0 space-y-2">
+          <Skeleton className="h-6 sm:h-7 w-24 sm:w-32 max-w-full" />
+          <Skeleton className="h-3.5 sm:h-4 w-32 sm:w-48 max-w-full" />
         </div>
       </CardContent>
     </Card>
-    <div className="grid grid-cols-2 gap-4 mb-8">
-      <Skeleton className="h-24 rounded-lg" />
-      <Skeleton className="h-24 rounded-lg" />
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-8">
+      <Skeleton className="h-20 sm:h-24 rounded-lg" />
+      <Skeleton className="h-20 sm:h-24 rounded-lg" />
     </div>
     <Skeleton className="h-48 rounded-lg" />
   </div>
