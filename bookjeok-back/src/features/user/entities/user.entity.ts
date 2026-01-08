@@ -35,7 +35,7 @@ export class User {
   handle: string;
 
   @Column({ name: 'profileImageUrl', nullable: true })
-  profileImageUrl: string;
+  profileImageUrl: string | null;
 
   @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
