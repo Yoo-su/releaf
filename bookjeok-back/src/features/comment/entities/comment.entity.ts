@@ -41,12 +41,12 @@ export class Comment {
   @Column()
   targetId: string; // ISBN 또는 Review ID (문자열로 통일)
 
-  @Column()
-  userId: number;
+  @Column({ nullable: true })
+  userId: number | null;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'userId' })
-  user: User;
+  user: User | null;
 
   @Column({ default: 0 })
   likeCount: number; // 비정규화: 좋아요 수 캐싱
