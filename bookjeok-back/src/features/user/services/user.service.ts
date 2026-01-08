@@ -297,7 +297,7 @@ export class UserService {
       // 1. 사용자 정보 익명화
       const timestamp = new Date().getTime();
       user.nickname = '(알수없음)';
-      user.profileImageUrl = null;
+      user.profileImageUrl = '';
       user.providerId = `deleted_${user.id}_${timestamp}`;
       user.email = `deleted_${user.id}_${timestamp}`;
       user.deletedAt = new Date();
