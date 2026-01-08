@@ -14,6 +14,9 @@ import { BookInfoDto } from '@/features/book/dtos/book-info.dto';
 import { Review } from '@/features/review/entities/review.entity';
 import { ReviewReaction } from '@/features/review/entities/review-reaction.entity';
 import { ReadingLog } from '@/features/reading-log/entities/reading-log.entity';
+import { Comment } from '@/features/comment/entities/comment.entity';
+import { CommentLike } from '@/features/comment/entities/comment-like.entity';
+import { ReadReceipt } from '@/features/chat/entities/read-receipt.entity';
 import { BusinessException } from '@/shared/exceptions/business.exception';
 
 @Injectable()
@@ -328,6 +331,18 @@ export class UserService {
 
       // 5. 위시리스트 삭제
       await queryRunner.manager.delete(Wishlist, { user: { id: userId } });
+
+      // 6. 댓글 좋아요 삭제 (댓글 익명화 전에 처리)
+      await queryRunner.manager.delete(CommentLike, { userId });
+
+      // 7. 댓글 익명화 (userId를 null로 설정하여 사용자 연결 해제)
+      await queryRunner.manager.update(Comment, { userId }, { userId: null });
+
+      // 8. 독서 기록 삭제
+      await queryRunner.manager.delete(ReadingLog, { userId });
+
+      // 9. 읽음 확인 기록 삭제
+      await queryRunner.manager.delete(ReadReceipt, { user: { id: userId } });
 
       await queryRunner.commitTransaction();
     } catch (err) {
