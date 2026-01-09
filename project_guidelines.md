@@ -59,10 +59,18 @@
 
 ### 백엔드 구조 (`src/`)
 
-- **`features/`**: 도메인 모듈 (예: `auth`, `book`, `user`).
+- **`features/`**: 도메인 모듈.
+  - `auth`: 인증 및 소셜 로그인
+  - `book`: 도서 정보 및 중고 서적 판매
+  - `chat`: 실시간 채팅
+  - `comment`: 댓글 시스템
+  - `insights`: 인사이트 대시보드
+  - `llm`: AI 도서 요약 (Google Gemini)
+  - `reading-log`: 독서 기록
+  - `review`: 도서 리뷰
+  - `user`: 사용자 정보
   - 각 기능 모듈은 자체적인 Controller, Service, Entity, DTO를 포함합니다.
-- **`common/`**: 전역 필터, 가드, 인터셉터, 데코레이터.
-- **`shared/`**: 공유 유틸리티 및 상수.
+- **`shared/`**: 공유 유틸리티, 예외, 타입.
 
 ## 3. 네이밍 컨벤션 (Naming Conventions)
 
