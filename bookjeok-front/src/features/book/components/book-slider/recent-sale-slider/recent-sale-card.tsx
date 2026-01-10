@@ -9,13 +9,17 @@ import { PATHS } from "@/shared/constants/paths";
 
 interface RecentSaleCardProps {
   sale: UsedBookSale;
+  priority?: boolean;
 }
 
 /**
  * 메인페이지 최신 중고책 슬라이더에서 사용되는 카드 컴포넌트
  * 세로형 포스터 스타일로 시각적 임팩트를 강화
  */
-export const RecentSaleCard = ({ sale }: RecentSaleCardProps) => {
+export const RecentSaleCard = ({
+  sale,
+  priority = false,
+}: RecentSaleCardProps) => {
   // 책 이미지 우선, 없으면 판매글 이미지 사용
   const displayImage = sale.imageUrls[0] || sale.book?.image;
 
@@ -28,15 +32,12 @@ export const RecentSaleCard = ({ sale }: RecentSaleCardProps) => {
       <div className="relative w-[200px] h-[280px] rounded-2xl overflow-hidden shadow-lg transition-all duration-500 ease-out transform-gpu hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/25">
         {/* 배경 이미지 */}
         <Image
-          src={displayImage || "/placeholder.jpg"}
+          src={displayImage || "/images/placeholder-book.svg"}
           alt={sale.title}
           fill
           sizes="200px"
+          priority={priority}
           className="object-cover transition-transform duration-700 group-hover:scale-110"
-          onError={(e) => {
-            e.currentTarget.src =
-              "https://placehold.co/200x280/e2e8f0/64748b?text=Book";
-          }}
         />
 
         {/* 그라데이션 오버레이 */}

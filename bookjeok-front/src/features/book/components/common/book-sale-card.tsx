@@ -1,3 +1,5 @@
+"use client";
+
 import { Eye, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,12 +10,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/shared/components/shadcn/avatar";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/shared/components/shadcn/card";
+import { Card, CardContent } from "@/shared/components/shadcn/card";
 import { Skeleton } from "@/shared/components/shadcn/skeleton";
 import { PATHS } from "@/shared/constants/paths";
 import { cn } from "@/shared/utils/cn";
@@ -27,18 +24,8 @@ interface SaleCardProps {
   className?: string;
   href?: string;
   showEffect?: boolean;
-}
-
-const PLACEHOLDER_IMAGE =
-  "https://placehold.co/250x192/e2e8f0/64748b?text=Image";
-
-interface SaleCardProps {
-  sale: UsedBookSale;
-  idx?: number;
-  className?: string;
-  href?: string;
-  showEffect?: boolean;
   rank?: number;
+  priority?: boolean; // LCP 이미지 우선 로드 여부
 }
 
 export const BookSaleCard = ({
@@ -48,6 +35,7 @@ export const BookSaleCard = ({
   href,
   showEffect = true,
   rank,
+  priority = false,
 }: SaleCardProps) => {
   const linkHref = href || PATHS.BOOK_SALES_DETAIL(String(sale.id));
 
@@ -67,14 +55,13 @@ export const BookSaleCard = ({
           {/* Image Section */}
           <div className="relative aspect-4/3 w-full overflow-hidden bg-gray-100">
             <Image
-              src={sale.imageUrls[0] || PLACEHOLDER_IMAGE}
+              src={sale.imageUrls[0] || "/images/placeholder-image.svg"}
               alt={sale.title}
               title={sale.title}
               fill
+              priority={priority}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              onError={(e) => {
-                e.currentTarget.src = PLACEHOLDER_IMAGE;
-              }}
             />
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent opacity-60" />

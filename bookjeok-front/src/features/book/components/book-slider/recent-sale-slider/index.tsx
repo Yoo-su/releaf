@@ -86,7 +86,7 @@ export const RecentSalesSlider = () => {
       >
         {displaySales.map((sale, index) => (
           <SwiperSlide key={`${sale.id}-${index}`} className="w-[200px]! py-4">
-            <RecentSaleCard sale={sale} />
+            <RecentSaleCard sale={sale} priority={index < 4} />
           </SwiperSlide>
         ))}
       </Swiper>

@@ -68,7 +68,12 @@ export function PopularBookSaleList() {
       >
         {sales.map((sale, index) => (
           <SwiperSlide key={sale.id}>
-            <BookSaleCard sale={sale} rank={index + 1} showEffect={false} />
+            <BookSaleCard
+              sale={sale}
+              rank={index + 1}
+              showEffect={false}
+              priority={index < 4}
+            />
           </SwiperSlide>
         ))}
       </Swiper>

@@ -37,8 +37,12 @@ export const SocketProvider = ({
         auth: {
           token: accessToken,
         },
+        // 재연결 설정 - Safari 등에서 유휴 상태 후 연결 복구를 위해 강화
         reconnection: true, // 자동 재연결 활성화
-        reconnectionAttempts: 1, // 최대 1회 시도
+        reconnectionAttempts: Infinity, // 무한 재연결 시도
+        reconnectionDelay: 1000, // 첫 재연결 시도까지 1초 대기
+        reconnectionDelayMax: 5000, // 최대 5초까지 지수 백오프 (서버 과부하 방지)
+        randomizationFactor: 0.5, // 재연결 지연에 랜덤 요소 추가 (동시 재연결 방지)
       });
 
       newSocket.on("connect", () => {
@@ -46,8 +50,30 @@ export const SocketProvider = ({
         setIsConnected(true);
       });
 
-      newSocket.on("disconnect", () => {
-        console.log(`Socket disconnected from ${namespace}`);
+      newSocket.on("disconnect", (reason) => {
+        console.log(`Socket disconnected from ${namespace}:`, reason);
+        setIsConnected(false);
+      });
+
+      // 재연결 관련 이벤트 핸들러
+      newSocket.on("reconnect", (attemptNumber) => {
+        console.log(
+          `Socket reconnected to ${namespace} after ${attemptNumber} attempts`
+        );
+      });
+
+      newSocket.on("reconnect_attempt", (attemptNumber) => {
+        console.log(
+          `Socket reconnection attempt ${attemptNumber} to ${namespace}`
+        );
+      });
+
+      newSocket.on("reconnect_error", (error) => {
+        console.error(`Socket reconnection error on ${namespace}:`, error);
+      });
+
+      newSocket.on("connect_error", (error) => {
+        console.error(`Socket connection error on ${namespace}:`, error);
         setIsConnected(false);
       });
 
