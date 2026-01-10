@@ -1,5 +1,4 @@
-import { AuthGuard } from "@/features/auth/components/auth-guard";
-import { BookSaleEditView } from "@/views/book-sale-edit-view"; // 새로 만들 View
+import { BookSaleEditView } from "@/views/book-sale-edit-view";
 
 export default async function Page({
   params,
@@ -8,9 +7,5 @@ export default async function Page({
 }) {
   const { id } = await params;
 
-  return (
-    <AuthGuard>
-      <BookSaleEditView saleId={id} />
-    </AuthGuard>
-  );
+  return <BookSaleEditView saleId={id} />;
 }

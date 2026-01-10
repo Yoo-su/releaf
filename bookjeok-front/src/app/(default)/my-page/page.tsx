@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 
-import { AuthGuard } from "@/features/auth/components/auth-guard";
 import { MyPageView } from "@/views/my-page-view";
 
 export const metadata: Metadata = {
@@ -9,9 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return (
-    <AuthGuard>
-      <MyPageView />
-    </AuthGuard>
-  );
+  return <MyPageView />;
 }
