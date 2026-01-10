@@ -70,7 +70,12 @@ export const BookSaleGrid = ({ filterParams }: BookSaleGridProps) => {
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {sales.map((sale, idx) => (
-          <BookSaleCard key={sale.id} idx={idx} sale={sale} />
+          <BookSaleCard
+            key={sale.id}
+            idx={idx}
+            sale={sale}
+            priority={idx < 3}
+          />
         ))}
       </div>
 

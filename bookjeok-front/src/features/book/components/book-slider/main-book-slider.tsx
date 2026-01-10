@@ -130,17 +130,12 @@ export const MainBookSlider = () => {
                 <Link href={PATHS.BOOK_DETAIL(book.isbn)} passHref>
                   <div className="group relative w-full h-[360px] md:h-[450px] rounded-lg overflow-hidden shadow-2xl transform transition-transform duration-500">
                     <Image
-                      src={book.image || "/placeholder.jpg"}
+                      src={book.image || "/images/placeholder-book.svg"}
                       alt={book.title}
                       fill
                       sizes="(max-width: 768px) 240px, 300px"
                       priority={true}
-                      loading="eager" // 빠른 스와이프 시 하얀 화면 방지
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      onError={(e) => {
-                        e.currentTarget.src =
-                          "https://placehold.co/300x450/e2e8f0/64748b?text=Image";
-                      }}
                     />
                     <div className="book-info-overlay absolute inset-0 bg-black bg-opacity-0 flex flex-col justify-end items-center p-6 text-center opacity-0">
                       <h3 className="text-white font-bold text-xl md:text-2xl mb-2 drop-shadow-lg">
