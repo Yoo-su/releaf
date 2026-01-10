@@ -26,6 +26,8 @@ import { ChatRoom } from '../entities/chat-room.entity';
     credentials: true,
   },
   namespace: 'chat',
+  pingInterval: 10000, // 10초마다 ping 전송
+  pingTimeout: 5000, // 5초 내 pong 응답이 없으면 연결 끊김 처리
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
