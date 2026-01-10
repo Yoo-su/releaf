@@ -11,6 +11,9 @@ export interface User {
   /** 사용자 이메일 (선택) */
   email: string | null;
 
+  /** 사용자 고유 핸들 (URL에 사용) */
+  handle: string;
+
   /** 사용자 닉네임 */
   nickname: string;
 

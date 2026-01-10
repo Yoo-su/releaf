@@ -3,6 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
+import { useAuthStore } from "@/features/auth/store";
 import { QUERY_KEYS } from "@/shared/constants/query-keys";
 import { useSocketContext } from "@/shared/providers/socket-provider";
 
@@ -63,6 +64,7 @@ export const useChatEvents = () => {
   const handleNewMessage = useCallback(
     (newMessage: ChatMessage) => {
       const roomId = newMessage.chatRoom.id;
+      const currentUserId = useAuthStore.getState().user?.id;
 
       // 채팅 상태를 한 번만 조회하여 재사용
       const { isChatOpen, activeChatRoomId } = useChatStore.getState();
@@ -73,8 +75,47 @@ export const useChatEvents = () => {
         socket?.emit("markAsRead", { roomId });
       }
 
-      // 메시지 캐시 업데이트
-      prependMessageToCache(roomId, newMessage);
+      // 내가 보낸 메시지인 경우, 낙관적 메시지를 실제 메시지로 교체
+      // 낙관적 메시지는 음수 ID를 가지고 있음
+      const isMyMessage = newMessage.sender?.id === currentUserId;
+
+      queryClient.setQueryData<InfiniteMessagesData>(
+        QUERY_KEYS.chatKeys.messages(roomId).queryKey,
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          // 내가 보낸 메시지라면, 기존 낙관적 메시지(음수 ID) 중 하나를 교체
+          if (isMyMessage) {
+            const hasOptimisticMessage = oldData.pages.some((page) =>
+              page.messages.some((msg) => msg.id < 0)
+            );
+
+            if (hasOptimisticMessage) {
+              // 첫 번째 낙관적 메시지를 실제 메시지로 교체
+              let replaced = false;
+              const newPages = oldData.pages.map((page) => ({
+                ...page,
+                messages: page.messages.map((msg) => {
+                  if (!replaced && msg.id < 0) {
+                    replaced = true;
+                    return newMessage;
+                  }
+                  return msg;
+                }),
+              }));
+              return { ...oldData, pages: newPages };
+            }
+          }
+
+          // 낙관적 메시지가 없거나 상대방 메시지인 경우, 기존처럼 맨 앞에 추가
+          const newPages = [...oldData.pages];
+          newPages[0] = {
+            ...newPages[0],
+            messages: [newMessage, ...newPages[0].messages],
+          };
+          return { ...oldData, pages: newPages };
+        }
+      );
 
       // 채팅방 목록 업데이트: 마지막 메시지 & 안읽음 카운트 갱신
       queryClient.setQueryData<ChatRoom[]>(
@@ -101,7 +142,7 @@ export const useChatEvents = () => {
         }
       );
     },
-    [queryClient, socket, prependMessageToCache]
+    [queryClient, socket]
   );
 
   const handleUserLeft = useCallback(

@@ -4,7 +4,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import debounce from "lodash/debounce";
 import throttle from "lodash/throttle";
-import { ArrowLeft, Loader2, LogOut, SendHorizontal } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Loader2,
+  LogOut,
+  SendHorizontal,
+} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -45,6 +51,9 @@ const MessageBubble = ({
     return <SystemMessageBubble content={message.content} />;
   }
 
+  // 음수 ID는 전송 중인 낙관적 메시지
+  const isSending = message.id < 0;
+
   return (
     <div
       className={`flex items-end gap-2 ${
@@ -57,12 +66,45 @@ const MessageBubble = ({
           <AvatarFallback>{message.sender.nickname.slice(0, 1)}</AvatarFallback>
         </Avatar>
       )}
+      {/* 내 메시지일 때 전송 상태를 버블 왼쪽에 표시 */}
+      {isMine && (
+        <div className="flex items-end mb-1">
+          {isSending ? (
+            <motion.div
+              className="flex gap-0.5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {[0, 1, 2].map((i) => (
+                <motion.span
+                  key={i}
+                  className="w-1 h-1 bg-gray-400 rounded-full"
+                  animate={{ opacity: [0.3, 1, 0.3] }}
+                  transition={{
+                    duration: 0.8,
+                    repeat: Infinity,
+                    delay: i * 0.15,
+                  }}
+                />
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            >
+              <Check className="w-3 h-3 text-emerald-600" />
+            </motion.div>
+          )}
+        </div>
+      )}
       <div
         className={`max-w-[70%] rounded-2xl px-4 py-2 ${
           isMine
             ? "bg-emerald-700 text-white rounded-br-none"
             : "bg-gray-100 text-gray-800 rounded-bl-none"
-        }`}
+        } ${isSending ? "opacity-70" : ""}`}
       >
         <p className="text-sm">{message.content}</p>
       </div>
@@ -202,22 +244,74 @@ export const ChatRoom = () => {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!socket || !activeChatRoomId || !newMessage.trim()) return;
+    if (!socket || !activeChatRoomId || !newMessage.trim() || !currentUser)
+      return;
 
-    socket.emit(
-      "sendMessage",
-      { roomId: activeChatRoomId, content: newMessage },
-      (response: { status: string; error?: string }) => {
-        if (response.status !== "ok") {
-          console.error("Message failed to send:", response.error);
-          toast.error(`메시지 전송에 실패했습니다: ${response.error}`);
-        }
-      }
-    );
+    const messageContent = newMessage.trim();
+    const tempId = -Date.now(); // 임시 ID (음수로 서버 ID와 충돌 방지)
+
+    // 낙관적 업데이트: 즉시 UI에 메시지 표시
+    const optimisticMessage: ChatMessage = {
+      id: tempId,
+      content: messageContent,
+      isRead: false,
+      createdAt: new Date().toISOString(),
+      sender: {
+        id: currentUser.id,
+        handle: currentUser.handle,
+        nickname: currentUser.nickname,
+        profileImageUrl: currentUser.profileImageUrl,
+      },
+      chatRoom: { id: activeChatRoomId },
+    };
+
+    // 캐시에 낙관적 메시지 추가
+    queryClient.setQueryData<{
+      pages: { messages: ChatMessage[] }[];
+      pageParams: (number | undefined)[];
+    }>(QUERY_KEYS.chatKeys.messages(activeChatRoomId).queryKey, (oldData) => {
+      if (!oldData) return oldData;
+      const newPages = [...oldData.pages];
+      newPages[0] = {
+        ...newPages[0],
+        messages: [optimisticMessage, ...newPages[0].messages],
+      };
+      return { ...oldData, pages: newPages };
+    });
+
+    // 입력 필드 즉시 초기화 (UX 개선)
     setNewMessage("");
     debouncedStopTyping.cancel();
     emitStartTyping.cancel();
     emitStopTyping();
+
+    // 서버에 메시지 전송
+    socket.emit(
+      "sendMessage",
+      { roomId: activeChatRoomId, content: messageContent },
+      (response: { status: string; error?: string }) => {
+        if (response.status !== "ok") {
+          console.error("Message failed to send:", response.error);
+          toast.error(`메시지 전송에 실패했습니다: ${response.error}`);
+
+          // 실패 시 낙관적 메시지 롤백
+          queryClient.setQueryData<{
+            pages: { messages: ChatMessage[] }[];
+            pageParams: (number | undefined)[];
+          }>(
+            QUERY_KEYS.chatKeys.messages(activeChatRoomId).queryKey,
+            (oldData) => {
+              if (!oldData) return oldData;
+              const newPages = oldData.pages.map((page) => ({
+                ...page,
+                messages: page.messages.filter((msg) => msg.id !== tempId),
+              }));
+              return { ...oldData, pages: newPages };
+            }
+          );
+        }
+      }
+    );
   };
 
   const handleLeaveRoom = () => {
