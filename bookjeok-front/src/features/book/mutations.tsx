@@ -11,7 +11,6 @@ import { compressImages } from "@/shared/utils/compress-image";
 
 import { useAuthStore } from "../auth/store";
 import { deleteImages } from "./actions/delete-action";
-import { revalidateBookMarketPage } from "./actions/revalidate-action";
 import { uploadImages } from "./actions/upload-action";
 import {
   createBookSale,
@@ -63,10 +62,8 @@ export const useCreateBookSaleMutation = () => {
       }
       return saleResult;
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       toast.success("판매글이 성공적으로 등록되었습니다.");
-      // 서버 캐시 즉시 무효화 (새 글이 바로 보이도록)
-      await revalidateBookMarketPage();
       router.push(PATHS.MY_PAGE_SALES);
     },
     onError: (error) => {
@@ -104,10 +101,8 @@ export const useUpdateBookSaleStatusMutation = () => {
         queryClient.setQueryData(queryKey, context.previousSales);
       }
     },
-    onSettled: async () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.bookKeys._def });
-      // 서버 캐시 즉시 무효화
-      await revalidateBookMarketPage();
     },
   });
 };
@@ -166,7 +161,7 @@ export const useUpdateBookSaleMutation = () => {
       }
       return result;
     },
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       toast.success("판매글이 성공적으로 수정되었습니다.");
       // 관련 쿼리들을 무효화하여 최신 데이터로 갱신
       queryClient.invalidateQueries({
@@ -175,8 +170,6 @@ export const useUpdateBookSaleMutation = () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.bookKeys.saleDetail(String(data.id)).queryKey,
       });
-      // 서버 캐시 즉시 무효화
-      await revalidateBookMarketPage();
       router.push(PATHS.MY_PAGE_SALES);
     },
     onError: (error) => {
@@ -202,11 +195,9 @@ export const useDeleteBookSaleMutation = () => {
       // 2. 백엔드에 게시글 삭제 요청
       await deleteBookSale(saleId);
     },
-    onSuccess: async (_, { saleId }) => {
+    onSuccess: (_, { saleId }) => {
       toast.success("판매글이 삭제되었습니다.");
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.bookKeys._def });
-      // 서버 캐시 즉시 무효화
-      await revalidateBookMarketPage();
       // 현재 페이지가 삭제된 게시글 상세 페이지일 경우 홈으로 이동
       if (window.location.pathname.includes(`/book/sales/${saleId}`)) {
         router.push(PATHS.MY_PAGE_SALES);

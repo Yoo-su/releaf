@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { deleteImages } from "@/features/book/actions/delete-action";
-import { revalidateReviewsPage } from "@/features/review/actions/revalidate-action";
 import {
   createReview,
   deleteReview,
@@ -121,15 +120,13 @@ export const useCreateReviewMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: ReviewFormValues) => createReview(data),
-    onSuccess: async () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewKeys.feeds.queryKey,
       });
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewKeys.list._def,
       });
-      // 서버 캐시 즉시 무효화 (새 리뷰가 바로 보이도록)
-      await revalidateReviewsPage();
       toast.success("리뷰가 작성되었습니다.");
     },
     onError: () => {
@@ -159,7 +156,7 @@ export const useUpdateReviewMutation = () => {
       }
       return updateReview(id, data);
     },
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewKeys.detail(data.id).queryKey,
       });
@@ -169,8 +166,6 @@ export const useUpdateReviewMutation = () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewKeys.list._def,
       });
-      // 서버 캐시 즉시 무효화
-      await revalidateReviewsPage();
       toast.success("리뷰가 수정되었습니다!");
     },
     onError: (error: any) => {
@@ -187,15 +182,13 @@ export const useDeleteReviewMutation = () => {
 
   return useMutation({
     mutationFn: deleteReview,
-    onSuccess: async () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewKeys.feeds.queryKey,
       });
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewKeys.list._def,
       });
-      // 서버 캐시 즉시 무효화
-      await revalidateReviewsPage();
       toast.success("리뷰가 삭제되었습니다.");
     },
     onError: () => {
